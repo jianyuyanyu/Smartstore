@@ -2,7 +2,6 @@
 
 using Smartstore.Core.Platform.AI.Prompting;
 using Smartstore.Engine.Modularity;
-using Smartstore.Http;
 
 namespace Smartstore.Core.Platform.AI
 {
@@ -22,19 +21,15 @@ namespace Smartstore.Core.Platform.AI
         bool Supports(AIProviderFeatures feature);
 
         /// <summary>
-        /// Gets <see cref="RouteInfo"/> for the given <paramref name="topic"/>.
+        /// Gets the names of the preferred AI models for the given <paramref name="topic"/>.
         /// </summary>
-        RouteInfo GetDialogRoute(AIChatTopic topic);
+        string[]? GetPreferredModelNames(AIChatTopic topic);
 
         /// <summary>
-        /// Gets the names of the preferred AI models for text generation.
+        /// Gets the default AI model names.
+        /// To be used when <see cref="GetPreferredModelNames(AIChatTopic)"/> returns <c>null</c>.
         /// </summary>
-        string[] GetPreferredTextModelNames();
-
-        /// <summary>
-        /// Gets the names of the preferred AI models for image creation.
-        /// </summary>
-        string[] GetPreferredImageModelNames();
+        string[] GetDefaultModelNames();
 
         /// <summary>
         /// Starts or continues an AI conversation.

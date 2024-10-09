@@ -6,13 +6,15 @@
 
             let el = $(this);
             let tool = el.closest(".ai-provider-tool");
+            if (tool.length === 0) {
+                return;
+            }
 
             // Set the title used for the modal dialog title. 
             // For direct openers the title is set else we take the text of the dropdown item.
             let title = this.getAttribute("title") || el.html();
             
             let params = {
-                providerSystemname: tool.data('provider-systemname'),
                 targetProperty: tool.data('target-property'),
                 entityName: tool.data('entity-name'),
                 type: tool.data('entity-type'),
@@ -30,19 +32,13 @@
 
             let el = $(this);
             let tool = el.closest(".ai-provider-tool");
-            let isRichText = tool.data('is-rich-text');
-
-            if (!isRichText) {
-                // Get chosen provider tool.
-                tool = el.closest(".ai-dialog-opener-root").find("button.active");
-            }
-
             if (tool.length === 0) {
                 return;
             }
 
+            let isRichText = tool.data('is-rich-text');
+
             let params = {
-                providerSystemName: tool.data('provider-systemname'),
                 entityName: tool.data('entity-name'),
                 Type: tool.data('entity-type'),
                 targetProperty: tool.data('target-property'),
@@ -76,29 +72,17 @@
             openDialog(tool, params, isRichText);
         });
 
-        // Prevent dropdown from closing when a provider is choosen.
-        $(document).on("click", ".btn-ai-provider-chooser", function (e) {
-            e.stopPropagation();
-
-            let el = $(this);
-
-            // Swap active class of button group
-            let btnGroup = el.closest('.btn-group');
-            btnGroup.find('button').removeClass('active');
-            el.addClass('active');
-
-            return false;
-        });
-
         // Translation
         $(document).on('click', '.ai-provider-tool .ai-translator', function (e) {
             e.preventDefault();
 
             let el = $(this);
             let tool = el.closest(".ai-provider-tool");
+            if (tool.length === 0) {
+                return;
+            }
 
             let params = {
-                providerSystemname: tool.data('provider-systemname'),
                 targetProperty: tool.data('target-property'),
                 ModalTitle: tool.data('modal-title')
             };
@@ -112,9 +96,11 @@
 
             let el = $(this);
             let tool = el.closest(".ai-provider-tool");
+            if (tool.length === 0) {
+                return;
+            }
 
             let params = {
-                providerSystemname: tool.data('provider-systemname'),
                 targetProperty: tool.data('target-property'),
                 type: tool.data('entity-type'),
                 mandatoryEntityFields: tool.data('mandatory-entity-fields'),
