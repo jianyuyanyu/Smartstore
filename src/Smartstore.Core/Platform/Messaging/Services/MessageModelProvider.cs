@@ -217,6 +217,9 @@ namespace Smartstore.Core.Messaging
                 case Order x:
                     modelPart = await CreateModelPartAsync(x, messageContext);
                     break;
+                case OrderItem x:
+                    modelPart = await CreateModelPartAsync(x, messageContext);
+                    break;
                 case Product x:
                     modelPart = await CreateModelPartAsync(x, messageContext);
                     break;
