@@ -33,9 +33,12 @@
 
             <div asp-validation-summary="ModelOnly"></div>
 
-            <div class="cart-container">
-                <partial name="ReturnCase.Items" model="Model.Items" view-data="itemsViewData" />
-            </div>
+            <fieldset class="form-group">
+                <legend class="sr-only">@T("ReturnRequests.SelectProduct(s)")</legend>
+                <div class="cart-container">
+                    <partial name="ReturnCase.Items" model="Model.Items" view-data="itemsViewData" />
+                </div>
+            </fieldset>
 
             <div sm-if="hasItemsToReturn" class="mt-4">
                 <div class="form-group row">

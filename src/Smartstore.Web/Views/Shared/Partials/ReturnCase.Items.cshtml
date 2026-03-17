@@ -4,6 +4,7 @@
 
 @{
     var returnAll = Model.ReturnAllItems;
+    var withdrawal = ViewBag.Withdrawal == true;
 }
 
 @if (Model.IsEditable)
@@ -45,17 +46,14 @@ else
             var quantityId = $"orderitem-quantity{item.Id}";
             <div class="cart-row return-item">
                 <div class="row">
-                    @if (Model.IsEditable)
-                    {
-                        <div class="select-cart-item col-auto">
-                            <input name="orderitem-select@(item.Id)"
-                                   type="checkbox"
-                                   class="form-check-input select-cart-item-checkbox return-item-checkbox"
-                                   attr-checked='(returnAll || item.Selected, "checked")'
-                                   attr-aria-disabled='(returnAll, "true")'
-                                   attr-disabled='(returnAll, "disabled")' />
-                        </div>
-                    }
+                    <div sm-if="Model.IsEditable" class="select-cart-item col-auto">
+                        <input name="orderitem-select@(item.Id)"
+                                type="checkbox"
+                                class="form-check-input select-cart-item-checkbox return-item-checkbox"
+                                attr-checked='(returnAll || item.Selected, "checked")'
+                                attr-aria-disabled='(returnAll, "true")'
+                                attr-disabled='(returnAll, "disabled")' />
+                    </div>
                     <div class="cart-item-img col-2" sm-if="item.Image != null && item.Image.HasImage()">
                         <img sm-model="item.Image" class="img-fluid" attr-alt='(item.Image.Alt.IsEmpty(), item.ProductName)' />
                     </div>
@@ -81,6 +79,17 @@ else
                         </div>
                         <div class="cart-item-qty pd-muted">
                             <span>@T("Order.Product(s).OrderedQuantity"):</span> <span>@item.Quantity.ToString("N0") @item.QuantityUnit</span>
+                            <button sm-if="Model.IsEditable && withdrawal" 
+                                    type="submit" 
+                                    name="orderitem-withdraw" 
+                                    value="@item.Id" 
+                                    class="btn btn-secondary btn-flat btn-sm btn-withdraw ml-2"
+                                    title="@T("Withdrawal.WithdrawItemOnly")"
+                                    aria-describedby="withdraw-item-only"
+                                    attr-class='(returnAll, "invisible")'>
+                                <i class="fa fa-reply-all" aria-hidden="true"></i>
+                                <span>@T("Withdrawal.Withdraw")</span>
+                            </button>
                         </div>
                         <div class="cart-item-return-qty mt-2">
                             @if (!Model.IsEditable)
@@ -90,7 +99,7 @@ else
                             else if (item.MaxReturnQuantity > 0)
                             {
                                 var qtyDisabled = returnAll || (!returnAll && !item.Selected);
-                                <label for="@quantityId" class="mb-1">@T("ReturnRequests.Products.Quantity"):</label>
+                                <label for="@quantityId" class="mr-2">@T("ReturnRequests.Products.Quantity"):</label>
                                 <select id="@quantityId" 
                                         name="@quantityId" 
                                         class="form-control form-control-sm return-item-quantity noskin" 
@@ -129,6 +138,7 @@ else
         }
     </div>
 </div>
+<div sm-if="withdrawal" id="withdraw-item-only" class="sr-only">@T("Withdrawal.WithdrawItemOnly")</div>
 
 @if(!Model.IsEditable)
 {
@@ -152,6 +162,9 @@ else
                 .each((_, el) => {
                     $(el).val(returnAll ? $(el).data('max-quantity') : 0);
                 });
+
+            $elContainer.find('.btn-withdraw')
+                .toggleClass('invisible', returnAll);
         });
 
         $('.return-item-checkbox').on('change', (e) => {

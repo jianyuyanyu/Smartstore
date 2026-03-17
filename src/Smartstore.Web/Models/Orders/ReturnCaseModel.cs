@@ -35,8 +35,7 @@ namespace Smartstore.Web.Models.Orders
             => Items?.Any(x => x.MaxReturnQuantity > 0) ?? false;
 
         [IgnoreDataMember]
-        public bool HasSingleItemToReturn
-            => Items?.Count == 1 && Items[0].MaxReturnQuantity == 1;
+        public bool HasSingleItemToReturn { get; set; }
 
         public partial class ItemModel : EntityModelBase
         {

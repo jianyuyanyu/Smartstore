@@ -158,6 +158,9 @@ namespace Smartstore.Core.Data.Migrations
             builder.AddOrUpdate("Admin.Configuration.Settings.Order.ReturnRequestSettings", "Returns", "Retouren");
 
             builder.AddOrUpdate("Admin.Configuration.Settings.GeneralCommon.CaptchaShowOnTargets.Option.Withdrawal", "Withdrawal", "Widerruf");
+
+            builder.AddOrUpdate("Withdrawal.Withdraw", "Withdraw", "Widerrufen");
+            builder.AddOrUpdate("Withdrawal.WithdrawItemOnly", "Withdraw this item only", "Nur diesen Artikel widerrufen");
         }
     }
 }
