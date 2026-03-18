@@ -249,6 +249,13 @@ namespace Smartstore.Core.Catalog.Categories
         public bool IgnoreInMenus { get; set; }
 
         /// <summary>
+        /// Gets or sets the number of days within which the products of this category can be withdrawn.
+        /// The number 0 means that the products cannot be withdrawn.
+        /// </summary>
+        /// <remarks>Only effective in accordance with Withdrawal module.</remarks>
+        public int? WithdrawalPeriodDays { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether the entity has been deleted.
         /// </summary>
         [IgnoreDataMember]

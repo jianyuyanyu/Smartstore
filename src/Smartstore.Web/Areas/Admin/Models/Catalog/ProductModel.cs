@@ -299,6 +299,10 @@ namespace Smartstore.Admin.Models.Catalog
 
         [LocalizedDisplay("*QuantityUnit")]
         public int? QuantityUnitId { get; set; }
+
+        [LocalizedDisplay("*WithdrawalPeriodDays")]
+        public int? WithdrawalPeriodDays { get; set; }
+
         public string ProductSelectCheckboxClass { get; set; }
         public bool IsSystemProduct { get; set; }
         public string SystemName { get; set; }
@@ -671,6 +675,10 @@ namespace Smartstore.Admin.Models.Catalog
                 .NotNull()  // Nullable required for IsTaxExempt.
                 .NotEqual(0)
                 .When(x => !x.IsTaxExempt);
+
+            RuleFor(x => x.WithdrawalPeriodDays)
+                .GreaterThanOrEqualTo(0)
+                .When(x => x.WithdrawalPeriodDays != null);
 
             When(x => x.IsTabLoaded("Inventory"), () =>
             {

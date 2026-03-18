@@ -795,6 +795,13 @@ namespace Smartstore.Core.Catalog.Products
         public bool Published { get; set; }
 
         /// <summary>
+        /// Gets or sets the number of days within which the product can be withdrawn.
+        /// The number 0 means that the product cannot be withdrawn.
+        /// </summary>
+        /// <remarks>Only effective in accordance with Withdrawal module.</remarks>
+        public int? WithdrawalPeriodDays { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether the product has been deleted.
         /// </summary>
         [IgnoreDataMember]
@@ -1059,6 +1066,6 @@ namespace Smartstore.Core.Catalog.Products
             return Name;
         }
 
-        public string[] GetDisplayNameMemberNames() => new[] { nameof(Name) };
+        public string[] GetDisplayNameMemberNames() => [nameof(Name)];
     }
 }

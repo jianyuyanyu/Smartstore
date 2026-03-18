@@ -378,6 +378,7 @@ namespace Smartstore.Core.DataExchange.Import
                     row.SetProperty(context.Result, (x) => x.ApprovedTotalReviews);
                     row.SetProperty(context.Result, (x) => x.NotApprovedTotalReviews);
                     row.SetProperty(context.Result, (x) => x.Published, true);
+                    row.SetProperty(context.Result, (x) => x.WithdrawalPeriodDays);
                     row.SetProperty(context.Result, (x) => x.Sku);
                     row.SetProperty(context.Result, (x) => x.ManufacturerPartNumber);
                     row.SetProperty(context.Result, (x) => x.Gtin);

@@ -83,6 +83,9 @@ namespace Smartstore.Admin.Models.Catalog
         [LocalizedDisplay("*ShowOnHomePage")]
         public bool ShowOnHomePage { get; set; }
 
+        [LocalizedDisplay("*WithdrawalPeriodDays")]
+        public int? WithdrawalPeriodDays { get; set; }
+
         [LocalizedDisplay("*Deleted")]
         public bool Deleted { get; set; }
 
@@ -177,6 +180,10 @@ namespace Smartstore.Admin.Models.Catalog
         public CategoryValidator(SmartDbContext db)
         {
             ApplyEntityRules<Category>(db);
+
+            RuleFor(x => x.WithdrawalPeriodDays)
+                .GreaterThanOrEqualTo(0)
+                .When(x => x.WithdrawalPeriodDays != null);
         }
     }
 

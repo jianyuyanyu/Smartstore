@@ -427,6 +427,7 @@ namespace Smartstore.Core.DataExchange.Export
                 _writer.WriteElementString(nameof(Category.HasDiscountsApplied), entity.HasDiscountsApplied.ToString());
                 _writer.WriteElementString(nameof(Category.Published), entity.Published.ToString());
                 _writer.WriteElementString(nameof(Category.IgnoreInMenus), entity.IgnoreInMenus.ToString());
+                _writer.WriteElementString(nameof(Category.WithdrawalPeriodDays), entity.WithdrawalPeriodDays?.ToString() ?? string.Empty);
                 _writer.WriteElementString(nameof(Category.Deleted), entity.Deleted.ToString());
                 _writer.WriteElementString(nameof(Category.DisplayOrder), entity.DisplayOrder.ToString());
                 _writer.WriteElementString(nameof(Category.CreatedOnUtc), entity.CreatedOnUtc.ToString(_culture));
@@ -720,6 +721,7 @@ namespace Smartstore.Core.DataExchange.Export
             _writer.WriteElementString(nameof(Product.Visibility), ((int)entity.Visibility).ToString());
             _writer.WriteElementString(nameof(Product.Condition), ((int)entity.Condition).ToString());
             _writer.WriteElementString(nameof(Product.DisplayOrder), entity.DisplayOrder.ToString());
+            _writer.WriteElementString(nameof(Product.WithdrawalPeriodDays), entity.WithdrawalPeriodDays?.ToString() ?? string.Empty);
             _writer.WriteElementString(nameof(Product.IsSystemProduct), entity.IsSystemProduct.ToString());
             _writer.WriteElementString(nameof(Product.BundleTitleText), entity.BundleTitleText);
             _writer.WriteElementString(nameof(Product.BundlePerItemPricing), entity.BundlePerItemPricing.ToString());

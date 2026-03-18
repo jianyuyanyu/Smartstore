@@ -303,6 +303,15 @@
     </div>
     <div class="adminRow">
         <div class="adminTitle">
+            <smart-label asp-for="WithdrawalPeriodDays" />
+        </div>
+        <div class="adminData">
+            <editor asp-for="WithdrawalPeriodDays" sm-postfix="@T("Time.Days")" />
+            <span asp-validation-for="WithdrawalPeriodDays"></span>
+        </div>
+    </div>
+    <div class="adminRow">
+        <div class="adminTitle">
             <smart-label asp-for="DisplayOrder" />
         </div>
         <div class="adminData">

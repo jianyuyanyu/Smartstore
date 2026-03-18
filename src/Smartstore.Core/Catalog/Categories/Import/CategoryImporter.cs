@@ -39,8 +39,8 @@ namespace Smartstore.Core.DataExchange.Import
             _mediaImporter = mediaImporter;
         }
 
-        public static string[] SupportedKeyFields => new[] { nameof(Category.Id), nameof(Category.Name) };
-        public static string[] DefaultKeyFields => new[] { nameof(Category.Name), nameof(Category.Id) };
+        public static string[] SupportedKeyFields => [nameof(Category.Id), nameof(Category.Name)];
+        public static string[] DefaultKeyFields => [nameof(Category.Name), nameof(Category.Id)];
 
         protected override async Task ProcessBatchAsync(ImportExecuteContext context, CancellationToken cancelToken = default)
         {
@@ -246,6 +246,7 @@ namespace Smartstore.Core.DataExchange.Import
                 row.SetProperty(context.Result, (x) => x.HasDiscountsApplied);
                 row.SetProperty(context.Result, (x) => x.Published, true);
                 row.SetProperty(context.Result, (x) => x.IgnoreInMenus);
+                row.SetProperty(context.Result, (x) => x.WithdrawalPeriodDays);
                 row.SetProperty(context.Result, (x) => x.DisplayOrder);
                 row.SetProperty(context.Result, (x) => x.Alias);
                 row.SetProperty(context.Result, (x) => x.DefaultViewMode);

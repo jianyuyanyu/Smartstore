@@ -2158,6 +2158,7 @@ namespace Smartstore.Admin.Controllers
             p.ShowOnHomePage = m.ShowOnHomePage;
             p.HomePageDisplayOrder = m.HomePageDisplayOrder;
             p.Published = m.Published;
+            p.WithdrawalPeriodDays = m.WithdrawalPeriodDays;
             p.RequireOtherProducts = m.RequireOtherProducts;
             p.RequiredProductIds = m.RequiredProductIds;
             p.AutomaticallyAddRequiredProducts = m.AutomaticallyAddRequiredProducts;
