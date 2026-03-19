@@ -175,9 +175,9 @@ namespace Smartstore.Admin.Models.Catalog
         public string SeName { get; set; }
     }
 
-    public partial class CategoryValidator : SmartValidator<CategoryModel>
+    public partial class CategoryModelValidator : SmartValidator<CategoryModel>
     {
-        public CategoryValidator(SmartDbContext db)
+        public CategoryModelValidator(SmartDbContext db)
         {
             ApplyEntityRules<Category>(db);
 

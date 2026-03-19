@@ -73,8 +73,9 @@ internal class Withdrawal : Migration, ILocaleResourcesProvider, IDataSeeder<Sma
 
     public void MigrateLocaleResources(LocaleResourcesBuilder builder)
     {
-        builder.AddOrUpdate("Withdrawal.Withdraw", "Withdraw", "Widerrufen");
-        builder.AddOrUpdate("Withdrawal.WithdrawItemOnly", "Withdraw this item only", "Nur diesen Artikel widerrufen");
+        builder.AddOrUpdate("Withdrawal.WithdrawItemOnly",
+            "Only withdraw this item in the ordered quantity.", 
+            "Nur diesen Artikel in der bestellten Menge widerrufen.");
 
         builder.AddOrUpdate("Admin.Catalog.Products.Fields.WithdrawalPeriodDays",
             "Withdrawal period (in days)",
