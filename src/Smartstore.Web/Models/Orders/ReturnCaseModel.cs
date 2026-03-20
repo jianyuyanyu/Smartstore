@@ -54,7 +54,7 @@ namespace Smartstore.Web.Models.Orders
             public bool Selected { get; set; }
             public int SelectedReturnQuantity { get; set; }
 
-            public bool Returnable { get; set; } = true;
+            public bool CanReturnItem { get; set; } = true;
             public int MaxReturnQuantity { get; set; }
 
             public List<CustomerReturnCaseModel> ReturnCases { get; set; }

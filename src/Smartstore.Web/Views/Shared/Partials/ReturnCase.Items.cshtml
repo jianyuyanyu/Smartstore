@@ -44,7 +44,7 @@ else
     <div class="cart-body">
         @foreach (var item in Model.Items)
         {
-            if (!isEditable && (!item.Selected || !item.Returnable))
+            if (!isEditable && (!item.Selected || !item.CanReturnItem))
             {
                 continue;
             }
