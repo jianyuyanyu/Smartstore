@@ -4,10 +4,11 @@
 
 @{
     var returnAll = Model.ReturnAllItems;
+    var isEditable = Model.IsEditable;
     var withdrawal = ViewBag.Withdrawal == true;
 }
 
-@if (Model.IsEditable)
+@if (isEditable)
 {
     <div class="btn-group btn-group-toggle mb-3" data-toggle="buttons">
         <label class="btn btn-secondary active">
@@ -16,7 +17,7 @@
                    sm-ignore-label="true" 
                    id="ReturnAllItems" 
                    value="true" 
-                   attr-checked='(Model.ReturnAllItems, "checked")'
+                   attr-checked='(returnAll, "checked")'
                    class="form-check-input">
             @T("ReturnCase.EntireOrder")
         </label>
@@ -26,7 +27,7 @@
                    sm-ignore-label="true" 
                    id="ReturnSelectedItems" 
                    value="false" 
-                   attr-checked='(!Model.ReturnAllItems, "checked")'
+                   attr-checked='(!returnAll, "checked")'
                    class="form-check-input">
             @T("ReturnCase.CertainItems")
         </label>
@@ -43,10 +44,17 @@ else
     <div class="cart-body">
         @foreach (var item in Model.Items)
         {
+            if (!isEditable && (!item.Selected || !item.Returnable))
+            {
+                continue;
+            }
             var quantityId = $"orderitem-quantity{item.Id}";
+            var maxQuantity = item.MaxReturnQuantity;
+            var hasReturnCases = item.ReturnCases.Count > 0;
+            var hasWarning = item.Warning.HasValue();
             <div class="cart-row return-item">
                 <div class="row">
-                    <div sm-if="Model.IsEditable" class="select-cart-item col-auto">
+                    <div sm-if="isEditable" class="select-cart-item col-auto">
                         <input name="orderitem-select@(item.Id)"
                                 type="checkbox"
                                 class="form-check-input select-cart-item-checkbox return-item-checkbox"
@@ -79,7 +87,7 @@ else
                         </div>
                         <div class="cart-item-qty pd-muted">
                             <span>@T("Order.Product(s).OrderedQuantity"):</span> <span>@item.Quantity.ToString("N0") @item.QuantityUnit</span>
-                            <button sm-if="Model.IsEditable && withdrawal" 
+                            <button sm-if="isEditable && withdrawal && maxQuantity > 0" 
                                     type="submit" 
                                     name="orderitem-withdraw" 
                                     value="@item.Id" 
@@ -91,11 +99,11 @@ else
                             </button>
                         </div>
                         <div class="cart-item-return-qty mt-2">
-                            @if (!Model.IsEditable)
+                            @if (!isEditable)
                             {
                                 <span>@T("ReturnRequests.Products.Quantity"):</span> <span>@item.SelectedReturnQuantity.ToString("N0")</span>
                             }
-                            else if (item.MaxReturnQuantity > 0)
+                            else if (maxQuantity > 0)
                             {
                                 var qtyDisabled = returnAll || (!returnAll && !item.Selected);
                                 <label for="@quantityId" class="mr-2">@T("ReturnRequests.Products.Quantity"):</label>
@@ -103,31 +111,35 @@ else
                                         name="@quantityId" 
                                         class="form-control form-control-sm return-item-quantity noskin" 
                                         style="max-width: 120px;"
-                                        data-max-quantity="@item.MaxReturnQuantity"
+                                        data-max-quantity="@maxQuantity"
                                         attr-aria-disabled='(qtyDisabled, "true")'
                                         attr-disabled='(qtyDisabled, "disabled")'>
-                                    @for (var i = 0; i <= item.MaxReturnQuantity; i++)
+                                    @for (var i = 0; i <= maxQuantity; i++)
                                     {
-                                        var selected = (returnAll && i == item.MaxReturnQuantity) || (!returnAll && i == item.SelectedReturnQuantity);
+                                        var selected = (returnAll && i == maxQuantity) || (!returnAll && i == item.SelectedReturnQuantity);
                                         <option value="@(i)" attr-selected='(selected, "selected")'>@(i)</option>
                                     }
                                 </select>
                             }
 
-                            <div sm-if="Model.IsEditable && item.ReturnCases.Count > 0" class="alert alert-info small mt-2 mb-0" role="status" aria-live="polite">
-                                <p>@T("ReturnRequests.Products.RequestAlreadyExists")</p>
-                                @foreach (var rr in item.ReturnCases)
+                            <div sm-if="isEditable && (hasReturnCases || hasWarning)" class="alert alert-info small mt-2 mb-0" role="status" aria-live="polite">
+                                <div sm-if="hasWarning">@Html.Raw(item.Warning)</div>
+                                @if(hasReturnCases)
                                 {
-                                    <dl class="row">
-                                        <dt class="col-sm-2">@T("ReturnRequests.Products.Quantity")</dt>
-                                        <dd class="col-sm-10 mb-0">@rr.Quantity</dd>
-                                        <dt class="col-sm-2">@T("Common.Status")</dt>
-                                        <dd class="col-sm-10 mb-0">@rr.ReturnCaseStatus</dd>
-                                        <dt class="col-sm-2">@T("Account.CustomerReturnRequests.Date")</dt>
-                                        <dd class="col-sm-10 mb-0">
-                                            <time asp-for="@rr.CreatedOn" sm-format="f"></time>
-                                        </dd>
-                                    </dl>
+                                    <p>@T("ReturnRequests.Products.RequestAlreadyExists")</p>
+                                    @foreach (var rr in item.ReturnCases)
+                                    {
+                                        <dl class="row">
+                                            <dt class="col-sm-3">@T("ReturnRequests.Products.Quantity")</dt>
+                                            <dd class="col-sm-9 mb-0">@rr.Quantity.ToString("N0")</dd>
+                                            <dt class="col-sm-3">@T("Common.Status")</dt>
+                                            <dd class="col-sm-9 mb-0">@rr.ReturnCaseStatus</dd>
+                                            <dt class="col-sm-3">@T("Account.CustomerReturnRequests.Date")</dt>
+                                            <dd class="col-sm-9 mb-0">
+                                                <time asp-for="@rr.CreatedOn" sm-format="f"></time>
+                                            </dd>
+                                        </dl>
+                                    }
                                 }
                             </div>
                         </div>
@@ -139,7 +151,7 @@ else
 </div>
 <div sm-if="withdrawal" id="withdraw-item-only" class="sr-only">@T("Withdrawal.WithdrawItemOnly")</div>
 
-@if(!Model.IsEditable)
+@if(!isEditable)
 {
     return;
 }

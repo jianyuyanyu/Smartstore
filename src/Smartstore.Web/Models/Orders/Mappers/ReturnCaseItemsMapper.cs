@@ -19,13 +19,11 @@ public static partial class ReturnCaseMappingExtensions
 {
     public static async Task<ReturnCaseItemsModel> MapAsync(this Order order,
         bool isEditable = true,
-        bool returnAllItems = true,
-        Dictionary<int, int> selectedQuantities = null)
+        bool returnAllItems = true)
     {
         dynamic parameters = new ExpandoObject();
         parameters.IsEditable = isEditable;
         parameters.ReturnAllItems = returnAllItems;
-        parameters.SelectedQuantities = selectedQuantities;
 
         var model = new ReturnCaseItemsModel();
         await MapperFactory.MapAsync<Order, ReturnCaseItemsModel>(order, model, parameters);
@@ -81,7 +79,6 @@ internal class ReturnCaseItemsMapper : IMapper<Order, ReturnCaseItemsModel>
         to.IsEditable = parameters?.IsEditable == true;
         to.ReturnAllItems = parameters?.ReturnAllItems == true;
 
-        var selectedQuantities = parameters?.SelectedQuantities as Dictionary<int, int>;
         var language = _workContext.WorkingLanguage;
         var request = _httpContextAccessor.HttpContext?.Request;
         var form = request != null && request.IsPost() && request.HasFormContentType ? request.Form : null;
@@ -98,27 +95,6 @@ internal class ReturnCaseItemsMapper : IMapper<Order, ReturnCaseItemsModel>
 
         foreach (var oi in from.OrderItems)
         {
-            var selected = false;
-            var selectedReturnQuantity = 0;
-
-            if (selectedQuantities != null)
-            {
-                if (selectedQuantities.TryGetValue(oi.Id, out selectedReturnQuantity))
-                {
-                    selected = selectedReturnQuantity > 0;
-                }
-            }
-            else if (form != null)
-            {
-                selectedReturnQuantity = form.TryGetValue($"orderitem-quantity{oi.Id}", out var qtyVal) ? qtyVal.ToString().ToInt() : 0;
-                selected = selectedReturnQuantity > 0 && form.TryGetValue($"orderitem-select{oi.Id}", out var selectedVal) && selectedVal.ToString().ToBool();
-            }
-
-            if (!to.IsEditable && !selected)
-            {
-                continue;
-            }
-
             var productSeName = await oi.Product.GetActiveSlugAsync();
             var returnCases = allReturnCases.TryGetValues(oi.Id, out var tmp) ? tmp.ToList() : [];
             var item = new ReturnCaseItemsModel.ItemModel
@@ -130,8 +106,6 @@ internal class ReturnCaseItemsMapper : IMapper<Order, ReturnCaseItemsModel>
                 ProductUrl = await _productUrlHelper.GetProductUrlAsync(productSeName, oi),
                 AttributeInfo = HtmlUtility.FormatPlainText(HtmlUtility.ConvertHtmlToPlainText(oi.AttributeDescription)),
                 Quantity = oi.Quantity,
-                Selected = selected,
-                SelectedReturnQuantity = selectedReturnQuantity,
                 MaxReturnQuantity = Math.Max(oi.Quantity - returnCases.Sum(x => x.Quantity), 0),
                 ReturnCases = returnCases
                     .Select(x => new CustomerReturnCaseModel
@@ -149,6 +123,12 @@ internal class ReturnCaseItemsMapper : IMapper<Order, ReturnCaseItemsModel>
                     customerCurrency,
                     true)
             };
+
+            if (form != null)
+            {
+                item.SelectedReturnQuantity = form.TryGetValue($"orderitem-quantity{oi.Id}", out var qtyVal) ? qtyVal.ToString().ToInt() : 0;
+                item.Selected = item.SelectedReturnQuantity > 0 && form.TryGetValue($"orderitem-select{oi.Id}", out var selectedVal) && selectedVal.ToString().ToBool();
+            }
 
             if (_shoppingCartSettings.ShowProductImagesOnShoppingCart)
             {

@@ -49,10 +49,12 @@ namespace Smartstore.Web.Models.Orders
             public string QuantityUnit { get; set; }
 
             public ImageModel Image { get; set; }
+            public string Warning { get; set; }
 
             public bool Selected { get; set; }
             public int SelectedReturnQuantity { get; set; }
 
+            public bool Returnable { get; set; } = true;
             public int MaxReturnQuantity { get; set; }
 
             public List<CustomerReturnCaseModel> ReturnCases { get; set; }

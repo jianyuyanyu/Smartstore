@@ -12,11 +12,14 @@ namespace Smartstore.Core.Migrations;
 [MigrationVersion("2026-03-12 15:00:00", "Core: Withdrawal")]
 internal class Withdrawal : Migration, ILocaleResourcesProvider, IDataSeeder<SmartDbContext>
 {
+    const string ReturnCaseTable = nameof(Checkout.Orders.ReturnCase);
+    const string WithdrawalIdColumn = nameof(RcEntity.WithdrawalId);
+
     public override void Up()
     {
-        if (!Schema.Table(nameof(Checkout.Orders.ReturnCase)).Column(nameof(RcEntity.WithdrawalId)).Exists())
+        if (!Schema.Table(ReturnCaseTable).Column(WithdrawalIdColumn).Exists())
         {
-            Create.Column(nameof(RcEntity.WithdrawalId)).OnTable(nameof(Checkout.Orders.ReturnCase))
+            Create.Column(WithdrawalIdColumn).OnTable(ReturnCaseTable)
                 .AsInt32()
                 .Nullable()
                 .Indexed();
@@ -24,16 +27,12 @@ internal class Withdrawal : Migration, ILocaleResourcesProvider, IDataSeeder<Sma
 
         if (!Schema.Table(nameof(Order)).Column(nameof(Order.CompletedOn)).Exists())
         {
-            Create.Column(nameof(Order.CompletedOn)).OnTable(nameof(Order))
-                .AsDateTime2()
-                .Nullable();
+            Create.Column(nameof(Order.CompletedOn)).OnTable(nameof(Order)).AsDateTime2().Nullable();
         }
 
         if (!Schema.Table(nameof(Product)).Column(nameof(Product.WithdrawalPeriodDays)).Exists())
         {
-            Create.Column(nameof(Product.WithdrawalPeriodDays)).OnTable(nameof(Product))
-                .AsInt32()
-                .Nullable();
+            Create.Column(nameof(Product.WithdrawalPeriodDays)).OnTable(nameof(Product)).AsInt32().Nullable();
         }
 
         if (!Schema.Table(nameof(Category)).Column(nameof(Category.WithdrawalPeriodDays)).Exists())
@@ -46,21 +45,18 @@ internal class Withdrawal : Migration, ILocaleResourcesProvider, IDataSeeder<Sma
 
     public override void Down()
     {
-        var columns = new Dictionary<string, string>
-        {
-            [nameof(Checkout.Orders.ReturnCase)] = nameof(RcEntity.WithdrawalId),
-            [nameof(Order)] = nameof(Order.CompletedOn),
-            [nameof(Product)] = nameof(Product.WithdrawalPeriodDays),
-            [nameof(Category)] =  nameof(Category.WithdrawalPeriodDays)
-        };
+        // Columns
+        if (Schema.Table(ReturnCaseTable).Column(WithdrawalIdColumn).Exists())
+            Delete.Column(WithdrawalIdColumn).FromTable(ReturnCaseTable);
 
-        foreach (var pair in columns)
-        {
-            if (Schema.Table(pair.Key).Column(pair.Value).Exists())
-            {
-                Delete.Column(pair.Value).FromTable(pair.Key);
-            }
-        }
+        if (Schema.Table(nameof(Order)).Column(nameof(Order.CompletedOn)).Exists())
+            Delete.Column(nameof(Order.CompletedOn)).FromTable(nameof(Order));
+
+        if (Schema.Table(nameof(Product)).Column(nameof(Product.WithdrawalPeriodDays)).Exists())
+            Delete.Column(nameof(Product.WithdrawalPeriodDays)).FromTable(nameof(Product));
+
+        if (Schema.Table(nameof(Category)).Column(nameof(Category.WithdrawalPeriodDays)).Exists())
+            Delete.Column(nameof(Category.WithdrawalPeriodDays)).FromTable(nameof(Category));
     }
 
     public DataSeederStage Stage => DataSeederStage.Early;
