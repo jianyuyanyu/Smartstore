@@ -32,7 +32,7 @@ namespace Smartstore.Web.Models.Orders
 
         [IgnoreDataMember]
         public bool HasItemsToReturn
-            => Items?.Any(x => x.MaxReturnQuantity > 0) ?? false;
+            => !Items.IsNullOrEmpty() && Items.Any(x => x.MaxReturnQuantity > 0);
 
         [IgnoreDataMember]
         public bool HasSingleItemToReturn { get; set; }
@@ -54,7 +54,6 @@ namespace Smartstore.Web.Models.Orders
             public bool Selected { get; set; }
             public int SelectedReturnQuantity { get; set; }
 
-            public bool CanReturnItem { get; set; } = true;
             public int MaxReturnQuantity { get; set; }
 
             public List<CustomerReturnCaseModel> ReturnCases { get; set; }

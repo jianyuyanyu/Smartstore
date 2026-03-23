@@ -5,12 +5,13 @@
 @{
     var returnAll = Model.ReturnAllItems;
     var isEditable = Model.IsEditable;
+    var hasItemsToReturn = Model.HasItemsToReturn;
     var withdrawal = ViewBag.Withdrawal == true;
 }
 
 @if (isEditable)
 {
-    <div class="btn-group btn-group-toggle mb-3" data-toggle="buttons">
+    <div sm-if="hasItemsToReturn" class="btn-group btn-group-toggle mb-3" data-toggle="buttons">
         <label class="btn btn-secondary active">
             <input type="radio" 
                    asp-for="ReturnAllItems" 
@@ -44,23 +45,25 @@ else
     <div class="cart-body">
         @foreach (var item in Model.Items)
         {
-            if (!isEditable && (!item.Selected || !item.CanReturnItem))
+            if (!isEditable && (!item.Selected || item.MaxReturnQuantity <= 0))
             {
                 continue;
             }
             var quantityId = $"orderitem-quantity{item.Id}";
             var maxQuantity = item.MaxReturnQuantity;
+            var canReturnItem = maxQuantity > 0;
             var hasReturnCases = item.ReturnCases.Count > 0;
             var hasWarning = item.Warning.HasValue();
             <div class="cart-row return-item">
                 <div class="row">
-                    <div sm-if="isEditable" class="select-cart-item col-auto">
+                    <div sm-if="isEditable && hasItemsToReturn" class="select-cart-item col-auto">
                         <input name="orderitem-select@(item.Id)"
-                                type="checkbox"
-                                class="form-check-input select-cart-item-checkbox return-item-checkbox"
-                                attr-checked='(returnAll || item.Selected, "checked")'
-                                attr-aria-disabled='(returnAll, "true")'
-                                attr-disabled='(returnAll, "disabled")' />
+                               type="checkbox"
+                               class="form-check-input select-cart-item-checkbox return-item-checkbox"
+                               attr-class='(!canReturnItem, "invisible")'
+                               attr-checked='(returnAll || item.Selected, "checked")'
+                               attr-aria-disabled='(returnAll, "true")'
+                               attr-disabled='(returnAll, "disabled")' />
                     </div>
                     <div class="cart-item-img col-2" sm-if="item.Image != null && item.Image.HasImage()">
                         <img sm-model="item.Image" class="img-fluid" attr-alt='(item.Image.Alt.IsEmpty(), item.ProductName)' />
@@ -87,7 +90,7 @@ else
                         </div>
                         <div class="cart-item-qty pd-muted">
                             <span>@T("Order.Product(s).OrderedQuantity"):</span> <span>@item.Quantity.ToString("N0") @item.QuantityUnit</span>
-                            <button sm-if="isEditable && withdrawal && maxQuantity > 0" 
+                            <button sm-if="isEditable && canReturnItem && withdrawal && maxQuantity > 0" 
                                     type="submit" 
                                     name="orderitem-withdraw" 
                                     value="@item.Id" 
@@ -103,7 +106,7 @@ else
                             {
                                 <span>@T("ReturnRequests.Products.Quantity"):</span> <span>@item.SelectedReturnQuantity.ToString("N0")</span>
                             }
-                            else if (maxQuantity > 0)
+                            else if (maxQuantity > 0 && canReturnItem)
                             {
                                 var qtyDisabled = returnAll || (!returnAll && !item.Selected);
                                 <label for="@quantityId" class="mr-2">@T("ReturnRequests.Products.Quantity"):</label>
