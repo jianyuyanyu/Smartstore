@@ -111,6 +111,7 @@ internal class ReturnCaseItemsMapper : IMapper<Order, ReturnCaseItemsModel>
                     .Select(x => new CustomerReturnCaseModel
                     {
                         Id = x.Id,
+                        Kind = x.Kind,
                         Quantity = x.Quantity,
                         OrderItemId = x.OrderItemId,
                         ReturnCaseStatus = x.ReturnCaseStatus.GetLocalizedEnum(language.Id),
@@ -146,5 +147,9 @@ internal class ReturnCaseItemsMapper : IMapper<Order, ReturnCaseItemsModel>
         to.HasSingleItemToReturn = from.OrderItems.Count == 1 
             && to.Items.Count == 1 
             && to.Items[0].MaxReturnQuantity == 1;
+        if (to.HasSingleItemToReturn)
+        {
+            to.ReturnAllItems = true;
+        }
     }
 }

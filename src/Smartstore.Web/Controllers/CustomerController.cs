@@ -612,6 +612,7 @@ namespace Smartstore.Web.Controllers
                     model.ReturnCases.Add(new()
                     {
                         Id = returnCase.Id,
+                        Kind = returnCase.Kind,
                         ReturnCaseStatus = returnCase.ReturnCaseStatus.GetLocalizedEnum(language.Id),
                         ProductId = orderItem.Product.Id,
                         ProductName = orderItem.Product.GetLocalized(x => x.Name),

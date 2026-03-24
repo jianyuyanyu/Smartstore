@@ -1,4 +1,5 @@
-﻿using Smartstore.Core.Localization;
+﻿using Smartstore.Core.Checkout.Orders;
+using Smartstore.Core.Localization;
 
 namespace Smartstore.Web.Models.Customers
 {
@@ -9,6 +10,7 @@ namespace Smartstore.Web.Models.Customers
 
     public partial class CustomerReturnCaseModel : EntityModelBase
     {
+        public ReturnCaseKind Kind { get; set; }
         public string ReturnCaseStatus { get; set; }
         public int ProductId { get; set; }
         public LocalizedValue<string> ProductName { get; set; }

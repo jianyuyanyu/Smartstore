@@ -6,6 +6,7 @@
     Assets.AppendTitleParts(T("PageTitle.ReturnItems"));
 
     var hasItemsToReturn = Model.Items?.HasItemsToReturn == true;
+    var hasSingleItemToReturn = Model.Items?.HasSingleItemToReturn == true;
 
     var itemsViewData = new ViewDataDictionary(ViewData);
     itemsViewData.TemplateInfo.HtmlFieldPrefix = nameof(Model.Items);
@@ -16,7 +17,7 @@
         <h1 id="returncase-title" class="h3">@T("ReturnRequests.Title", Model.OrderId)</h1>
     </div>
 
-    @if (Model.Items.Items.IsNullOrEmpty())
+    @if (Model.Items?.Items?.IsNullOrEmpty() ?? true)
     {
         <div class="alert alert-info" role="alert">
             @T("ReturnRequests.ReturnsNotPossible")
@@ -28,13 +29,13 @@
         <form asp-action="ReturnCase">
             <input type="hidden" asp-for="OrderId" />
 
-            <h2 sm-if="hasItemsToReturn" class="h4 fwn text-muted mb-4">@T("ReturnRequests.SelectProduct(s)")</h2>
+            <h2 sm-if="hasItemsToReturn && !hasSingleItemToReturn" class="h4 fwn text-muted mb-4">@T("ReturnRequests.SelectProduct(s)")</h2>
             <zone name="returnrequest_wish_before" />
 
             <div asp-validation-summary="ModelOnly"></div>
 
             <fieldset class="form-group">
-                <legend class="sr-only">@T("ReturnRequests.SelectProduct(s)")</legend>
+                <legend sm-if="hasItemsToReturn && !hasSingleItemToReturn" class="sr-only">@T("ReturnRequests.SelectProduct(s)")</legend>
                 <div class="cart-container">
                     <partial name="ReturnCase.Items" model="Model.Items" view-data="itemsViewData" />
                 </div>

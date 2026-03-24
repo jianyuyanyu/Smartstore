@@ -73,6 +73,10 @@ internal class Withdrawal : Migration, ILocaleResourcesProvider, IDataSeeder<Sma
             "Only withdraw this item in the ordered quantity.", 
             "Nur diesen Artikel in der bestellten Menge widerrufen.");
 
+        builder.AddOrUpdate("Withdrawal.WithdrawalAlreadySubmitted",
+            "A withdrawal request has already been submitted for this item.",
+            "Für diesen Artikel wurde bereits ein Widerruf eingereicht.");
+
         builder.AddOrUpdate("Admin.Catalog.Products.Fields.WithdrawalPeriodDays",
             "Withdrawal period (in days)",
             "Widerrufsfrist (in Tagen)",
@@ -90,5 +94,10 @@ internal class Withdrawal : Migration, ILocaleResourcesProvider, IDataSeeder<Sma
             "Legt die Frist in Tagen fest, innerhalb derer Produkte dieser Warengruppe widerrufen werden können. Der Wert 0 bedeutet, dass die Produkte nicht widerrufbar sind"
             + " (z.B. Hygieneartikel). Wenn ein Produkt mehreren Warengruppen zugeordnet ist, müssen die Widerrufsfristen aller Warengruppen eingehalten sein, damit der Artikel"
             + " widerrufen werden kann. Diese Einstellung ist nur wirksam, wenn das Vertragswiderrufs-Plugin verwendet wird.");
+
+        // Renaming: "Rücksendewünsche" -> "Retourenanträge".
+        builder.AddOrUpdate("ReturnRequests.Products.RequestAlreadyExists",
+            "Return requests for this item already exist.",
+            "Für diesen Artikel liegen bereits Retourenanträge vor.");
     }
 }

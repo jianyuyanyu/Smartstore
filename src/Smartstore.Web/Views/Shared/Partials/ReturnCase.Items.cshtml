@@ -1,4 +1,6 @@
-﻿@using Smartstore.Web.Models.Orders
+﻿@using Smartstore.Core.Checkout.Orders
+@using Smartstore.Web.Models.Customers
+@using Smartstore.Web.Models.Orders
 
 @model ReturnCaseItemsModel
 
@@ -6,12 +8,33 @@
     var returnAll = Model.ReturnAllItems;
     var isEditable = Model.IsEditable;
     var hasItemsToReturn = Model.HasItemsToReturn;
+    var hasSingleItemToReturn = Model.HasSingleItemToReturn;
     var withdrawal = ViewBag.Withdrawal == true;
+
+    async Task ReturnCases(List<CustomerReturnCaseModel> returnCases, bool isWithdrawal)
+    {
+        foreach (var rr in returnCases)
+        {
+            <dl class="row mb-0">
+                <dt class="col-sm-3">@T("ReturnRequests.Products.Quantity")</dt>
+                <dd class="col-sm-9 mb-0">@rr.Quantity.ToString("N0")</dd>
+                @if(!isWithdrawal)
+                {
+                    <dt class="col-sm-3">@T("Common.Status")</dt>
+                    <dd class="col-sm-9 mb-0">@rr.ReturnCaseStatus</dd>
+                }
+                <dt class="col-sm-3">@T("Account.CustomerReturnRequests.Date")</dt>
+                <dd class="col-sm-9 mb-0">
+                    <time asp-for="@rr.CreatedOn" sm-format="f"></time>
+                </dd>
+            </dl>
+        }
+    }
 }
 
 @if (isEditable)
 {
-    <div sm-if="hasItemsToReturn" class="btn-group btn-group-toggle mb-3" data-toggle="buttons">
+    <div sm-if="hasItemsToReturn && !hasSingleItemToReturn" class="btn-group btn-group-toggle mb-3" data-toggle="buttons">
         <label class="btn btn-secondary active">
             <input type="radio" 
                    asp-for="ReturnAllItems" 
@@ -33,11 +56,14 @@
             @T("ReturnCase.CertainItems")
         </label>
     </div>
+    <div sm-if="Model.Warning.HasValue()" class="alert alert-info" role="status" aria-live="polite">
+        @Html.Raw(Model.Warning)
+    </div>
 }
 else
 {
     <div>
-        @T(returnAll ? "ReturnCase.WithdrawEntireOrder" : "ReturnCase.WithdrawItems")
+        @T(returnAll && !hasSingleItemToReturn ? "ReturnCase.WithdrawEntireOrder" : "ReturnCase.WithdrawItems")
     </div>
 }
 
@@ -52,11 +78,12 @@ else
             var quantityId = $"orderitem-quantity{item.Id}";
             var maxQuantity = item.MaxReturnQuantity;
             var canReturnItem = maxQuantity > 0;
-            var hasReturnCases = item.ReturnCases.Count > 0;
+            var returnCases = item.ReturnCases.Where(x => x.Kind == ReturnCaseKind.Return).ToList();
+            var withdrawals = item.ReturnCases.Where(x => x.Kind == ReturnCaseKind.Withdrawal).ToList();
             var hasWarning = item.Warning.HasValue();
             <div class="cart-row return-item">
                 <div class="row">
-                    <div sm-if="isEditable && hasItemsToReturn" class="select-cart-item col-auto">
+                    <div sm-if="isEditable && hasItemsToReturn && !hasSingleItemToReturn" class="select-cart-item col-auto">
                         <input name="orderitem-select@(item.Id)"
                                type="checkbox"
                                class="form-check-input select-cart-item-checkbox return-item-checkbox"
@@ -125,25 +152,19 @@ else
                                 </select>
                             }
 
-                            <div sm-if="isEditable && (hasReturnCases || hasWarning)" class="alert alert-info small mt-2 mb-0" role="status" aria-live="polite">
+                            <div sm-if="isEditable && (hasWarning || returnCases.Count > 0 || withdrawals.Count > 0)" 
+                                class="alert alert-info small mt-2 mb-0" 
+                                role="status" 
+                                aria-live="polite">
                                 <div sm-if="hasWarning">@Html.Raw(item.Warning)</div>
-                                @if(hasReturnCases)
-                                {
+                                <div sm-if="withdrawals.Count > 0">
+                                    <p>@T("Withdrawal.WithdrawalAlreadySubmitted")</p>
+                                    @{ await ReturnCases(withdrawals, true); }
+                                </div>
+                                <div sm-if="returnCases.Count > 0">
                                     <p>@T("ReturnRequests.Products.RequestAlreadyExists")</p>
-                                    @foreach (var rr in item.ReturnCases)
-                                    {
-                                        <dl class="row">
-                                            <dt class="col-sm-3">@T("ReturnRequests.Products.Quantity")</dt>
-                                            <dd class="col-sm-9 mb-0">@rr.Quantity.ToString("N0")</dd>
-                                            <dt class="col-sm-3">@T("Common.Status")</dt>
-                                            <dd class="col-sm-9 mb-0">@rr.ReturnCaseStatus</dd>
-                                            <dt class="col-sm-3">@T("Account.CustomerReturnRequests.Date")</dt>
-                                            <dd class="col-sm-9 mb-0">
-                                                <time asp-for="@rr.CreatedOn" sm-format="f"></time>
-                                            </dd>
-                                        </dl>
-                                    }
-                                }
+                                    @{ await ReturnCases(returnCases, false); }
+                                </div>
                             </div>
                         </div>
                     </div>

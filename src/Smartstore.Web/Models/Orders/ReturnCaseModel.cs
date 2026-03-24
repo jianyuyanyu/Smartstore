@@ -27,6 +27,7 @@ namespace Smartstore.Web.Models.Orders
     {
         public bool IsEditable { get; set; } = true;
         public bool ReturnAllItems { get; set; } = true;
+        public string Warning { get; set; }
 
         public List<ItemModel> Items { get; set; } = [];
 
