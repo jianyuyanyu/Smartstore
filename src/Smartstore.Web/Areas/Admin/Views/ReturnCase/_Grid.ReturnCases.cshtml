@@ -2,10 +2,11 @@
 
 @{
     var parentModel = ViewData["Parent"] as ReturnCaseListModel;
-    var stores = ViewBag.Stores as IList<SelectListItem>;
+    var isSingleStoreMode = (bool)ViewBag.IsSingleStoreMode;
 }
 
 <datagrid id="returncases-grid"
+          version="2"
           allow-resize="true"
           preserve-grid-state="true" preserve-command-state="true"
           allow-column-reordering="true">
@@ -28,6 +29,7 @@
     <columns>
         <column for="Id" halign="center" hideable="false">
             <display-template>
+                <span class="badge badge-subtle badge-ring mr-1" :class="item.row.KindLabelClass">{{ item.row.KindString }}</span>
                 <div class="text-truncate"><a :href="item.row.EditUrl" class="text-truncate">{{ item.value }}</a></div>
             </display-template>
         </column>
@@ -42,7 +44,7 @@
                 <div class="text-truncate"><a :href="item.row.CustomerEditUrl" class="text-truncate">{{ item.row.CustomerFullName }}</a></div>
             </display-template>
         </column>
-        <column for="OrderId" sortable="false">
+        <column for="OrderId" sortable="false" halign="center">
             <display-template>
                 <div class="text-truncate"><a :href="item.row.OrderEditUrl" class="text-truncate">{{ item.row.OrderNumber }}</a></div>
             </display-template>
@@ -50,7 +52,7 @@
         <column for="ReturnCaseStatusString" entity-member="ReturnCaseStatusId" />
         <column for="CreatedOn" entity-member="CreatedOnUtc" />
         <column for="UpdatedOn" entity-member="UpdatedOnUtc" visible="false" />
-        @if (stores.Count > 1)
+        @if (!isSingleStoreMode)
         {
             <column for="StoreName" sortable="false" />
         }

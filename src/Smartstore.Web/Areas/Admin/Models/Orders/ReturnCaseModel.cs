@@ -1,10 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Smartstore.Core.Checkout.Orders;
 
 namespace Smartstore.Admin.Models.Orders
 {
     [LocalizedDisplay("Admin.ReturnRequests.Fields.")]
-    public class ReturnCaseModel : EntityModelBase
+    public class ReturnCaseModel : TabbableModel
     {
         [LocalizedDisplay("*ID")]
         public override int Id { get; set; }
@@ -70,6 +71,23 @@ namespace Smartstore.Admin.Models.Orders
 
         public bool CanAccept
             => Id != 0 && (ReturnCaseStatus)ReturnCaseStatusId < ReturnCaseStatus.ReturnAuthorized;
+
+        public ReturnCaseKind Kind { get; set; }
+        public string KindString { get; set; }
+
+        [NotMapped]
+        public string KindLabelClass
+        {
+            get
+            {
+                return Kind switch
+                {
+                    ReturnCaseKind.Return => "badge-info",
+                    ReturnCaseKind.Withdrawal => "badge-warning",
+                    _ => string.Empty,
+                };
+            }
+        }
 
         public string ReturnCaseInfo { get; set; }
         public string EditUrl { get; set; }

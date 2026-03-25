@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using System.Linq.Dynamic.Core;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Smartstore.Admin.Models.Orders;
 using Smartstore.Core.Catalog.Products;
@@ -9,6 +10,7 @@ using Smartstore.Core.Common.Services;
 using Smartstore.Core.Localization;
 using Smartstore.Core.Logging;
 using Smartstore.Core.Messaging;
+using Smartstore.Core.Rules;
 using Smartstore.Core.Rules.Filters;
 using Smartstore.Core.Security;
 using Smartstore.Core.Stores;
@@ -50,7 +52,7 @@ namespace Smartstore.Admin.Controllers
         [Permission(Permissions.Order.ReturnCase.Read)]
         public IActionResult List()
         {
-            ViewBag.Stores = Services.StoreContext.GetAllStores().ToSelectListItems();
+            ViewBag.IsSingleStoreMode = Services.StoreContext.IsSingleStoreMode();
 
             return View(new ReturnCaseListModel());
         }
@@ -58,6 +60,15 @@ namespace Smartstore.Admin.Controllers
         [Permission(Permissions.Order.ReturnCase.Read)]
         public async Task<IActionResult> ReturnCaseList(GridCommand command, ReturnCaseListModel model)
         {
+            var dtHelper = Services.DateTimeHelper;
+            DateTime? startDateUtc = model.StartDate == null
+                ? null
+                : dtHelper.ConvertToUtcTime(model.StartDate.Value, dtHelper.CurrentTimeZone);
+
+            DateTime? endDateUtc = model.EndDate == null
+                ? null
+                : dtHelper.ConvertToUtcTime(model.EndDate.Value, dtHelper.CurrentTimeZone).AddDays(1);
+
             var query = _db.ReturnCases
                 .Include(x => x.Customer).ThenInclude(x => x.BillingAddress)
                 .Include(x => x.Customer).ThenInclude(x => x.ShippingAddress)
@@ -67,24 +78,31 @@ namespace Smartstore.Admin.Controllers
             {
                 query = query.Where(x => x.Id == model.SearchId);
             }
-
+            if (model.SearchReturnCaseKind.HasValue)
+            {
+                query = query.Where(x => x.Kind == (ReturnCaseKind)model.SearchReturnCaseKind.Value);
+            }
             if (model.SearchStatusId.HasValue)
             {
                 query = query.Where(x => x.ReturnCaseStatusId == model.SearchStatusId.Value);
             }
-
             if (model.CustomerEmail.HasValue())
             {
-                query = query.ApplySearchFilterFor(x => x.Customer.BillingAddress.Email, model.CustomerEmail);
+                query = query.ApplySearchFilter(
+                    model.CustomerEmail,
+                    LogicalRuleOperator.Or,
+                    x => x.Customer.Email,
+                    x => x.Customer.BillingAddress.Email);
             }
-
             if (model.CustomerName.HasValue())
             {
-                query = query.Where(x =>
-                    x.Customer.BillingAddress.LastName.Contains(model.CustomerName) ||
-                    x.Customer.BillingAddress.FirstName.Contains(model.CustomerName));
+                query = query.ApplySearchFilter(
+                    model.CustomerName,
+                    LogicalRuleOperator.Or,
+                    x => x.Customer.FullName,
+                    x => x.Customer.BillingAddress.FirstName,
+                    x => x.Customer.BillingAddress.LastName);
             }
-
             if (model.OrderNumber.HasValue())
             {
                 var orderQuery = int.TryParse(model.OrderNumber, out var orderId) && orderId != 0
@@ -99,6 +117,7 @@ namespace Smartstore.Admin.Controllers
             }
 
             var returnCases = await query
+                .ApplyAuditDateFilter(startDateUtc, endDateUtc)
                 .ApplyStandardFilter(null, null, model.SearchStoreId)
                 .ApplyGridCommand(command)
                 .ToPagedList(command)
@@ -114,13 +133,14 @@ namespace Smartstore.Admin.Controllers
 
             var allStores = Services.StoreContext.GetAllStores().ToDictionary(x => x.Id);
 
-            var rows = returnCases.Select(x =>
-            {
-                var m = new ReturnCaseModel();
-                PrepareReturnCaseRequestModel(m, x, orderItems.Get(x.OrderItemId), allStores, false, true);
-                return m;
-            })
-            .ToList();
+            var rows = returnCases
+                .Select(x =>
+                {
+                    var m = new ReturnCaseModel();
+                    PrepareReturnCaseRequestModel(m, x, orderItems.Get(x.OrderItemId), allStores, false, true);
+                    return m;
+                })
+                .ToList();
 
             return Json(new GridModel<ReturnCaseModel>
             {
@@ -149,7 +169,7 @@ namespace Smartstore.Admin.Controllers
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [FormValueRequired("save", "save-continue")]
         [Permission(Permissions.Order.ReturnCase.Update)]
-        public async Task<IActionResult> Edit(ReturnCaseModel model, bool continueEditing)
+        public async Task<IActionResult> Edit(ReturnCaseModel model, bool continueEditing, IFormCollection form)
         {
             var returnCase = await _db.ReturnCases
                 .IncludeCustomer()
@@ -179,6 +199,7 @@ namespace Smartstore.Admin.Controllers
 
                 await _db.SaveChangesAsync();
 
+                await Services.EventPublisher.PublishAsync(new ModelBoundEvent(model, returnCase, form));
                 Services.ActivityLogger.LogActivity(KnownActivityLogTypes.EditReturnCase, T("ActivityLog.EditReturnRequest"), returnCase.Id);
                 NotifySuccess(T("Admin.ReturnRequests.Updated"));
 
@@ -322,6 +343,8 @@ namespace Smartstore.Admin.Controllers
             model.CustomerFullName = customer.GetFullName().NullEmpty() ?? customer.FindEmail().NaIfEmpty();
             model.CanSendEmailToCustomer = customer.FindEmail().HasValue();
             model.Quantity = returnCase.Quantity;
+            model.Kind = returnCase.Kind;
+            model.KindString = Services.Localization.GetLocalizedEnum(returnCase.Kind);
             model.ReturnCaseStatusString = Services.Localization.GetLocalizedEnum(returnCase.ReturnCaseStatus);
             model.CreatedOn = Services.DateTimeHelper.ConvertToUserTime(returnCase.CreatedOnUtc, DateTimeKind.Utc);
             model.UpdatedOn = Services.DateTimeHelper.ConvertToUserTime(returnCase.UpdatedOnUtc, DateTimeKind.Utc);

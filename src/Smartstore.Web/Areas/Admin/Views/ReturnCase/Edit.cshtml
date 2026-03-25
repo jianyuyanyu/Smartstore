@@ -3,7 +3,8 @@
 @model ReturnCaseModel
 
 @{
-    ViewBag.Title = T("Admin.ReturnRequests.EditReturnRequestDetails");
+    var isWithdrawal = Model.Kind == ReturnCaseKind.Withdrawal;
+    ViewBag.Title = T(isWithdrawal ? "Admin.Withdrawal.EditWithdrawal" : "Admin.ReturnRequests.EditReturnRequestDetails", Model.Id);
 }
 
 <form asp-action="Edit" method="post">
@@ -12,24 +13,29 @@
     <div class="section-header">
         <div class="title">
             <a sm-backto asp-action="List"></a>
-            <i class="fa fa-truck-moving"></i>
+            <i class="fa @(isWithdrawal ? "fa-reply" : "fa-truck-moving")"></i>
             <span>@ViewBag.Title</span>
         </div>
         <div class="options">
             <zone name="admin_button_toolbar_before" />
 
-            <button sm-if="Model.CanAccept" type="button" name="accept" class="btn btn-secondary btn-to-danger accept-returncase-button"
+            @if (isWithdrawal)
+            {
+                    
+            }
+            else
+            {
+                <button sm-if="Model.CanAccept" type="button" name="accept" class="btn btn-secondary btn-to-danger accept-returncase-button"
                     data-toggle="modal"
                     data-target="#update-orderitem-dialog">
-                <i class="fa fa-check"></i>
-                <span>@T("Admin.ReturnRequests.Accept")</span>
-            </button>
-
-            <button sm-if="Model.CanSendEmailToCustomer" type="submit" name="notify-customer" value="notify-customer" class="btn btn-secondary btn-to-danger confirm">
-                <i class="fa fa-envelope"></i>
-                <span>@T("Admin.ReturnRequests.NotifyCustomer")</span>
-            </button>
-
+                    <i class="fa fa-check"></i>
+                    <span>@T("Admin.ReturnRequests.Accept")</span>
+                </button>
+                <button sm-if="Model.CanSendEmailToCustomer" type="submit" name="notify-customer" value="notify-customer" class="btn btn-secondary btn-to-danger confirm">
+                    <i class="fa fa-envelope"></i>
+                    <span>@T("Admin.ReturnRequests.NotifyCustomer")</span>
+                </button>
+            }
             <button type="submit" name="save" value="save" class="btn btn-warning">
                 <i class="fa fa-check"></i>
                 <span>@T("Admin.Common.Save")</span>
@@ -48,171 +54,195 @@
     </div>
 
     <div asp-validation-summary="All"></div>
+    <input type="hidden" asp-for="Id" />
 
-    <div sm-if="Model.ReturnCaseInfo.HasValue()" class="alert alert-info alert-dismissible">
-        <div class="w-25">
-            @Html.Raw(Model.ReturnCaseInfo)
-        </div>
-        <button type="button" class="btn-close" data-dismiss="alert"></button>
-    </div>
-
-    <zone name="returnrequest_top" />
-
-    <div class="adminContent">
-        <div class="adminRow">
-            <div class="adminTitle">
-                <smart-label asp-for="Id" />
-            </div>
-            <div class="adminData">
-                <input asp-for="Id" sm-plaintext="true" readonly />
-            </div>
-        </div>
-        <div sm-if="Model.StoreName.HasValue()" class="adminRow">
-            <div class="adminTitle">
-                <smart-label asp-for="StoreName" />
-            </div>
-            <div class="adminData">
-                <input asp-for="StoreName" sm-plaintext="true" readonly />
-            </div>
-        </div>
-        <div class="adminRow">
-            <div class="adminTitle">
-                <smart-label asp-for="OrderId" />
-            </div>
-            <div class="adminData">
-                <div class="form-control-plaintext">
-                    <a href="@Model.OrderEditUrl">@Model.OrderNumber</a>
+    <tabstrip id="returncase-edit" sm-nav-style="Material">
+        <tab sm-title="@T("Common.General")" sm-selected="true">
+            <div sm-if="Model.ReturnCaseInfo.HasValue()" class="alert alert-info alert-dismissible">
+                <div class="w-25">
+                    @Html.Raw(Model.ReturnCaseInfo)
                 </div>
+                <button type="button" class="btn-close" data-dismiss="alert"></button>
             </div>
-        </div>
-        <div class="adminRow">
-            <div class="adminTitle">
-                <smart-label asp-for="CustomerId" />
-            </div>
-            <div class="adminData">
-                <div class="form-control-plaintext">
-                    <a href="@Model.CustomerEditUrl">@Model.CustomerFullName</a> (@Model.CustomerId)
-                </div>
-            </div>
-        </div>
-        <div class="adminRow">
-            <div class="adminTitle">
-                <smart-label asp-for="ProductName" />
-            </div>
-            <div class="adminData">
-                <div class="form-control-plaintext">
-                    <div class="mb-1">
-                        <a href="@Model.ProductEditUrl">@Model.ProductName</a>
+
+            <zone name="returnrequest_top" />
+
+            <div class="adminContent">
+                <div class="adminRow">
+                    <div class="adminTitle">
+                        <smart-label asp-for="Id" />
                     </div>
-                    <div sm-if="Model.AttributeInfo.HasValue()">
-                        @Html.Raw(Model.AttributeInfo)
-                    </div>
-                    <div sm-if="Model.ProductSku.HasValue()" class="mt-1">
-                        <span class="fwm">@T("Admin.Orders.Products.SKU")</span>: @Model.ProductSku
+                    <div class="adminData form-control-plaintext">
+                        <span class="badge badge-subtle badge-ring mr-1 @Model.KindLabelClass">@Model.KindString</span>
+                        <span>@Model.Id.ToStringInvariant()</span>
                     </div>
                 </div>
-            </div>
-        </div>
-        <div sm-if="Model.MaxRefundAmount != Money.Zero" class="adminRow">
-            <div class="adminTitle">
-                <smart-label asp-for="MaxRefundAmount" />
-            </div>
-            <div class="adminData">
-                <div class="form-control-plaintext">
-                    @Html.Raw(Model.MaxRefundAmount.ToString())
+                <div sm-if="Model.StoreName.HasValue()" class="adminRow">
+                    <div class="adminTitle">
+                        <smart-label asp-for="StoreName" />
+                    </div>
+                    <div class="adminData">
+                        <input asp-for="StoreName" sm-plaintext="true" readonly />
+                    </div>
+                </div>
+                <div class="adminRow">
+                    <div class="adminTitle">
+                        <smart-label asp-for="OrderId" />
+                    </div>
+                    <div class="adminData">
+                        <div class="form-control-plaintext">
+                            <a href="@Model.OrderEditUrl">@Model.OrderNumber</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="adminRow">
+                    <div class="adminTitle">
+                        <smart-label asp-for="CustomerId" />
+                    </div>
+                    <div class="adminData">
+                        <div class="form-control-plaintext">
+                            <a href="@Model.CustomerEditUrl">@Model.CustomerFullName</a> (@Model.CustomerId)
+                        </div>
+                    </div>
+                </div>
+                <div class="adminRow">
+                    <div class="adminTitle">
+                        <smart-label asp-for="ProductName" />
+                    </div>
+                    <div class="adminData">
+                        <div class="form-control-plaintext">
+                            <div class="mb-1">
+                                <a href="@Model.ProductEditUrl">@Model.ProductName</a>
+                            </div>
+                            <div sm-if="Model.AttributeInfo.HasValue()">
+                                @Html.Raw(Model.AttributeInfo)
+                            </div>
+                            <div sm-if="Model.ProductSku.HasValue()" class="mt-1">
+                                <span class="fwm">@T("Admin.Orders.Products.SKU")</span>: @Model.ProductSku
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @if (isWithdrawal)
+                {
+                    <div class="adminRow">
+                        <div class="adminTitle">
+                            <smart-label asp-for="ReturnCaseStatusId" />
+                        </div>
+                        <div class="adminData">
+                            <select asp-for="ReturnCaseStatusId" asp-items="Html.GetLocalizedEnumSelectList(typeof(ReturnCaseStatus))"></select>
+                            <span asp-validation-for="ReturnCaseStatusId"></span>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                <div sm-if="Model.MaxRefundAmount != Money.Zero" class="adminRow">
+                    <div class="adminTitle">
+                        <smart-label asp-for="MaxRefundAmount" />
+                    </div>
+                    <div class="adminData">
+                        <div class="form-control-plaintext">
+                            @Html.Raw(Model.MaxRefundAmount.ToString())
+                        </div>
+                    </div>
+                </div>
+                <div class="adminRow">
+                    <div class="adminTitle">
+                        <smart-label asp-for="Quantity" />
+                    </div>
+                    <div class="adminData">
+                        <editor asp-for="Quantity" />
+                        <span asp-validation-for="Quantity"></span>
+                    </div>
+                </div>
+                <div class="adminRow">
+                    <div class="adminTitle">
+                        <smart-label asp-for="ReturnCaseStatusId" />
+                    </div>
+                    <div class="adminData">
+                        <select asp-for="ReturnCaseStatusId" asp-items="Html.GetLocalizedEnumSelectList(typeof(ReturnCaseStatus))"></select>
+                        <span asp-validation-for="ReturnCaseStatusId"></span>
+                    </div>
+                </div>
+                <div class="adminRow">
+                    <div class="adminTitle">
+                        <smart-label asp-for="ReasonForReturn" />
+                    </div>
+                    <div class="adminData">
+                        <select asp-for="ReasonForReturn" asp-items="ViewBag.ReasonForReturn"></select>
+                        <span asp-validation-for="ReasonForReturn"></span>
+                    </div>
+                </div>
+                <div class="adminRow">
+                    <div class="adminTitle">
+                        <smart-label asp-for="RequestedAction" />
+                    </div>
+                    <div class="adminData">
+                        <select asp-for="RequestedAction" asp-items="ViewBag.ActionsForReturn"></select>
+                        <span asp-validation-for="RequestedAction"></span>
+                    </div>
+                </div>
+                <div sm-if="Model.RequestedActionUpdated.HasValue" class="adminRow">
+                    <div class="adminTitle">
+                        <smart-label asp-for="RequestedActionUpdated" />
+                    </div>
+                    <div class="adminData">
+                        <div class="form-control-plaintext">@Model.RequestedActionUpdated</div>
+                    </div>
+                </div>
+                <div class="adminRow">
+                    <div class="adminTitle">
+                        <smart-label asp-for="CustomerComments" />
+                    </div>
+                    <div class="adminData">
+                        <editor asp-for="CustomerComments" />
+                        <span asp-validation-for="CustomerComments"></span>
+                    </div>
+                </div>
+                <div class="adminRow">
+                    <div class="adminTitle">
+                        <smart-label asp-for="StaffNotes" />
+                    </div>
+                    <div class="adminData">
+                        <editor asp-for="StaffNotes" />
+                        <span asp-validation-for="StaffNotes"></span>
+                    </div>
+                </div>
+                }
+                <div class="adminRow">
+                    <div class="adminTitle">
+                        <smart-label asp-for="AdminComment" />
+                    </div>
+                    <div class="adminData">
+                        <editor asp-for="AdminComment" />
+                        <span asp-validation-for="AdminComment"></span>
+                    </div>
+                </div>
+                <div class="adminRow">
+                    <div class="adminTitle">
+                        <smart-label asp-for="CreatedOn" />
+                    </div>
+                    <div class="adminData">
+                        <div class="form-control-plaintext">@Model.CreatedOn</div>
+                    </div>
+                </div>
+                <div class="adminRow">
+                    <div class="adminTitle">
+                        <smart-label asp-for="UpdatedOn" />
+                    </div>
+                    <div class="adminData">
+                        <div class="form-control-plaintext">@Model.UpdatedOn</div>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="adminRow">
-            <div class="adminTitle">
-                <smart-label asp-for="Quantity" />
-            </div>
-            <div class="adminData">
-                <editor asp-for="Quantity" />
-                <span asp-validation-for="Quantity"></span>
-            </div>
-        </div>
-        <div class="adminRow">
-            <div class="adminTitle">
-                <smart-label asp-for="ReturnCaseStatusId" />
-            </div>
-            <div class="adminData">
-                <select asp-for="ReturnCaseStatusId" asp-items="Html.GetLocalizedEnumSelectList(typeof(ReturnCaseStatus))"></select>
-                <span asp-validation-for="ReturnCaseStatusId"></span>
-            </div>
-        </div>
-        <div class="adminRow">
-            <div class="adminTitle">
-                <smart-label asp-for="ReasonForReturn" />
-            </div>
-            <div class="adminData">
-                <select asp-for="ReasonForReturn" asp-items="ViewBag.ReasonForReturn"></select>
-                <span asp-validation-for="ReasonForReturn"></span>
-            </div>
-        </div>
-        <div class="adminRow">
-            <div class="adminTitle">
-                <smart-label asp-for="RequestedAction" />
-            </div>
-            <div class="adminData">
-                <select asp-for="RequestedAction" asp-items="ViewBag.ActionsForReturn"></select>
-                <span asp-validation-for="RequestedAction"></span>
-            </div>
-        </div>
-        <div sm-if="Model.RequestedActionUpdated.HasValue" class="adminRow">
-            <div class="adminTitle">
-                <smart-label asp-for="RequestedActionUpdated" />
-            </div>
-            <div class="adminData">
-                <div class="form-control-plaintext">@Model.RequestedActionUpdated</div>
-            </div>
-        </div>
-        <div class="adminRow">
-            <div class="adminTitle">
-                <smart-label asp-for="CustomerComments" />
-            </div>
-            <div class="adminData">
-                <editor asp-for="CustomerComments" />
-                <span asp-validation-for="CustomerComments"></span>
-            </div>
-        </div>
-        <div class="adminRow">
-            <div class="adminTitle">
-                <smart-label asp-for="StaffNotes" />
-            </div>
-            <div class="adminData">
-                <editor asp-for="StaffNotes" />
-                <span asp-validation-for="StaffNotes"></span>
-            </div>
-        </div>
-        <div class="adminRow">
-            <div class="adminTitle">
-                <smart-label asp-for="AdminComment" />
-            </div>
-            <div class="adminData">
-                <editor asp-for="AdminComment" />
-                <span asp-validation-for="AdminComment"></span>
-            </div>
-        </div>
-        <div class="adminRow">
-            <div class="adminTitle">
-                <smart-label asp-for="CreatedOn" />
-            </div>
-            <div class="adminData">
-                <div class="form-control-plaintext">@Model.CreatedOn</div>
-            </div>
-        </div>
-        <div class="adminRow">
-            <div class="adminTitle">
-                <smart-label asp-for="UpdatedOn" />
-            </div>
-            <div class="adminData">
-                <div class="form-control-plaintext">@Model.UpdatedOn</div>
-            </div>
-        </div>
-    </div>
 
-    <zone name="returnrequest_bottom" />
+            <zone name="returnrequest_bottom" />
+        </tab>
+    </tabstrip>
 </form>
 
-<partial name="~/Areas/Admin/Views/Order/_UpdateOrderItemDialog.cshtml" model="Model.UpdateOrderItem" />
+@if (!isWithdrawal)
+{
+    <partial name="~/Areas/Admin/Views/Order/_UpdateOrderItemDialog.cshtml" model="Model.UpdateOrderItem" />
+}

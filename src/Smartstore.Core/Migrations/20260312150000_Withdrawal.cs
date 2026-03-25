@@ -95,9 +95,22 @@ internal class Withdrawal : Migration, ILocaleResourcesProvider, IDataSeeder<Sma
             + " (z.B. Hygieneartikel). Wenn ein Produkt mehreren Warengruppen zugeordnet ist, müssen die Widerrufsfristen aller Warengruppen eingehalten sein, damit der Artikel"
             + " widerrufen werden kann. Diese Einstellung ist nur wirksam, wenn das Vertragswiderrufs-Plugin verwendet wird.");
 
-        // Renaming: "Rücksendewünsche" -> "Retourenanträge".
+        builder.AddOrUpdate("Enums.ReturnCaseKind.Return", "Return", "Retoure");
+        builder.AddOrUpdate("Enums.ReturnCaseKind.Withdrawal", "Withdrawal", "Wiederruf");
+
+        builder.AddOrUpdate("Common.Type", "Type", "Typ");
+        builder.AddOrUpdate("Admin.ReturnRequests", "Withdrawals and Returns", "Wiederrufe und Retouren");
+
         builder.AddOrUpdate("ReturnRequests.Products.RequestAlreadyExists",
             "Return requests for this item already exist.",
             "Für diesen Artikel liegen bereits Retourenanträge vor.");
+
+        builder.AddOrUpdate("Admin.ReturnRequests.EditReturnRequestDetails",
+            "Edit return #{0}",
+            "Retoure #{0} bearbeiten");
+
+        builder.AddOrUpdate("Admin.Withdrawal.EditWithdrawal",
+            "Edit withdrawal #{0}",
+            "Widerruf #{0} bearbeiten");
     }
 }

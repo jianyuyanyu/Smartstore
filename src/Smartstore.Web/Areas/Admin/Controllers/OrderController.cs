@@ -209,13 +209,18 @@ public class OrderController : AdminController
 
         if (model.CustomerEmail.HasValue())
         {
-            orderQuery = orderQuery.ApplySearchFilterFor(x => x.BillingAddress.Email, model.CustomerEmail);
+            orderQuery = orderQuery.ApplySearchFilter(
+                model.CustomerEmail,
+                LogicalRuleOperator.Or,
+                x => x.Customer.Email,
+                x => x.Customer.BillingAddress.Email);
         }
         if (model.CustomerName.HasValue())
         {
             orderQuery = orderQuery.ApplySearchFilter(
                 model.CustomerName,
                 LogicalRuleOperator.Or,
+                x => x.Customer.FullName,
                 x => x.BillingAddress.FirstName,
                 x => x.BillingAddress.LastName);
         }
