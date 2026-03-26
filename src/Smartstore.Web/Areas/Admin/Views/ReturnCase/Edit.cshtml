@@ -4,7 +4,10 @@
 
 @{
     var isWithdrawal = Model.Kind == ReturnCaseKind.Withdrawal;
-    ViewBag.Title = T(isWithdrawal ? "Admin.Withdrawal.EditWithdrawal" : "Admin.ReturnRequests.EditReturnRequestDetails", Model.Id);
+    ViewBag.Title = T(isWithdrawal ? "Admin.Withdrawal.EditWithdrawal" : "Admin.ReturnRequests.EditReturnRequestDetails");
+
+    var returnCasesOfCurrentOrder = ViewBag.ReturnCasesOfCurrentOrder as List<ChoiceListItem>;
+    var selectedReturnCase = returnCasesOfCurrentOrder.FirstOrDefault(x => x.Selected);
 }
 
 <form asp-action="Edit" method="post">
@@ -12,8 +15,29 @@
 
     <div class="section-header">
         <div class="title">
-            <a sm-backto asp-action="List"></a>
-            <i class="fa @(isWithdrawal ? "fa-reply" : "fa-truck-moving")"></i>
+            <div class="btn-group mr-3" role="group">
+                <a sm-backto asp-action="List"></a>
+                <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle text-truncate"
+                        style="max-width: 15vw"
+                        data-toggle="dropdown"
+                        aria-haspopup="true"
+                        aria-expanded="true"
+                        data-boundary="window"
+                        title="@selectedReturnCase?.Text">
+                    <span class="d-none d-md-inline text-truncate">@selectedReturnCase?.Text</span>
+                </button>
+                <div class="dropdown-menu">
+                    @foreach (var item in returnCasesOfCurrentOrder)
+                    {
+                        <a href="@Url.Action("Edit", new { id = item.Id })"
+                           style="line-height: var(--body-line-height)"
+                           class="dropdown-item@(item.Disabled ? " disabled" : string.Empty)"
+                           title="@item.UrlTitle">
+                            <span>@item.Text</span>
+                        </a>
+                    }
+                </div>
+            </div>
             <span>@ViewBag.Title</span>
         </div>
         <div class="options">
@@ -72,9 +96,11 @@
                     <div class="adminTitle">
                         <smart-label asp-for="Id" />
                     </div>
-                    <div class="adminData form-control-plaintext">
-                        <span class="badge badge-subtle badge-ring mr-1 @Model.KindLabelClass">@Model.KindString</span>
-                        <span>@Model.Id.ToStringInvariant()</span>
+                    <div class="adminData">
+                        <div class="form-control-plaintext">
+                            <span class="badge badge-subtle badge-ring mr-1 @Model.KindLabelClass">@Model.KindString</span>
+                            <span>@Model.Id.ToStringInvariant()</span>
+                        </div>
                     </div>
                 </div>
                 <div sm-if="Model.StoreName.HasValue()" class="adminRow">
@@ -127,11 +153,20 @@
                 {
                     <div class="adminRow">
                         <div class="adminTitle">
-                            <smart-label asp-for="ReturnCaseStatusId" />
+                            <smart-label asp-for="ReturnCaseStatusString" />
                         </div>
                         <div class="adminData">
-                            <select asp-for="ReturnCaseStatusId" asp-items="Html.GetLocalizedEnumSelectList(typeof(ReturnCaseStatus))"></select>
-                            <span asp-validation-for="ReturnCaseStatusId"></span>
+                            <div class="form-control-plaintext">
+                                <span class="@Model.ReturnCaseStatusLabelClass">@Model.ReturnCaseStatusString</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="adminRow">
+                        <div class="adminTitle">
+                            <smart-label asp-for="Quantity" />
+                        </div>
+                        <div class="adminData">
+                            <input asp-for="Quantity" sm-plaintext="true" readonly />
                         </div>
                     </div>
                 }
@@ -161,7 +196,7 @@
                         <smart-label asp-for="ReturnCaseStatusId" />
                     </div>
                     <div class="adminData">
-                        <select asp-for="ReturnCaseStatusId" asp-items="Html.GetLocalizedEnumSelectList(typeof(ReturnCaseStatus))"></select>
+                        <select asp-for="ReturnCaseStatusId" asp-items="ViewBag.ReturnCaseStatuses"></select>
                         <span asp-validation-for="ReturnCaseStatusId"></span>
                     </div>
                 </div>

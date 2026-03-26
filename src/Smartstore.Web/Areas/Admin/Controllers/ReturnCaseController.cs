@@ -14,6 +14,7 @@ using Smartstore.Core.Rules;
 using Smartstore.Core.Rules.Filters;
 using Smartstore.Core.Security;
 using Smartstore.Core.Stores;
+using Smartstore.Web.Models;
 using Smartstore.Web.Models.DataGrid;
 using Smartstore.Web.Rendering;
 
@@ -22,26 +23,26 @@ namespace Smartstore.Admin.Controllers
     public class ReturnCaseController : AdminController
     {
         private readonly SmartDbContext _db;
-        private readonly ICurrencyService _currencyService;
         private readonly ITaxService _taxService;
         private readonly IOrderProcessingService _orderProcessingService;
         private readonly IMessageFactory _messageFactory;
         private readonly OrderSettings _orderSettings;
+        private readonly Currency _primaryCurrency;
 
         public ReturnCaseController(
             SmartDbContext db,
-            ICurrencyService currencyService,
             ITaxService taxService,
+            ICurrencyService currencyService,
             IOrderProcessingService orderProcessingService,
             IMessageFactory messageFactory,
             OrderSettings orderSettings)
         {
             _db = db;
-            _currencyService = currencyService;
             _taxService = taxService;
             _orderProcessingService = orderProcessingService;
             _messageFactory = messageFactory;
             _orderSettings = orderSettings;
+            _primaryCurrency = currencyService.PrimaryCurrency;
         }
 
         public IActionResult Index()
@@ -76,7 +77,7 @@ namespace Smartstore.Admin.Controllers
 
             if (model.SearchId.HasValue)
             {
-                query = query.Where(x => x.Id == model.SearchId);
+                query = query.Where(x => x.Id == model.SearchId || x.WithdrawalId == model.SearchId);
             }
             if (model.SearchReturnCaseKind.HasValue)
             {
@@ -112,8 +113,8 @@ namespace Smartstore.Admin.Controllers
                 query =
                     from o in orderQuery
                     join oi in _db.OrderItems on o.Id equals oi.OrderId
-                    join rr in query on oi.Id equals rr.OrderItemId
-                    select rr;
+                    join rc in query on oi.Id equals rc.OrderItemId
+                    select rc;
             }
 
             var returnCases = await query
@@ -123,6 +124,7 @@ namespace Smartstore.Admin.Controllers
                 .ToPagedList(command)
                 .LoadAsync();
 
+            var allStores = Services.StoreContext.GetAllStores().ToDictionary(x => x.Id);
             var orderItemIds = returnCases.ToDistinctArray(x => x.OrderItemId);
             var orderItems = await _db.OrderItems
                 .Include(x => x.Product)
@@ -131,16 +133,14 @@ namespace Smartstore.Admin.Controllers
                 .Where(x => orderItemIds.Contains(x.Id))
                 .ToDictionaryAsync(x => x.Id, x => x);
 
-            var allStores = Services.StoreContext.GetAllStores().ToDictionary(x => x.Id);
-
-            var rows = returnCases
-                .Select(x =>
+            var rows = await returnCases
+                .SelectAwait(async x =>
                 {
                     var m = new ReturnCaseModel();
-                    PrepareReturnCaseRequestModel(m, x, orderItems.Get(x.OrderItemId), allStores, false, true);
+                    await PrepareReturnCaseModel(m, x, orderItems.Get(x.OrderItemId), allStores, false, true);
                     return m;
                 })
-                .ToList();
+                .ToListAsync();
 
             return Json(new GridModel<ReturnCaseModel>
             {
@@ -161,7 +161,7 @@ namespace Smartstore.Admin.Controllers
             }
 
             var model = new ReturnCaseModel();
-            await PrepareReturnCaseModelAsync(model, returnCase);
+            await PrepareReturnCaseModel(model, returnCase);
 
             return View(model);
         }
@@ -208,7 +208,7 @@ namespace Smartstore.Admin.Controllers
                     : RedirectToAction(nameof(List));
             }
 
-            await PrepareReturnCaseModelAsync(model, returnCase, true);
+            await PrepareReturnCaseModel(model, returnCase, true);
 
             return View(model);
         }
@@ -300,7 +300,7 @@ namespace Smartstore.Admin.Controllers
             return RedirectToAction(nameof(List));
         }
 
-        private async Task<ReturnCaseModel> PrepareReturnCaseModelAsync(
+        private async Task<ReturnCaseModel> PrepareReturnCaseModel(
             ReturnCaseModel model,
             ReturnCase returnCase,
             bool excludeProperties = false)
@@ -309,14 +309,14 @@ namespace Smartstore.Admin.Controllers
             var orderItem = await _db.OrderItems
                 .Include(x => x.Product)
                 .Include(x => x.Order)
-                .FindByIdAsync(returnCase.OrderItemId);
+                .FindByIdAsync(returnCase.OrderItemId, false);
 
-            PrepareReturnCaseRequestModel(model, returnCase, orderItem, allStores, excludeProperties);
+            await PrepareReturnCaseModel(model, returnCase, orderItem, allStores, excludeProperties);
 
             return model;
         }
 
-        private void PrepareReturnCaseRequestModel(
+        private async Task PrepareReturnCaseModel(
             ReturnCaseModel model,
             ReturnCase returnCase,
             OrderItem orderItem,
@@ -329,12 +329,13 @@ namespace Smartstore.Admin.Controllers
             var store = allStores.Get(returnCase.StoreId);
             var order = orderItem?.Order;
             var customer = returnCase.Customer;
+            var localization = Services.Localization;
 
             model.Id = returnCase.Id;
             model.ProductId = orderItem?.ProductId ?? 0;
             model.ProductSku = orderItem?.Sku?.NullEmpty() ?? orderItem?.Product?.Sku;
             model.ProductName = orderItem?.Product?.Name;
-            model.ProductTypeName = orderItem?.Product?.GetProductTypeLabel(Services.Localization);
+            model.ProductTypeName = orderItem?.Product?.GetProductTypeLabel(localization);
             model.ProductTypeLabelHint = orderItem?.Product?.ProductTypeLabelHint;
             model.AttributeInfo = orderItem?.AttributeDescription;
             model.OrderId = orderItem?.OrderId ?? 0;
@@ -344,8 +345,8 @@ namespace Smartstore.Admin.Controllers
             model.CanSendEmailToCustomer = customer.FindEmail().HasValue();
             model.Quantity = returnCase.Quantity;
             model.Kind = returnCase.Kind;
-            model.KindString = Services.Localization.GetLocalizedEnum(returnCase.Kind);
-            model.ReturnCaseStatusString = Services.Localization.GetLocalizedEnum(returnCase.ReturnCaseStatus);
+            model.KindString = localization.GetLocalizedEnum(returnCase.Kind);
+            model.ReturnCaseStatusString = localization.GetLocalizedEnum(returnCase.ReturnCaseStatus);
             model.CreatedOn = Services.DateTimeHelper.ConvertToUserTime(returnCase.CreatedOnUtc, DateTimeKind.Utc);
             model.UpdatedOn = Services.DateTimeHelper.ConvertToUserTime(returnCase.UpdatedOnUtc, DateTimeKind.Utc);
             model.EditUrl = Url.Action(nameof(Edit), "ReturnCase", new { id = returnCase.Id });
@@ -418,18 +419,54 @@ namespace Smartstore.Admin.Controllers
 
                 model.ReturnCaseInfo = TempData[UpdateOrderDetailsContext.InfoKey] as string;
 
-                // The maximum amount that can be refunded for this return request.
                 if (orderItem != null)
                 {
+                    // The maximum amount that can be refunded for this return request.
                     var maxRefundAmount = Math.Max(orderItem.UnitPriceInclTax * returnCase.Quantity, 0);
                     if (maxRefundAmount > decimal.Zero)
                     {
-                        model.MaxRefundAmount = new Money(
-                            maxRefundAmount,
-                            _currencyService.PrimaryCurrency,
-                            false,
-                            _taxService.GetTaxFormat(true, true));
+                        model.MaxRefundAmount = new(maxRefundAmount, _primaryCurrency, false, _taxService.GetTaxFormat(true, true));
                     }
+
+                    // Easy navigate to return cases of current order.
+                    string linkTextTemplate = T("Admin.ReturnRequests.LinkText");
+                    string linkTitleTemplate = T("Admin.ReturnRequests.LinkTitle");
+                    string returnStr = T("Enums.ReturnCaseKind.Return");
+                    string withdrawalStr = T("Enums.ReturnCaseKind.Withdrawal");
+
+                    var returnCasesOfCurrentOrder = await (
+                        from o in _db.Orders.Where(x => x.Id == orderItem.OrderId)
+                        join oi in _db.OrderItems on o.Id equals oi.OrderId
+                        join rc in _db.ReturnCases on oi.Id equals rc.OrderItemId
+                        orderby rc.CreatedOnUtc descending
+                        select new
+                        {
+                            rc.Id,
+                            rc.CreatedOnUtc,
+                            rc.Quantity,
+                            rc.Kind,
+                            ProductName = oi.Product.Name
+                        })
+                        .ToListAsync();
+
+                    ViewBag.ReturnCasesOfCurrentOrder = returnCasesOfCurrentOrder
+                        .Select(x => new ChoiceListItem
+                        {
+                            Id = x.Id.ToString(),
+                            Text = linkTextTemplate.FormatInvariant(x.Quantity.ToString("N0"), x.ProductName.Truncate(40, "…")),
+                            UrlTitle = linkTitleTemplate.FormatInvariant(x.Kind == ReturnCaseKind.Withdrawal ? withdrawalStr : returnStr, x.ProductName),
+                            Disabled = x.Id == returnCase.Id,
+                            Selected = x.Id == returnCase.Id
+                        })
+                        .ToList();
+                }
+
+                if (returnCase.Kind == ReturnCaseKind.Return)
+                {
+                    ViewBag.ReturnCaseStatuses = Enum.GetValues<ReturnCaseStatus>()
+                        .Where(x => x != ReturnCaseStatus.Processing && x != ReturnCaseStatus.Complete)
+                        .Select(x => new SelectListItem { Value = ((int)x).ToString(), Text = localization.GetLocalizedEnum(x), Selected = x == returnCase.ReturnCaseStatus })
+                        .ToList();
                 }
             }
         }

@@ -105,12 +105,19 @@ internal class Withdrawal : Migration, ILocaleResourcesProvider, IDataSeeder<Sma
             "Return requests for this item already exist.",
             "Für diesen Artikel liegen bereits Retourenanträge vor.");
 
-        builder.AddOrUpdate("Admin.ReturnRequests.EditReturnRequestDetails",
-            "Edit return #{0}",
-            "Retoure #{0} bearbeiten");
+        builder.AddOrUpdate("Admin.ReturnRequests.EditReturnRequestDetails", "Edit return", "Retoure bearbeiten");
+        builder.AddOrUpdate("Admin.Withdrawal.EditWithdrawal", "Edit withdrawal", "Widerruf bearbeiten");
 
-        builder.AddOrUpdate("Admin.Withdrawal.EditWithdrawal",
-            "Edit withdrawal #{0}",
-            "Widerruf #{0} bearbeiten");
+        builder.AddOrUpdate("Admin.ReturnRequests.LinkText", "{0} × {1}", "{0} × {1}");
+        builder.AddOrUpdate("Admin.ReturnRequests.LinkTitle", "{0} for {1}", "{0} zu {1}");
+
+        builder.AddOrUpdate("Enums.ReturnCaseStatus.Processing", "Processing", "Wird bearbeitet");
+        builder.AddOrUpdate("Enums.ReturnCaseStatus.Complete", "Complete", "Komplett");
+
+        builder.AddOrUpdate("Admin.ReturnRequests.Fields.ID",
+            "ID",
+            "ID",
+            "Return item ID",
+            "ID des Retourenartikels");
     }
 }

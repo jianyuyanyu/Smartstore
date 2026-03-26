@@ -49,7 +49,11 @@
                 <div class="text-truncate"><a :href="item.row.OrderEditUrl" class="text-truncate">{{ item.row.OrderNumber }}</a></div>
             </display-template>
         </column>
-        <column for="ReturnCaseStatusString" entity-member="ReturnCaseStatusId" />
+        <column for="ReturnCaseStatusString" entity-member="ReturnCaseStatusId">
+            <display-template>
+                <span v-bind:class="item.row.ReturnCaseStatusLabelClass" class="text-truncate">{{ item.row.ReturnCaseStatusString }}</span>
+            </display-template>
+        </column>
         <column for="CreatedOn" entity-member="CreatedOnUtc" />
         <column for="UpdatedOn" entity-member="UpdatedOnUtc" visible="false" />
         @if (!isSingleStoreMode)

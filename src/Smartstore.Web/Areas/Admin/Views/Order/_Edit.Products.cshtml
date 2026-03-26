@@ -135,10 +135,8 @@
                                     {
                                         <div>
                                             <span class="badge badge-@(rc.StatusLabel) mr-1">@rc.StatusString</span>
-                                            <a asp-action="Edit" asp-controller="ReturnCase" asp-route-id="@rc.Id">
-                                                @T("Admin.Orders.Products.ReturnRequest") @rc.Id
-                                            </a>
-                                            , @T("Admin.ReturnRequests.Fields.Quantity") @rc.Quantity
+                                            <a asp-action="Edit" asp-controller="ReturnCase" asp-route-id="@rc.Id">@T("Admin.Orders.Products.ReturnRequest") @rc.Id</a><span>, 
+                                                @T("Admin.ReturnRequests.Fields.Quantity") @rc.Quantity</span>
                                         </div>
                                     }
                                 </div>
