@@ -14,7 +14,6 @@ using Smartstore.Core.Rules;
 using Smartstore.Core.Rules.Filters;
 using Smartstore.Core.Security;
 using Smartstore.Core.Stores;
-using Smartstore.Web.Models;
 using Smartstore.Web.Models.DataGrid;
 using Smartstore.Web.Rendering;
 
@@ -77,7 +76,8 @@ namespace Smartstore.Admin.Controllers
 
             if (model.SearchId.HasValue)
             {
-                query = query.Where(x => x.Id == model.SearchId || x.WithdrawalId == model.SearchId);
+                query = query.Where(x => x.Id == model.SearchId);
+                //query = query.Where(x => x.Id == model.SearchId || x.WithdrawalId == model.SearchId);
             }
             if (model.SearchReturnCaseKind.HasValue)
             {
@@ -427,46 +427,6 @@ namespace Smartstore.Admin.Controllers
                     {
                         model.MaxRefundAmount = new(maxRefundAmount, _primaryCurrency, false, _taxService.GetTaxFormat(true, true));
                     }
-
-                    // Easy navigate to return cases of current order.
-                    string linkTextTemplate = T("Admin.ReturnRequests.LinkText");
-                    string linkTitleTemplate = T("Admin.ReturnRequests.LinkTitle");
-                    string returnStr = T("Enums.ReturnCaseKind.Return");
-                    string withdrawalStr = T("Enums.ReturnCaseKind.Withdrawal");
-
-                    var returnCasesOfCurrentOrder = await (
-                        from o in _db.Orders.Where(x => x.Id == orderItem.OrderId)
-                        join oi in _db.OrderItems on o.Id equals oi.OrderId
-                        join rc in _db.ReturnCases on oi.Id equals rc.OrderItemId
-                        orderby rc.CreatedOnUtc descending
-                        select new
-                        {
-                            rc.Id,
-                            rc.CreatedOnUtc,
-                            rc.Quantity,
-                            rc.Kind,
-                            ProductName = oi.Product.Name
-                        })
-                        .ToListAsync();
-
-                    ViewBag.ReturnCasesOfCurrentOrder = returnCasesOfCurrentOrder
-                        .Select(x => new ChoiceListItem
-                        {
-                            Id = x.Id.ToString(),
-                            Text = linkTextTemplate.FormatInvariant(x.Quantity.ToString("N0"), x.ProductName.Truncate(40, "…")),
-                            UrlTitle = linkTitleTemplate.FormatInvariant(x.Kind == ReturnCaseKind.Withdrawal ? withdrawalStr : returnStr, x.ProductName),
-                            Disabled = x.Id == returnCase.Id,
-                            Selected = x.Id == returnCase.Id
-                        })
-                        .ToList();
-                }
-
-                if (returnCase.Kind == ReturnCaseKind.Return)
-                {
-                    ViewBag.ReturnCaseStatuses = Enum.GetValues<ReturnCaseStatus>()
-                        .Where(x => x != ReturnCaseStatus.Processing && x != ReturnCaseStatus.Complete)
-                        .Select(x => new SelectListItem { Value = ((int)x).ToString(), Text = localization.GetLocalizedEnum(x), Selected = x == returnCase.ReturnCaseStatus })
-                        .ToList();
                 }
             }
         }

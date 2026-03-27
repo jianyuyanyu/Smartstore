@@ -69,6 +69,10 @@ internal class Withdrawal : Migration, ILocaleResourcesProvider, IDataSeeder<Sma
 
     public void MigrateLocaleResources(LocaleResourcesBuilder builder)
     {
+        builder.Delete(
+            "Admin.ReturnRequests.Fields.CreatedOn.Hint",
+            "Admin.ReturnRequests.Fields.Status.Hint");
+
         builder.AddOrUpdate("Withdrawal.WithdrawItemOnly",
             "Only withdraw this item in the ordered quantity.", 
             "Nur diesen Artikel in der bestellten Menge widerrufen.");
@@ -108,16 +112,27 @@ internal class Withdrawal : Migration, ILocaleResourcesProvider, IDataSeeder<Sma
         builder.AddOrUpdate("Admin.ReturnRequests.EditReturnRequestDetails", "Edit return", "Retoure bearbeiten");
         builder.AddOrUpdate("Admin.Withdrawal.EditWithdrawal", "Edit withdrawal", "Widerruf bearbeiten");
 
-        builder.AddOrUpdate("Admin.ReturnRequests.LinkText", "{0} × {1}", "{0} × {1}");
-        builder.AddOrUpdate("Admin.ReturnRequests.LinkTitle", "{0} for {1}", "{0} zu {1}");
-
-        builder.AddOrUpdate("Enums.ReturnCaseStatus.Processing", "Processing", "Wird bearbeitet");
-        builder.AddOrUpdate("Enums.ReturnCaseStatus.Complete", "Complete", "Komplett");
-
         builder.AddOrUpdate("Admin.ReturnRequests.Fields.ID",
             "ID",
             "ID",
             "Return item ID",
             "ID des Retourenartikels");
+
+        // Typo.
+        builder.AddOrUpdate("Admin.ReturnRequests.Fields.Quantity.Hint",
+            "Number of items to be returned",
+            "Anzahl der zurückzusendenden Artikel");
+
+        builder.AddOrUpdate("Admin.ReturnRequests.Deleted",
+            "The return item has been deleted",
+            "Der Retourenartikel wurde gelöscht");
+
+        builder.AddOrUpdate("Admin.ReturnRequests.MaxRefundAmount.Hint",
+            "The maximum amount that can be refunded for this item.",
+            "Der maximale Betrag, der für diesen Retourenartikel erstattet werden kann.");
+
+        builder.AddOrUpdate("Admin.ReturnRequests.Updated",
+            "The item has been successfully processed",
+            "Der Retourenartikel wurde erfolgreich bearbeitet");
     }
 }

@@ -72,13 +72,11 @@ namespace Smartstore.Admin.Models.Orders
                     case ReturnCaseStatus.Pending:
                         return "fw-600";
                     case ReturnCaseStatus.ItemsRefunded:
-                    case ReturnCaseStatus.Complete:
                         return "text-success";
                     case ReturnCaseStatus.RequestRejected:
                         return "text-danger";
                     case ReturnCaseStatus.Cancelled:
                         return "muted";
-                    case ReturnCaseStatus.Processing:
                     default:
                         return string.Empty;
                 }

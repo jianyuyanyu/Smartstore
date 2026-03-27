@@ -113,6 +113,7 @@ namespace Smartstore.Web.Controllers
                         OrderItem = oi,
                         ReturnCase = new ReturnCase
                         {
+                            Kind = ReturnCaseKind.Return,
                             StoreId = order.StoreId,
                             OrderItemId = oi.Id,
                             Quantity = quantity,

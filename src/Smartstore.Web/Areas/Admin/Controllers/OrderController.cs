@@ -1137,6 +1137,7 @@ public class OrderController : AdminController
         {
             var returnCase = new ReturnCase
             {
+                Kind = ReturnCaseKind.Return,
                 StoreId = order.StoreId,
                 OrderItemId = orderItem.Id,
                 Quantity = orderItem.Quantity,

@@ -64,11 +64,6 @@
         ReturnAuthorized = 20,
 
         /// <summary>
-        /// Processing withdrawal.
-        /// </summary>
-        Processing = 25,
-
-        /// <summary>
         /// Item(s) repaired.
         /// </summary>
         ItemsRepaired = 30,
@@ -82,11 +77,6 @@
         /// Request rejected.
         /// </summary>
         RequestRejected = 50,
-
-        /// <summary>
-        /// Withdrawal complete.
-        /// </summary>
-        Complete = 55,
 
         /// <summary>
         /// Cancelled.
@@ -107,6 +97,6 @@
         /// <summary>
         /// Legal online withdrawal (revocation) of a contract/order.
         /// </summary>
-        Withdrawal = 10
+        Withdrawal
     }
 }
