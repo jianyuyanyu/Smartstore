@@ -73,10 +73,6 @@ internal class Withdrawal : Migration, ILocaleResourcesProvider, IDataSeeder<Sma
             "Admin.ReturnRequests.Fields.CreatedOn.Hint",
             "Admin.ReturnRequests.Fields.Status.Hint");
 
-        builder.AddOrUpdate("Withdrawal.WithdrawItemOnly",
-            "Only withdraw this item in the ordered quantity.", 
-            "Nur diesen Artikel in der bestellten Menge widerrufen.");
-
         builder.AddOrUpdate("Withdrawal.WithdrawalAlreadySubmitted",
             "A withdrawal request has already been submitted for this item.",
             "Für diesen Artikel wurde bereits ein Widerruf eingereicht.");

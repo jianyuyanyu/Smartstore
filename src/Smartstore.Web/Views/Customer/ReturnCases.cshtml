@@ -18,7 +18,7 @@
             <div class="card shadow-sm">
                 <div class="card-body">
                     <div id="returncase-title@(item.Id)" class="card-title h4 mb-4">
-                        @T("Account.CustomerReturnRequests.Title", item.Id, item.ReturnCaseStatus)
+                        @T("Account.CustomerReturnRequests.Title", item.Id, item.ReturnCaseStatusStr)
                     </div>
                     <dl class="row mb-0" role="presentation">
                         <dt class="col-sm-4 fwn text-muted">@T("Account.CustomerReturnRequests.Item")</dt>
@@ -28,17 +28,17 @@
                         <dt class="col-sm-4 fwn text-muted">@T("ReturnRequests.Products.Quantity")</dt>
                         <dd class="col-sm-8">@item.Quantity</dd>
                         <dt class="col-sm-4 fwn text-muted">@T("Account.CustomerReturnRequests.Reason")</dt>
-                        <dd class="col-sm-8">@item.ReturnReason</dd>
+                        <dd class="col-sm-8">@item.ReasonForReturn</dd>
                         <dt class="col-sm-4 fwn text-muted">@T("Account.CustomerReturnRequests.Action")</dt>
-                        <dd class="col-sm-8">@item.ReturnAction</dd>
+                        <dd class="col-sm-8">@item.RequestedAction</dd>
                         <dt class="col-sm-4 fwn text-muted">@T("Account.CustomerReturnRequests.Date")</dt>
                         <dd class="col-sm-8">
                             <time asp-for="@item.CreatedOn" sm-format="f"></time>
                         </dd>
-                        @if (item.Comments.HasValue())
+                        @if (item.CustomerComments.HasValue())
                         {
                             <dt class="col-sm-4 fwn text-muted">@T("Account.CustomerReturnRequests.Comments")</dt>
-                            <dd class="col-sm-8" dir="auto">@Html.Raw(HtmlUtility.ConvertPlainTextToHtml(item.Comments))</dd>
+                            <dd class="col-sm-8" dir="auto">@Html.Raw(HtmlUtility.ConvertPlainTextToHtml(item.CustomerComments))</dd>
                         }
                     </dl>
                 </div>

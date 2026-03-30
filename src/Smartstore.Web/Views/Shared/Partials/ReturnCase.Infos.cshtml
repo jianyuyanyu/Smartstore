@@ -1,0 +1,48 @@
+﻿@using Smartstore.Core.Checkout.Orders
+@using Smartstore.Web.Models.Customers
+@using Smartstore.Web.Models.Orders
+
+@model List<ReturnCaseModel>
+
+@{
+    if (Model.Count == 0)
+    {
+        return;
+    }
+
+    var withdrawals = Model.Where(x => x.Kind == ReturnCaseKind.Withdrawal).ToList();
+    var returnCases = Model.Where(x => x.Kind == ReturnCaseKind.Return).ToList();
+
+    async Task ReturnCases(List<ReturnCaseModel> returnCases, bool isWithdrawal)
+    {
+        foreach (var rr in returnCases)
+        {
+            <dl class="row mb-0">
+                <dt class="col-sm-3">@T("ReturnRequests.Products.Quantity")</dt>
+                <dd class="col-sm-9 mb-0">@rr.Quantity.ToString("N0")</dd>
+                @if (!isWithdrawal)
+                {
+                    <dt class="col-sm-3">@T("Common.Status")</dt>
+                    <dd class="col-sm-9 mb-0">@rr.ReturnCaseStatusStr</dd>
+                }
+                <dt class="col-sm-3">@T("Account.CustomerReturnRequests.Date")</dt>
+                <dd class="col-sm-9 mb-0">
+                    <time asp-for="@rr.CreatedOn" sm-format="f"></time>
+                </dd>
+            </dl>
+        }
+    }
+}
+
+<div sm-if="withdrawals.Count > 0">
+    <div class="mb-1">@T("Withdrawal.WithdrawalAlreadySubmitted")</div>
+    @{
+        await ReturnCases(withdrawals, true);
+    }
+</div>
+<div sm-if="returnCases.Count > 0">
+    <div class="mb-1">@T("ReturnRequests.Products.RequestAlreadyExists")</div>
+    @{
+        await ReturnCases(returnCases, false);
+    }
+</div>

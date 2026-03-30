@@ -85,6 +85,8 @@
                         <span class="pd-subtotal-label">@T("Order.Product(s).Total"):</span>
                         <data asp-for="@item.SubTotal" class="pd-subtotal-amount fwm"></data>
                     </div>
+
+                    <zone name="orderdetails_page_after_item_data" model="item.Id" />
                 </div>
             </div>
         </div>

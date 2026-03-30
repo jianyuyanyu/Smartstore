@@ -613,17 +613,17 @@ namespace Smartstore.Web.Controllers
                     {
                         Id = returnCase.Id,
                         Kind = returnCase.Kind,
-                        ReturnCaseStatus = returnCase.ReturnCaseStatus.GetLocalizedEnum(language.Id),
+                        ReturnCaseStatusStr = returnCase.ReturnCaseStatus.GetLocalizedEnum(language.Id),
+                        Quantity = returnCase.Quantity,
+                        OrderItemId = returnCase.OrderItemId,
+                        RequestedAction = returnCase.RequestedAction,
+                        ReasonForReturn = returnCase.ReasonForReturn,
+                        CustomerComments = returnCase.CustomerComments,
+                        CreatedOn = _dateTimeHelper.ConvertToUserTime(returnCase.CreatedOnUtc, DateTimeKind.Utc),
                         ProductId = orderItem.Product.Id,
                         ProductName = orderItem.Product.GetLocalized(x => x.Name),
                         ProductSeName = seName,
-                        ProductUrl = await _productUrlHelper.GetProductUrlAsync(seName, orderItem),
-                        Quantity = returnCase.Quantity,
-                        OrderItemId = returnCase.OrderItemId,
-                        ReturnAction = returnCase.RequestedAction,
-                        ReturnReason = returnCase.ReasonForReturn,
-                        Comments = returnCase.CustomerComments,
-                        CreatedOn = _dateTimeHelper.ConvertToUserTime(returnCase.CreatedOnUtc, DateTimeKind.Utc)
+                        ProductUrl = await _productUrlHelper.GetProductUrlAsync(seName, orderItem)
                     });
                 }
             }

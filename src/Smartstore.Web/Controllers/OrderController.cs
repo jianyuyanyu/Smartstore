@@ -57,7 +57,7 @@ namespace Smartstore.Web.Controllers
             // Include deleted products but do not load a deleted order.
             var order = await _db.Orders
                 .AsNoTracking()
-                .IncludeCustomer()
+                .IncludeCustomer(false, true)
                 .IgnoreQueryFilters()
                 .IncludeBillingAddress()
                 .IncludeOrderItems()

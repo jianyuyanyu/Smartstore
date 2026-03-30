@@ -53,8 +53,11 @@ public static class OrderQueryExtensions
     /// <summary>
     /// Includes the customer graph for eager loading.
     /// </summary>
+    /// <param name="includeRewardPoints">A value indicating whether to include redeemed reward points and customer's reward points history.</param>
+    /// <param name="includeReturnCases">A value indicating whether to include customer's return cases.</param>
     public static IIncludableQueryable<Order, CustomerRole> IncludeCustomer(this IQueryable<Order> query,
-        bool includeRewardPoints = false)
+        bool includeRewardPoints = false,
+        bool includeReturnCases = false)
     {
         Guard.NotNull(query);
 
@@ -63,6 +66,11 @@ public static class OrderQueryExtensions
             query = query
                 .Include(x => x.RedeemedRewardPointsEntry)
                 .Include(x => x.Customer.RewardPointsHistory);
+        }
+
+        if (includeReturnCases)
+        {
+            query = query.Include(x => x.Customer.ReturnCases);
         }
 
         return query

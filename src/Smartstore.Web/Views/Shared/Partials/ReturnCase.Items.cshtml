@@ -9,27 +9,6 @@
     var isEditable = Model.IsEditable;
     var hasItemsToReturn = Model.HasItemsToReturn;
     var hasSingleItemToReturn = Model.HasSingleItemToReturn;
-    var withdrawal = ViewBag.Withdrawal == true;
-
-    async Task ReturnCases(List<CustomerReturnCaseModel> returnCases, bool isWithdrawal)
-    {
-        foreach (var rr in returnCases)
-        {
-            <dl class="row mb-0">
-                <dt class="col-sm-3">@T("ReturnRequests.Products.Quantity")</dt>
-                <dd class="col-sm-9 mb-0">@rr.Quantity.ToString("N0")</dd>
-                @if(!isWithdrawal)
-                {
-                    <dt class="col-sm-3">@T("Common.Status")</dt>
-                    <dd class="col-sm-9 mb-0">@rr.ReturnCaseStatus</dd>
-                }
-                <dt class="col-sm-3">@T("Account.CustomerReturnRequests.Date")</dt>
-                <dd class="col-sm-9 mb-0">
-                    <time asp-for="@rr.CreatedOn" sm-format="f"></time>
-                </dd>
-            </dl>
-        }
-    }
 }
 
 @if (isEditable)
@@ -77,9 +56,6 @@ else
             }
             var quantityId = $"orderitem-quantity{item.Id}";
             var maxQuantity = item.MaxReturnQuantity;
-            var canReturnItem = maxQuantity > 0;
-            var returnCases = item.ReturnCases.Where(x => x.Kind == ReturnCaseKind.Return).ToList();
-            var withdrawals = item.ReturnCases.Where(x => x.Kind == ReturnCaseKind.Withdrawal).ToList();
             var hasWarning = item.Warning.HasValue();
             <div class="cart-row return-item">
                 <div class="row">
@@ -87,7 +63,7 @@ else
                         <input name="orderitem-select@(item.Id)"
                                type="checkbox"
                                class="form-check-input select-cart-item-checkbox return-item-checkbox"
-                               attr-class='(!canReturnItem, "invisible")'
+                               attr-class='(!item.CanReturnItem, "invisible")'
                                attr-checked='(returnAll || item.Selected, "checked")'
                                attr-aria-disabled='(returnAll, "true")'
                                attr-disabled='(returnAll, "disabled")' />
@@ -117,23 +93,13 @@ else
                         </div>
                         <div class="cart-item-qty pd-muted">
                             <span>@T("Order.Product(s).OrderedQuantity"):</span> <span>@item.Quantity.ToString("N0") @item.QuantityUnit</span>
-                            <button sm-if="isEditable && canReturnItem && withdrawal && maxQuantity > 0" 
-                                    type="submit" 
-                                    name="orderitem-withdraw" 
-                                    value="@item.Id" 
-                                    class="btn btn-secondary btn-icon btn-sm btn-withdraw ml-2"
-                                    title="@T("Withdrawal.WithdrawItemOnly")"
-                                    aria-describedby="withdraw-item-only"
-                                    attr-class='(returnAll, "invisible")'>
-                                <i class="fa fa-reply-all" aria-hidden="true"></i>
-                            </button>
                         </div>
                         <div class="cart-item-return-qty mt-2">
                             @if (!isEditable)
                             {
                                 <span>@T("ReturnRequests.Products.Quantity"):</span> <span>@item.SelectedReturnQuantity.ToString("N0")</span>
                             }
-                            else if (maxQuantity > 0 && canReturnItem)
+                            else if (item.CanReturnItem)
                             {
                                 var qtyDisabled = returnAll || (!returnAll && !item.Selected);
                                 <label for="@quantityId" class="mr-2">@T("ReturnRequests.Products.Quantity"):</label>
@@ -152,19 +118,12 @@ else
                                 </select>
                             }
 
-                            <div sm-if="isEditable && (hasWarning || returnCases.Count > 0 || withdrawals.Count > 0)" 
+                            <div sm-if="isEditable && (hasWarning || item.ReturnCases.Count > 0)" 
                                 class="alert alert-info small mt-2 mb-0" 
                                 role="status" 
                                 aria-live="polite">
                                 <div sm-if="hasWarning">@Html.Raw(item.Warning)</div>
-                                <div sm-if="withdrawals.Count > 0">
-                                    <p>@T("Withdrawal.WithdrawalAlreadySubmitted")</p>
-                                    @{ await ReturnCases(withdrawals, true); }
-                                </div>
-                                <div sm-if="returnCases.Count > 0">
-                                    <p>@T("ReturnRequests.Products.RequestAlreadyExists")</p>
-                                    @{ await ReturnCases(returnCases, false); }
-                                </div>
+                                <partial name="ReturnCase.Infos" model="item.ReturnCases" />
                             </div>
                         </div>
                     </div>
@@ -173,7 +132,6 @@ else
         }
     </div>
 </div>
-<div sm-if="withdrawal" id="withdraw-item-only" class="sr-only">@T("Withdrawal.WithdrawItemOnly")</div>
 
 @if(!isEditable)
 {
@@ -197,9 +155,6 @@ else
                 .each((_, el) => {
                     $(el).val(returnAll ? $(el).data('max-quantity') : 0);
                 });
-
-            $elContainer.find('.btn-withdraw')
-                .toggleClass('invisible', returnAll);
         });
 
         $('.return-item-checkbox').on('change', (e) => {

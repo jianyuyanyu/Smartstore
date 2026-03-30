@@ -11,7 +11,6 @@ using Smartstore.Core.Content.Media;
 using Smartstore.Core.Localization;
 using Smartstore.Core.Seo;
 using Smartstore.Utilities.Html;
-using Smartstore.Web.Models.Customers;
 
 namespace Smartstore.Web.Models.Orders;
 
@@ -29,6 +28,30 @@ public static partial class ReturnCaseMappingExtensions
         await MapperFactory.MapAsync<Order, ReturnCaseItemsModel>(order, model, parameters);
 
         return model;
+    }
+
+    public static async Task<ReturnCaseModel> MapAsync(this ReturnCase returnCase)
+    {
+        var model = new ReturnCaseModel();
+        await MapperFactory.MapAsync(returnCase, model);
+        return model;
+    }
+
+    public static async Task<List<ReturnCaseModel>> MapAsync(this IEnumerable<ReturnCase> returnCases)
+    {
+        Guard.NotNull(returnCases);
+
+        var mapper = MapperFactory.GetMapper<ReturnCase, ReturnCaseModel>();
+        var models = await returnCases
+            .SelectAwait(async x =>
+            {
+                var model = new ReturnCaseModel();
+                await mapper.MapAsync(x, model);
+                return model;
+            })
+            .ToListAsync();
+
+        return models;
     }
 }
 
@@ -97,7 +120,7 @@ internal class ReturnCaseItemsMapper : IMapper<Order, ReturnCaseItemsModel>
         {
             var productSeName = await oi.Product.GetActiveSlugAsync();
             var returnCases = allReturnCases.TryGetValues(oi.Id, out var tmp) ? tmp.ToList() : [];
-            var item = new ReturnCaseItemsModel.ItemModel
+            var item = new ReturnCaseItemsModel.ReturnCaseItemModel
             {
                 Id = oi.Id,
                 ProductId = oi.Product.Id,
@@ -107,17 +130,7 @@ internal class ReturnCaseItemsMapper : IMapper<Order, ReturnCaseItemsModel>
                 AttributeInfo = HtmlUtility.FormatPlainText(HtmlUtility.ConvertHtmlToPlainText(oi.AttributeDescription)),
                 Quantity = oi.Quantity,
                 MaxReturnQuantity = Math.Max(oi.Quantity - returnCases.Sum(x => x.Quantity), 0),
-                ReturnCases = returnCases
-                    .Select(x => new CustomerReturnCaseModel
-                    {
-                        Id = x.Id,
-                        Kind = x.Kind,
-                        Quantity = x.Quantity,
-                        OrderItemId = x.OrderItemId,
-                        ReturnCaseStatus = x.ReturnCaseStatus.GetLocalizedEnum(language.Id),
-                        CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc)
-                    })
-                    .ToList(),
+                ReturnCases = await returnCases.MapAsync(),
                 UnitPrice = _currencyService.ConvertToExchangeRate(
                     excludingTax ? oi.UnitPriceExclTax : oi.UnitPriceInclTax,
                     from.CurrencyRate,
@@ -149,6 +162,7 @@ internal class ReturnCaseItemsMapper : IMapper<Order, ReturnCaseItemsModel>
             && to.Items[0].MaxReturnQuantity == 1;
         if (to.HasSingleItemToReturn)
         {
+            // Force "ReturnAllItems" if there's only a single item to return.
             to.ReturnAllItems = true;
         }
     }

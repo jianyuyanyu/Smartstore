@@ -54,14 +54,14 @@ namespace Smartstore.Web.Controllers
                 return RedirectToRoute("Homepage");
             }
 
-            var model = new ReturnCaseModel();
+            var model = new AddReturnCaseModel();
             await PrepareReturnCaseModel(model, order);
 
             return View(model);
         }
 
         [HttpPost, ActionName("ReturnCase")]
-        public async Task<IActionResult> ReturnCaseSubmit(int id /* orderId */, ReturnCaseModel model)
+        public async Task<IActionResult> ReturnCaseSubmit(int id /* orderId */, AddReturnCaseModel model)
         {
             var form = Request.Form;
             var order = await _db.Orders
@@ -149,7 +149,7 @@ namespace Smartstore.Web.Controllers
             return View(model);
         }
 
-        private async Task PrepareReturnCaseModel(ReturnCaseModel model, Order order)
+        private async Task PrepareReturnCaseModel(AddReturnCaseModel model, Order order)
         {
             Guard.NotNull(order);
             Guard.NotNull(model);

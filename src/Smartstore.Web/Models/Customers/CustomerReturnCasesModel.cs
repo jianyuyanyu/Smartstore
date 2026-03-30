@@ -1,5 +1,5 @@
-﻿using Smartstore.Core.Checkout.Orders;
-using Smartstore.Core.Localization;
+﻿using Smartstore.Core.Localization;
+using Smartstore.Web.Models.Orders;
 
 namespace Smartstore.Web.Models.Customers
 {
@@ -8,20 +8,11 @@ namespace Smartstore.Web.Models.Customers
         public List<CustomerReturnCaseModel> ReturnCases { get; set; } = [];
     }
 
-    public partial class CustomerReturnCaseModel : EntityModelBase
+    public partial class CustomerReturnCaseModel : ReturnCaseModel
     {
-        public ReturnCaseKind Kind { get; set; }
-        public string ReturnCaseStatus { get; set; }
         public int ProductId { get; set; }
         public LocalizedValue<string> ProductName { get; set; }
         public string ProductSeName { get; set; }
         public string ProductUrl { get; set; }
-        public int Quantity { get; set; }
-        public int OrderItemId { get; set; }
-        public DateTime CreatedOn { get; set; }
-
-        public string ReturnReason { get; set; }
-        public string ReturnAction { get; set; }
-        public string Comments { get; set; }
     }
 }

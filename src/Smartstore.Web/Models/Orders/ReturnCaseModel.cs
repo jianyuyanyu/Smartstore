@@ -1,63 +1,46 @@
-﻿using System.Runtime.Serialization;
+﻿using Smartstore.ComponentModel;
+using Smartstore.Core.Checkout.Orders;
+using Smartstore.Core.Common.Services;
 using Smartstore.Core.Localization;
-using Smartstore.Web.Models.Customers;
-using Smartstore.Web.Models.Media;
 
-namespace Smartstore.Web.Models.Orders
+
+namespace Smartstore.Web.Models.Orders;
+
+public partial class ReturnCaseModel : EntityModelBase
 {
-    [LocalizedDisplay("ReturnRequests.")]
-    public partial class ReturnCaseModel : ModelBase
+    public ReturnCaseKind Kind { get; set; }
+    public int Quantity { get; set; }
+    public int OrderItemId { get; set; }
+    public ReturnCaseStatus ReturnCaseStatus { get; set; }
+    public string ReturnCaseStatusStr { get; set; }
+    public string ReasonForReturn { get; set; }
+    public string RequestedAction { get; set; }
+    public string CustomerComments { get; set; }
+    public DateTime CreatedOn { get; set; }
+}
+
+internal class ReturnCaseMapper : IMapper<ReturnCase, ReturnCaseModel>
+{
+    private readonly IDateTimeHelper _dateTimeHelper;
+    private readonly IWorkContext _workContext;
+
+    public ReturnCaseMapper(IDateTimeHelper dateTimeHelper, IWorkContext workContext)
     {
-        public int OrderId { get; set; }
-
-        public ReturnCaseItemsModel Items { get; set; }
-
-        [LocalizedDisplay("*ReturnReason")]
-        public string ReturnReason { get; set; }
-
-        [LocalizedDisplay("*ReturnAction")]
-        public string ReturnAction { get; set; }
-
-        [SanitizeHtml]
-        [LocalizedDisplay("*Comments")]
-        public string Comments { get; set; }
+        _dateTimeHelper = dateTimeHelper;
+        _workContext = workContext;
     }
 
-    public partial class ReturnCaseItemsModel : ModelBase
+    public async Task MapAsync(ReturnCase from, ReturnCaseModel to, dynamic parameters = null)
     {
-        public bool IsEditable { get; set; } = true;
-        public bool ReturnAllItems { get; set; } = true;
-        public string Warning { get; set; }
+        Guard.NotNull(from);
+        Guard.NotNull(to);
 
-        public List<ItemModel> Items { get; set; } = [];
+        var language = _workContext.WorkingLanguage;
 
-        [IgnoreDataMember]
-        public bool HasItemsToReturn
-            => !Items.IsNullOrEmpty() && Items.Any(x => x.MaxReturnQuantity > 0);
+        MiniMapper.Map(from, to);
 
-        [IgnoreDataMember]
-        public bool HasSingleItemToReturn { get; set; }
-
-        public partial class ItemModel : EntityModelBase
-        {
-            public int ProductId { get; set; }
-            public LocalizedValue<string> ProductName { get; set; }
-            public string ProductSeName { get; set; }
-            public string ProductUrl { get; set; }
-            public string AttributeInfo { get; set; }
-            public Money UnitPrice { get; set; }
-            public int Quantity { get; set; }
-            public string QuantityUnit { get; set; }
-
-            public ImageModel Image { get; set; }
-            public string Warning { get; set; }
-
-            public bool Selected { get; set; }
-            public int SelectedReturnQuantity { get; set; }
-
-            public int MaxReturnQuantity { get; set; }
-
-            public List<CustomerReturnCaseModel> ReturnCases { get; set; }
-        }
+        to.ReturnCaseStatusStr = from.ReturnCaseStatus.GetLocalizedEnum(language.Id);
+        to.CreatedOn = _dateTimeHelper.ConvertToUserTime(from.CreatedOnUtc, DateTimeKind.Utc);
     }
 }
+
