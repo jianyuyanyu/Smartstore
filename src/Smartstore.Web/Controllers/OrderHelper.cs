@@ -315,7 +315,11 @@ namespace Smartstore.Web.Controllers
             var customerCurrency = context?.Currencies?.Get(o.CustomerCurrencyCode) ??
                 await _db.Currencies.AsNoTracking().FirstOrDefaultAsync(x => x.CurrencyCode == o.CustomerCurrencyCode);
 
-            await _db.LoadReferenceAsync(o, x => x.Customer, false, q => q.Include(x => x.CustomerRoleMappings)
+            await _db.LoadCollectionAsync(o, x => x.OrderItems, false, q => q.Include(x => x.Product));
+
+            await _db.LoadReferenceAsync(o, x => x.Customer, false, q => q
+                .Include(x => x.ReturnCases)
+                .Include(x => x.CustomerRoleMappings)
                 .ThenInclude(x => x.CustomerRole));
 
             var model = new OrderDetailsModel
@@ -329,7 +333,7 @@ namespace Smartstore.Web.Controllers
                 CreatedOn = dtHelper.ConvertToUserTime(o.CreatedOnUtc, DateTimeKind.Utc),
                 OrderStatus = _services.Localization.GetLocalizedEnum(o.OrderStatus),
                 IsReOrderAllowed = orderSettings.IsReOrderAllowed,
-                CanReturnItems = _orderProcessingService.CanReturnItems(o),
+                CanReturnItems = _orderProcessingService.CanReturnItems(o) && o.OrderItems.Any(x => x.GetMaxReturnQuantity() > 0),
                 DisplayPdfInvoice = pdfSettings.Enabled,
                 RenderOrderNotes = pdfSettings.RenderOrderNotes,
                 ShippingStatus = _services.Localization.GetLocalizedEnum(o.ShippingStatus),
@@ -580,8 +584,6 @@ namespace Smartstore.Web.Controllers
             model.ShowProductImages = shoppingCartSettings.ShowProductImagesOnShoppingCart;
             model.ShowProductBundleImages = shoppingCartSettings.ShowProductBundleImagesOnShoppingCart;
             model.BundleThumbSize = mediaSettings.CartThumbBundleItemPictureSize;
-
-            await _db.LoadCollectionAsync(o, x => x.OrderItems, false, q => q.Include(x => x.Product));
 
             foreach (var orderItem in o.OrderItems)
             {

@@ -1,12 +1,14 @@
 ﻿@using Smartstore.Web.Models.Customers
 @using Smartstore.Utilities.Html
+@using Smartstore.Core.Checkout.Orders
 
 @model CustomerReturnCasesModel
 
 @{
+    Layout = "_MyAccount";
+
     Assets.AppendTitleParts(T("PageTitle.Account"));
 
-    Layout = "_MyAccount";
     ViewBag.PageClassToken = "returncases";
     ViewBag.PageTitle = T("Account.CustomerReturnRequests").Value;
 }
@@ -14,11 +16,19 @@
 <ul class="return-cases-grid list-unstyled" aria-labelledby="myaccount-header">
     @foreach (var item in Model.ReturnCases)
     {
+        var isWithdrawal = item.Kind == ReturnCaseKind.Withdrawal;
         <li class="returncase-item mb-3" aria-labelledby="returncase-title@(item.Id)">
             <div class="card shadow-sm">
                 <div class="card-body">
                     <div id="returncase-title@(item.Id)" class="card-title h4 mb-4">
-                        @T("Account.CustomerReturnRequests.Title", item.Id, item.ReturnCaseStatusStr)
+                        @if (isWithdrawal)
+                        {
+                            @T("Account.Withdrawal.Title", item.Id)
+                        }
+                        else
+                        {
+                            @T("Account.CustomerReturnRequests.Title", item.Id, item.ReturnCaseStatusStr)
+                        }
                     </div>
                     <dl class="row mb-0" role="presentation">
                         <dt class="col-sm-4 fwn text-muted">@T("Account.CustomerReturnRequests.Item")</dt>
@@ -27,10 +37,13 @@
                         </dd>
                         <dt class="col-sm-4 fwn text-muted">@T("ReturnRequests.Products.Quantity")</dt>
                         <dd class="col-sm-8">@item.Quantity</dd>
-                        <dt class="col-sm-4 fwn text-muted">@T("Account.CustomerReturnRequests.Reason")</dt>
-                        <dd class="col-sm-8">@item.ReasonForReturn</dd>
-                        <dt class="col-sm-4 fwn text-muted">@T("Account.CustomerReturnRequests.Action")</dt>
-                        <dd class="col-sm-8">@item.RequestedAction</dd>
+                        @if (!isWithdrawal)
+                        {
+                            <dt class="col-sm-4 fwn text-muted">@T("Account.CustomerReturnRequests.Reason")</dt>
+                            <dd class="col-sm-8">@item.ReasonForReturn</dd>
+                            <dt class="col-sm-4 fwn text-muted">@T("Account.CustomerReturnRequests.Action")</dt>
+                            <dd class="col-sm-8">@item.RequestedAction</dd>
+                        }
                         <dt class="col-sm-4 fwn text-muted">@T("Account.CustomerReturnRequests.Date")</dt>
                         <dd class="col-sm-8">
                             <time asp-for="@item.CreatedOn" sm-format="f"></time>

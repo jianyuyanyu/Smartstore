@@ -99,11 +99,16 @@ internal class Withdrawal : Migration, ILocaleResourcesProvider, IDataSeeder<Sma
         builder.AddOrUpdate("Enums.ReturnCaseKind.Withdrawal", "Withdrawal", "Wiederruf");
 
         builder.AddOrUpdate("Common.Type", "Type", "Typ");
+        builder.AddOrUpdate("Account.CustomerReturnRequests", "Withdrawals and Returns", "Wiederrufe und Retouren");
         builder.AddOrUpdate("Admin.ReturnRequests", "Withdrawals and Returns", "Wiederrufe und Retouren");
 
         builder.AddOrUpdate("ReturnRequests.Products.RequestAlreadyExists",
             "Return requests for this item already exist.",
             "Für diesen Artikel liegen bereits Retourenanträge vor.");
+
+        builder.AddOrUpdate("Account.CustomerReturnRequests.Title")
+            .Value("de", "Retoure #{0} - {1}");
+        builder.AddOrUpdate("Account.Withdrawal.Title", "Withdrawal #{0}", "Widerruf #{0}");
 
         builder.AddOrUpdate("Admin.ReturnRequests.EditReturnRequestDetails", "Edit return", "Retoure bearbeiten");
         builder.AddOrUpdate("Admin.Withdrawal.EditWithdrawal", "Edit withdrawal", "Widerruf bearbeiten");

@@ -65,9 +65,8 @@ namespace Smartstore.Web.Controllers
         {
             var form = Request.Form;
             var order = await _db.Orders
-                .IncludeCustomer()
+                .IncludeCustomer(false, true)
                 .IncludeOrderItems()
-                .Include(x => x.Customer.ReturnCases)
                 .FindByIdAsync(id);
 
             if (order == null)
@@ -88,10 +87,6 @@ namespace Smartstore.Web.Controllers
             var items = order.OrderItems
                 .Select(oi =>
                 {
-                    var existingQuantity = order.Customer.ReturnCases
-                        .Where(x => x.OrderItemId == oi.Id)
-                        .Sum(x => x.Quantity);
-
                     var quantity = 0;
                     if (model.Items.ReturnAllItems)
                     {
@@ -102,7 +97,10 @@ namespace Smartstore.Web.Controllers
                         quantity = form.TryGetValue($"orderitem-quantity{oi.Id}", out var qtyVal) ? qtyVal.ToString().ToInt() : 0;
                     }
 
-                    quantity = Math.Max(quantity - existingQuantity, 0);
+                    if (quantity > 0)
+                    {
+                        quantity = oi.GetMaxReturnQuantity(quantity);
+                    }
                     if (quantity == 0)
                     {
                         return null;

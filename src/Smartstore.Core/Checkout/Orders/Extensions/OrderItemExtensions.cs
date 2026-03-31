@@ -18,7 +18,7 @@ public static partial class OrderItemExtensions
             return data;
         }
 
-        return new List<ProductBundleItemOrderData>();
+        return [];
     }
 
     /// <summary>
@@ -36,5 +36,26 @@ public static partial class OrderItemExtensions
         }
 
         orderItem.BundleData = rawData;
+    }
+
+    /// <summary>
+    /// Gets the maximum quantity that can be returned for a given order item,
+    /// taking into account any existing return cases for the item.
+    /// </summary>
+    /// <param name="quantity">Desired return quantity. <c>null</c> to use the quantity of the order item.</param>
+    public static int GetMaxReturnQuantity(this OrderItem orderItem, int? quantity = null)
+    {
+        if (quantity <= 0)
+        {
+            return 0;
+        }
+
+        var returnCases = Guard.NotNull(orderItem?.Order?.Customer?.ReturnCases);
+
+        var existingQuantity = returnCases
+            .Where(x => x.OrderItemId == orderItem.Id)
+            .Sum(x => x.Quantity);
+
+        return Math.Max((quantity ?? orderItem.Quantity) - existingQuantity, 0);
     }
 }
