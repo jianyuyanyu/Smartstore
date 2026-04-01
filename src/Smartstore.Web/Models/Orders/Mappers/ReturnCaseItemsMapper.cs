@@ -30,28 +30,15 @@ public static partial class ReturnCaseMappingExtensions
         return model;
     }
 
-    public static async Task<ReturnCaseModel> MapAsync(this ReturnCase returnCase)
+    public static async Task<ReturnCaseModel> MapAsync(this ReturnCase returnCase,
+        OrderItem orderItem = null)
     {
+        dynamic parameters = new ExpandoObject();
+        parameters.OrderItem = orderItem;
+
         var model = new ReturnCaseModel();
-        await MapperFactory.MapAsync(returnCase, model);
+        await MapperFactory.MapAsync<ReturnCase, ReturnCaseModel>(returnCase, model, parameters);
         return model;
-    }
-
-    public static async Task<List<ReturnCaseModel>> MapAsync(this IEnumerable<ReturnCase> returnCases)
-    {
-        Guard.NotNull(returnCases);
-
-        var mapper = MapperFactory.GetMapper<ReturnCase, ReturnCaseModel>();
-        var models = await returnCases
-            .SelectAwait(async x =>
-            {
-                var model = new ReturnCaseModel();
-                await mapper.MapAsync(x, model);
-                return model;
-            })
-            .ToListAsync();
-
-        return models;
     }
 }
 
@@ -130,7 +117,9 @@ internal class ReturnCaseItemsMapper : IMapper<Order, ReturnCaseItemsModel>
                 AttributeInfo = HtmlUtility.FormatPlainText(HtmlUtility.ConvertHtmlToPlainText(oi.AttributeDescription)),
                 Quantity = oi.Quantity,
                 MaxReturnQuantity = Math.Max(oi.Quantity - returnCases.Sum(x => x.Quantity), 0),
-                ReturnCases = await returnCases.MapAsync(),
+                ReturnCases = await returnCases
+                    .SelectAwait(async x => await x.MapAsync(oi))
+                    .ToListAsync(),
                 UnitPrice = _currencyService.ConvertToExchangeRate(
                     excludingTax ? oi.UnitPriceExclTax : oi.UnitPriceInclTax,
                     from.CurrencyRate,

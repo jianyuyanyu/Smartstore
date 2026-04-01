@@ -69,13 +69,12 @@ internal class Withdrawal : Migration, ILocaleResourcesProvider, IDataSeeder<Sma
 
     public void MigrateLocaleResources(LocaleResourcesBuilder builder)
     {
+        builder.AddOrUpdate("Common.Type", "Type", "Typ");
+
         builder.Delete(
             "Admin.ReturnRequests.Fields.CreatedOn.Hint",
-            "Admin.ReturnRequests.Fields.Status.Hint");
-
-        builder.AddOrUpdate("Withdrawal.WithdrawalAlreadySubmitted",
-            "A withdrawal request has already been submitted for this item.",
-            "Für diesen Artikel wurde bereits ein Widerruf eingereicht.");
+            "Admin.ReturnRequests.Fields.Status.Hint",
+            "Account.CustomerReturnRequests.Title");
 
         builder.AddOrUpdate("Admin.Catalog.Products.Fields.WithdrawalPeriodDays",
             "Withdrawal period (in days)",
@@ -96,22 +95,47 @@ internal class Withdrawal : Migration, ILocaleResourcesProvider, IDataSeeder<Sma
             + " widerrufen werden kann. Diese Einstellung ist nur wirksam, wenn das Vertragswiderrufs-Plugin verwendet wird.");
 
         builder.AddOrUpdate("Enums.ReturnCaseKind.Return", "Return", "Retoure");
-        builder.AddOrUpdate("Enums.ReturnCaseKind.Withdrawal", "Withdrawal", "Wiederruf");
+        builder.AddOrUpdate("Enums.ReturnCaseKind.Withdrawal", "Withdrawal", "Widerruf");
 
-        builder.AddOrUpdate("Common.Type", "Type", "Typ");
-        builder.AddOrUpdate("Account.CustomerReturnRequests", "Withdrawals and Returns", "Wiederrufe und Retouren");
-        builder.AddOrUpdate("Admin.ReturnRequests", "Withdrawals and Returns", "Wiederrufe und Retouren");
+        builder.AddOrUpdate("ReturnCase.WithdrawalAlreadySubmitted",
+            "A withdrawal request has already been submitted for this item.",
+            "Für diesen Artikel wurde bereits ein Widerruf eingereicht.");
+
+        builder.AddOrUpdate("ReturnCase.Case", "Case #{0}", "Fall #{0}");
+        builder.AddOrUpdate("ReturnCase.NextStep", "Next step", "Nächster Schritt");
+        builder.AddOrUpdate("ReturnCase.WithdrawalQuantity", "Withdrawal quantity", "Widerrufsmenge");
+        builder.AddOrUpdate("ReturnCase.WithdrawalSubmitted", "withdrawal has been submitted", "Widerruf wurde übermittelt");
+        builder.AddOrUpdate("ReturnCase.ReviewWithdrawal", "We are reviewing your withdrawal", "Wir prüfen Ihren Widerruf.");
+        builder.AddOrUpdate("ReturnCase.Open", "Open", "Offen");
+        builder.AddOrUpdate("ReturnCase.Complete", "Complete", "Abgeschlossen");
+
+        builder.AddOrUpdate("ReturnCase.Status.Pending", "We are reviewing your return request.", "Wir prüfen Ihren Retourenantrag.");
+        builder.AddOrUpdate("ReturnCase.Status.Received", "We are processing your return request.", "Wir bearbeiten Ihren Retourenantrag.");
+        builder.AddOrUpdate("ReturnCase.Status.ReturnAuthorized", "Please return the item(s) to us.", "Bitte senden Sie den/die Artikel an uns zurück.");
+        builder.AddOrUpdate("ReturnCase.Status.ItemsRepaired", "We will send the repaired item(s) back to you.", "Wir senden Ihnen den/die reparierten Artikel zurück.");
+        builder.AddOrUpdate("ReturnCase.Status.ItemsRefunded", "The refund has been processed.", "Die Gutschrift wurde veranlasst.");
+        builder.AddOrUpdate("ReturnCase.Status.RequestRejected", "The return request was denied.", "Der Retourenantrag wurde abgelehnt.");
+        builder.AddOrUpdate("ReturnCase.Status.Cancelled", "The return request has been canceled.", "Der Retourenantrag wurde storniert.");
+
+
+        // Renaming, typos, fixes.
+        builder.AddOrUpdate("Products.Details", "Product details", "Produktdetails");
+        builder.AddOrUpdate("Account.CustomerReturnRequests", "Withdrawals and Returns", "Widerrufe und Retouren");
+        builder.AddOrUpdate("Admin.ReturnRequests", "Withdrawals and Returns", "Widerrufe und Retouren");
+
+        builder.AddOrUpdate("Enums.ReturnRequestStatus.RequestRejected")
+            .Value("de", "Antrag abgewiesen");
+        builder.AddOrUpdate("Enums.ReturnRequestStatus.ReturnAuthorized")
+            .Value("de", "Retoure genehmigt");
 
         builder.AddOrUpdate("ReturnRequests.Products.RequestAlreadyExists",
             "Return requests for this item already exist.",
             "Für diesen Artikel liegen bereits Retourenanträge vor.");
 
-        builder.AddOrUpdate("Account.CustomerReturnRequests.Title")
-            .Value("de", "Retoure #{0} - {1}");
-        builder.AddOrUpdate("Account.Withdrawal.Title", "Withdrawal #{0}", "Widerruf #{0}");
-
         builder.AddOrUpdate("Admin.ReturnRequests.EditReturnRequestDetails", "Edit return", "Retoure bearbeiten");
         builder.AddOrUpdate("Admin.Withdrawal.EditWithdrawal", "Edit withdrawal", "Widerruf bearbeiten");
+
+        builder.AddOrUpdate("Account.CustomerReturnRequests.Date", "Requested on", "Angefragt am");
 
         builder.AddOrUpdate("Admin.ReturnRequests.Fields.ID",
             "ID",
@@ -119,7 +143,6 @@ internal class Withdrawal : Migration, ILocaleResourcesProvider, IDataSeeder<Sma
             "Return item ID",
             "ID des Retourenartikels");
 
-        // Typo.
         builder.AddOrUpdate("Admin.ReturnRequests.Fields.Quantity.Hint",
             "Number of items to be returned",
             "Anzahl der zurückzusendenden Artikel");

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Smartstore.Admin.Models.Customers;
+using Smartstore.Admin.Models.Orders;
 using Smartstore.ComponentModel;
 using Smartstore.Core.Catalog.Products;
 using Smartstore.Core.Checkout.Cart;
@@ -24,6 +25,7 @@ using Smartstore.IO;
 using Smartstore.Utilities;
 using Smartstore.Web.Models.Common;
 using Smartstore.Web.Models.Customers;
+using Smartstore.Web.Models.Orders;
 using Smartstore.Web.Rendering;
 
 namespace Smartstore.Web.Controllers
@@ -55,7 +57,6 @@ namespace Smartstore.Web.Controllers
         private readonly LocalizationSettings _localizationSettings;
         private readonly OrderSettings _orderSettings;
         private readonly RewardPointsSettings _rewardPointsSettings;
-        private readonly MediaSettings _mediaSettings;
         private readonly ShoppingCartSettings _shoppingCartSettings;
 
         public CustomerController(
@@ -84,7 +85,6 @@ namespace Smartstore.Web.Controllers
             LocalizationSettings localizationSettings,
             OrderSettings orderSettings,
             RewardPointsSettings rewardPointsSettings,
-            MediaSettings mediaSettings,
             ShoppingCartSettings shoppingCartSettings)
         {
             _db = db;
@@ -112,7 +112,6 @@ namespace Smartstore.Web.Controllers
             _localizationSettings = localizationSettings;
             _orderSettings = orderSettings;
             _rewardPointsSettings = rewardPointsSettings;
-            _mediaSettings = mediaSettings;
             _shoppingCartSettings = shoppingCartSettings;
         }
 
@@ -585,7 +584,7 @@ namespace Smartstore.Web.Controllers
 
         #region Return cases
 
-        public async Task<IActionResult> ReturnCases()
+        public async Task<IActionResult> ReturnCases(int? page)
         {
             var customer = Services.WorkContext.CurrentCustomer;
             if (!customer.IsRegistered())
@@ -593,40 +592,50 @@ namespace Smartstore.Web.Controllers
                 return ChallengeOrForbid();
             }
 
+            var store = Services.StoreContext.CurrentStore;
             var language = Services.WorkContext.WorkingLanguage;
-            var model = new CustomerReturnCasesModel();
+            var pageIndex = Math.Max((page ?? 0) - 1, 0);
             var returnCases = await _db.ReturnCases
                 .AsNoTracking()
-                .ApplyStandardFilter(storeId: Services.StoreContext.CurrentStore.Id, customerId: customer.Id)
+                .ApplyStandardFilter(null, customer.Id, store.Id)
+                .ToPagedList(pageIndex, _orderSettings.ReturnCaseListPageSize)
+                .LoadAsync();
+
+            var orderItemIds = returnCases.ToDistinctArray(x => x.OrderItemId);
+            var orderItems = await _db.OrderItems
+                .AsNoTracking()
+                .Include(x => x.Product)
+                .Include(x => x.Order)
+                .Where(x => orderItemIds.Contains(x.Id))
+                .ToDictionaryAsync(x => x.Id, x => x);
+
+            var returnCaseModels = await returnCases
+                .SelectAwait(async x =>
+                {
+                    if (orderItems.TryGetValue(x.OrderItemId, out var orderItem))
+                    {
+                        var seName = await orderItem.Product.GetActiveSlugAsync();
+                        var m = new CustomerReturnCaseModel
+                        {
+                            ProductId = orderItem.Product.Id,
+                            ProductName = orderItem.Product.GetLocalized(x => x.Name),
+                            ProductSeName = seName,
+                            ProductUrl = await _productUrlHelper.GetProductUrlAsync(seName, orderItem),
+                            ReturnCase = await x.MapAsync(orderItem)
+                        };
+
+                        return m;
+                    }
+
+                    return null;
+                })
+                .Where(x => x != null)
                 .ToListAsync();
 
-            foreach (var returnCase in returnCases)
+            var model = new CustomerReturnCasesModel
             {
-                var orderItem = await _db.OrderItems
-                    .Include(x => x.Product)
-                    .FindByIdAsync(returnCase.OrderItemId, false);
-                if (orderItem != null)
-                {
-                    var seName = await orderItem.Product.GetActiveSlugAsync();
-
-                    model.ReturnCases.Add(new()
-                    {
-                        Id = returnCase.Id,
-                        Kind = returnCase.Kind,
-                        ReturnCaseStatusStr = returnCase.ReturnCaseStatus.GetLocalizedEnum(language.Id),
-                        Quantity = returnCase.Quantity,
-                        OrderItemId = returnCase.OrderItemId,
-                        RequestedAction = returnCase.RequestedAction,
-                        ReasonForReturn = returnCase.ReasonForReturn,
-                        CustomerComments = returnCase.CustomerComments,
-                        CreatedOn = _dateTimeHelper.ConvertToUserTime(returnCase.CreatedOnUtc, DateTimeKind.Utc),
-                        ProductId = orderItem.Product.Id,
-                        ProductName = orderItem.Product.GetLocalized(x => x.Name),
-                        ProductSeName = seName,
-                        ProductUrl = await _productUrlHelper.GetProductUrlAsync(seName, orderItem)
-                    });
-                }
-            }
+                ReturnCases = returnCaseModels.ToPagedList(returnCases.PageIndex, returnCases.PageSize, returnCases.TotalCount)
+            };
 
             return View(model);
         }

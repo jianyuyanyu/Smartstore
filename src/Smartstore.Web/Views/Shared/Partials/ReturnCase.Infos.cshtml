@@ -18,7 +18,7 @@
         foreach (var rr in returnCases)
         {
             <dl class="row mb-0">
-                <dt class="col-sm-3">@T("ReturnRequests.Products.Quantity")</dt>
+                <dt class="col-sm-3">@T(isWithdrawal ? "ReturnCase.WithdrawalQuantity" : "ReturnRequests.Products.Quantity")</dt>
                 <dd class="col-sm-9 mb-0">@rr.Quantity.ToString("N0")</dd>
                 @if (!isWithdrawal)
                 {
@@ -27,7 +27,7 @@
                 }
                 <dt class="col-sm-3">@T("Account.CustomerReturnRequests.Date")</dt>
                 <dd class="col-sm-9 mb-0">
-                    <time asp-for="@rr.CreatedOn" sm-format="f"></time>
+                    <time asp-for="@rr.CreatedOn" sm-format="g"></time>
                 </dd>
             </dl>
         }
@@ -35,7 +35,7 @@
 }
 
 <div sm-if="withdrawals.Count > 0">
-    <div class="mb-1">@T("Withdrawal.WithdrawalAlreadySubmitted")</div>
+    <div class="mb-1">@T("ReturnCase.WithdrawalAlreadySubmitted")</div>
     @{
         await ReturnCases(withdrawals, true);
     }

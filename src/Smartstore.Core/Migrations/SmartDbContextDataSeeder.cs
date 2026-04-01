@@ -25,35 +25,6 @@ namespace Smartstore.Core.Data.Migrations
 
         public void MigrateLocaleResources(LocaleResourcesBuilder builder)
         {
-            builder.Delete(
-                "Admin.ReturnRequests.Fields.CreatedOn.Hint",
-                "Admin.ReturnRequests.Fields.Status.Hint");
-
-            builder.AddOrUpdate("Admin.ReturnRequests.Fields.ID",
-                "ID",
-                "ID",
-                "Return item ID",
-                "ID des Retourenartikels");
-
-            // Typo.
-            builder.AddOrUpdate("Admin.ReturnRequests.Fields.Quantity.Hint",
-                "Number of items to be returned",
-                "Anzahl der zurückzusendenden Artikel");
-
-            builder.AddOrUpdate("Admin.ReturnRequests.Deleted",
-                "The return item has been deleted",
-                "Der Retourenartikel wurde gelöscht");
-
-            builder.AddOrUpdate("Admin.ReturnRequests.MaxRefundAmount.Hint",
-                "The maximum amount that can be refunded for this item.",
-                "Der maximale Betrag, der für diesen Retourenartikel erstattet werden kann.");
-
-            builder.AddOrUpdate("Admin.ReturnRequests.Updated",
-                "The item has been successfully processed",
-                "Der Retourenartikel wurde erfolgreich bearbeitet");
-
-
-
             builder.AddOrUpdate("Admin.Orders.Products.AppliedDiscounts",
                 "The following discounts were applied to the products: {0}.",
                 "Auf die Produkte wurden die folgenden Rabatte gewährt: {0}.");

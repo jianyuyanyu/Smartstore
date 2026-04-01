@@ -1,4 +1,5 @@
-﻿using Smartstore.Core.Configuration;
+﻿using Smartstore.Core.Catalog.Products;
+using Smartstore.Core.Configuration;
 using Smartstore.Core.Localization;
 
 namespace Smartstore.Core.Checkout.Orders
@@ -88,6 +89,11 @@ namespace Smartstore.Core.Checkout.Orders
         /// Gets or sets the page size of the recurring payment list.
         /// </summary>
         public int RecurringPaymentListPageSize { get; set; } = 10;
+
+        /// <summary>
+        /// Gets or sets the page size of the return case list.
+        /// </summary>
+        public int ReturnCaseListPageSize { get; set; } = 10;
 
         /// <summary>
         /// Gets or sets the maximum order age in days up to which to create and send messages.
