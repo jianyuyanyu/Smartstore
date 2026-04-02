@@ -40,10 +40,13 @@
                         <dd class="col-sm-8">
                             <time asp-for="@rc.CreatedOn" sm-format="g"></time>
                         </dd>
-                        @if (!isWithdrawal)
+                        @if (!isWithdrawal && rc.ReasonForReturn.HasValue())
                         {
                             <dt class="col-sm-4 fwn text-muted">@T("Account.CustomerReturnRequests.Reason")</dt>
                             <dd class="col-sm-8">@rc.ReasonForReturn</dd>
+                        }
+                        @if (!isWithdrawal && rc.RequestedAction.HasValue())
+                        {
                             <dt class="col-sm-4 fwn text-muted">@T("Account.CustomerReturnRequests.Action")</dt>
                             <dd class="col-sm-8">@rc.RequestedAction</dd>
                         }

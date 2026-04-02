@@ -105,7 +105,7 @@ internal class Withdrawal : Migration, ILocaleResourcesProvider, IDataSeeder<Sma
         builder.AddOrUpdate("ReturnCase.NextStep", "Next step", "Nächster Schritt");
         builder.AddOrUpdate("ReturnCase.WithdrawalQuantity", "Withdrawal quantity", "Widerrufsmenge");
         builder.AddOrUpdate("ReturnCase.WithdrawalSubmitted", "withdrawal has been submitted", "Widerruf wurde übermittelt");
-        builder.AddOrUpdate("ReturnCase.ReviewWithdrawal", "We are reviewing your withdrawal", "Wir prüfen Ihren Widerruf.");
+        builder.AddOrUpdate("ReturnCase.ReviewWithdrawal", "We are reviewing your withdrawal.", "Wir prüfen Ihren Widerruf.");
         builder.AddOrUpdate("ReturnCase.Open", "Open", "Offen");
         builder.AddOrUpdate("ReturnCase.Complete", "Complete", "Abgeschlossen");
 
@@ -127,6 +127,9 @@ internal class Withdrawal : Migration, ILocaleResourcesProvider, IDataSeeder<Sma
             .Value("de", "Antrag abgewiesen");
         builder.AddOrUpdate("Enums.ReturnRequestStatus.ReturnAuthorized")
             .Value("de", "Retoure genehmigt");
+
+        builder.AddOrUpdate("PageTitle.OrderDetails")
+            .Value("de", "Bestelldetails");
 
         builder.AddOrUpdate("ReturnRequests.Products.RequestAlreadyExists",
             "Return requests for this item already exist.",

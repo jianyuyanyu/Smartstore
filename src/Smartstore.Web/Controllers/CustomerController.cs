@@ -1140,6 +1140,8 @@ namespace Smartstore.Web.Controllers
 
             var orders = await _db.Orders
                 .AsNoTracking()
+                .IncludeCustomer(false, true)
+                .IncludeOrderItems()
                 .ApplyStandardFilter(customer.Id, _orderSettings.DisplayOrdersOfAllStores ? null : store.Id)
                 .ToPagedList(orderPageIndex, _orderSettings.OrderListPageSize)
                 .LoadAsync();
@@ -1152,19 +1154,19 @@ namespace Smartstore.Web.Controllers
                 .ToDictionarySafe(x => x.CurrencyCode, x => x, StringComparer.OrdinalIgnoreCase);
 
             var orderModels = await orders
-                .SelectAwait(async x =>
+                .SelectAwait(async o =>
                 {
-                    customerCurrencies.TryGetValue(x.CustomerCurrencyCode, out var customerCurrency);
+                    customerCurrencies.TryGetValue(o.CustomerCurrencyCode, out var customerCurrency);
 
-                    (var orderTotal, _) = await _orderService.GetOrderTotalInCustomerCurrencyAsync(x, customerCurrency);
+                    (var orderTotal, _) = await _orderService.GetOrderTotalInCustomerCurrencyAsync(o, customerCurrency);
 
                     var orderModel = new CustomerOrderListModel.OrderDetailsModel
                     {
-                        Id = x.Id,
-                        OrderNumber = x.GetOrderNumber(),
-                        CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc),
-                        OrderStatus = _localizationService.GetLocalizedEnum(x.OrderStatus),
-                        CanReturnItems = _orderProcessingService.CanReturnItems(x),
+                        Id = o.Id,
+                        OrderNumber = o.GetOrderNumber(),
+                        CreatedOn = _dateTimeHelper.ConvertToUserTime(o.CreatedOnUtc, DateTimeKind.Utc),
+                        OrderStatus = _localizationService.GetLocalizedEnum(o.OrderStatus),
+                        CanReturnItems = _orderProcessingService.CanReturnItems(o) && o.OrderItems.Any(x => x.GetMaxReturnQuantity() > 0),
                         OrderTotal = orderTotal
                     };
 
