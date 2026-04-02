@@ -101,7 +101,7 @@ namespace Smartstore.Data.Providers
 
         public static string[] GetSupportedProviders()
         {
-            return new[] { "Smartstore.Data.SqlServer", "Smartstore.Data.MySql", "Smartstore.Data.PostgreSql", "Smartstore.Data.Sqlite" };
+            return ["Smartstore.Data.SqlServer", "Smartstore.Data.MySql", "Smartstore.Data.PostgreSql", "Smartstore.Data.Sqlite"];
         }
 
         /// <summary>
@@ -111,8 +111,8 @@ namespace Smartstore.Data.Providers
         /// <param name="provider">The provider to find</param>
         public static DbFactory Load(string provider, ITypeScanner typeScanner)
         {
-            Guard.NotEmpty(provider, nameof(provider));
-            Guard.NotNull(typeScanner, nameof(typeScanner));
+            Guard.NotEmpty(provider);
+            Guard.NotNull(typeScanner);
 
             return _loadedFactories.GetOrAdd(provider, key =>
             {

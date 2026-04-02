@@ -1,10 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Smartstore.Core.Identity;
 using Smartstore.Data.Caching;
 using Smartstore.Data.Hooks;
+using Smartstore.Json;
 
 namespace Smartstore.Core.Logging;
 
@@ -30,17 +33,17 @@ internal class LogMap : IEntityTypeConfiguration<Log>
             .HasForeignKey(c => c.CustomerId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.OwnsMany(c => c.Occurrences, builder =>
-        {
-            builder.ToJson();
-            // Map 'TimestampUtc' to shorter 't' in JSON-String
-            builder.Property(x => x.TimestampUtc).HasJsonPropertyName("t");
-        });
+        builder.Property(p => p.Occurrences)
+            .HasConversion(
+                v => JsonSerializer.Serialize(v, SmartJsonOptions.Default),
+                v => JsonSerializer.Deserialize<List<LogOccurrence>>(v, SmartJsonOptions.Default)
+            );
     }
 }
 
 public class LogOccurrence
 {
+    [JsonPropertyName("t")]
     public DateTime TimestampUtc { get; set; }
 }
 
