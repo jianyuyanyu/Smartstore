@@ -143,10 +143,10 @@ namespace Smartstore.Data.Providers
                 var path = Path.Combine(baseDirectory, $"{assemblyName}.dll");
                 var assembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(path);
 
-                var dbFactoryType = typeScanner.FindTypes<DbFactory>(new[] { assembly }).FirstOrDefault();
+                var dbFactoryType = typeScanner.FindTypes<DbFactory>([assembly]).FirstOrDefault();
                 if (dbFactoryType == null)
                 {
-                    throw new SystemException($"The data provider assembly '${assemblyName}' does not contain any concrete '${typeof(DbFactory)}' implementation.");
+                    throw new SystemException($"The data provider assembly '{assemblyName}' does not contain any concrete '{typeof(DbFactory)}' implementation.");
                 }
 
                 return (DbFactory)Activator.CreateInstance(dbFactoryType);

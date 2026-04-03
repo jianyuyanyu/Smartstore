@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Smartstore.Core.Identity;
@@ -36,7 +37,15 @@ internal class LogMap : IEntityTypeConfiguration<Log>
         builder.Property(p => p.Occurrences)
             .HasConversion(
                 v => JsonSerializer.Serialize(v, SmartJsonOptions.Default),
-                v => JsonSerializer.Deserialize<List<LogOccurrence>>(v, SmartJsonOptions.Default)
+                v => JsonSerializer.Deserialize<List<LogOccurrence>>(v, SmartJsonOptions.Default),
+                new ValueComparer<List<LogOccurrence>>(
+                    (a, b) => (a == null && b == null)
+                        || (a != null && b != null
+                            && a.Count == b.Count
+                            && a.Zip(b).All(p => p.First.TimestampUtc == p.Second.TimestampUtc)),
+                    v => v == null ? 0 : v.Aggregate(0, (h, e) => HashCode.Combine(h, e.TimestampUtc)),
+                    v => v == null ? null : v.Select(e => new LogOccurrence { TimestampUtc = e.TimestampUtc }).ToList()
+                )
             );
     }
 }
