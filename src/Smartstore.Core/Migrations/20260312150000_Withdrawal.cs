@@ -74,7 +74,8 @@ internal class Withdrawal : Migration, ILocaleResourcesProvider, IDataSeeder<Sma
         builder.Delete(
             "Admin.ReturnRequests.Fields.CreatedOn.Hint",
             "Admin.ReturnRequests.Fields.Status.Hint",
-            "Account.CustomerReturnRequests.Title");
+            "Account.CustomerReturnRequests.Title",
+            "ReturnRequests.Products.RequestAlreadyExists");
 
         builder.AddOrUpdate("Admin.Catalog.Products.Fields.WithdrawalPeriodDays",
             "Withdrawal period (in days)",
@@ -97,14 +98,10 @@ internal class Withdrawal : Migration, ILocaleResourcesProvider, IDataSeeder<Sma
         builder.AddOrUpdate("Enums.ReturnCaseKind.Return", "Return", "Retoure");
         builder.AddOrUpdate("Enums.ReturnCaseKind.Withdrawal", "Withdrawal", "Widerruf");
 
-        builder.AddOrUpdate("ReturnCase.WithdrawalAlreadySubmitted",
-            "A withdrawal request has already been submitted for this item.",
-            "Für diesen Artikel wurde bereits ein Widerruf eingereicht.");
-
         builder.AddOrUpdate("ReturnCase.Case", "Case #{0}", "Fall #{0}");
         builder.AddOrUpdate("ReturnCase.NextStep", "Next step", "Nächster Schritt");
         builder.AddOrUpdate("ReturnCase.WithdrawalQuantity", "Withdrawal quantity", "Widerrufsmenge");
-        builder.AddOrUpdate("ReturnCase.WithdrawalSubmitted", "withdrawal has been submitted", "Widerruf wurde übermittelt");
+        builder.AddOrUpdate("ReturnCase.WithdrawalSubmitted", "Withdrawal submitted", "Widerruf übermittelt");
         builder.AddOrUpdate("ReturnCase.ReviewWithdrawal", "We are reviewing your withdrawal.", "Wir prüfen Ihren Widerruf.");
         builder.AddOrUpdate("ReturnCase.Open", "Open", "Offen");
         builder.AddOrUpdate("ReturnCase.Complete", "Complete", "Abgeschlossen");
@@ -117,6 +114,17 @@ internal class Withdrawal : Migration, ILocaleResourcesProvider, IDataSeeder<Sma
         builder.AddOrUpdate("ReturnCase.Status.RequestRejected", "The return request was denied.", "Der Retourenantrag wurde abgelehnt.");
         builder.AddOrUpdate("ReturnCase.Status.Cancelled", "The return request has been canceled.", "Der Retourenantrag wurde storniert.");
 
+        builder.AddOrUpdate("ReturnCase.OrderWithdrawn",
+            "The order has been withdrawn.",
+            "Die Bestellung wurde widerrufen.");
+
+        builder.AddOrUpdate("ReturnCase.WithdrawalItemExists",
+            "A withdrawal request has been submitted for this item.",
+            "Für diesen Artikel wurde ein Widerruf eingereicht.");
+
+        builder.AddOrUpdate("ReturnCase.ReturnItemExists",
+            "This item has been requested for return.",
+            "Für diesen Artikel liegen Retourenanträge vor.");
 
         // Renaming, typos, fixes.
         builder.AddOrUpdate("Products.Details", "Product details", "Produktdetails");
@@ -130,10 +138,6 @@ internal class Withdrawal : Migration, ILocaleResourcesProvider, IDataSeeder<Sma
 
         builder.AddOrUpdate("PageTitle.OrderDetails")
             .Value("de", "Bestelldetails");
-
-        builder.AddOrUpdate("ReturnRequests.Products.RequestAlreadyExists",
-            "Return requests for this item already exist.",
-            "Für diesen Artikel liegen bereits Retourenanträge vor.");
 
         builder.AddOrUpdate("Admin.ReturnRequests.EditReturnRequestDetails", "Edit return", "Retoure bearbeiten");
         builder.AddOrUpdate("Admin.Withdrawal.EditWithdrawal", "Edit withdrawal", "Widerruf bearbeiten");

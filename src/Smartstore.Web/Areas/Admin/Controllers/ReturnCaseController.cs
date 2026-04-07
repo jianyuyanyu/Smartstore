@@ -77,7 +77,6 @@ namespace Smartstore.Admin.Controllers
             if (model.SearchId.HasValue)
             {
                 query = query.Where(x => x.Id == model.SearchId);
-                //query = query.Where(x => x.Id == model.SearchId || x.WithdrawalId == model.SearchId);
             }
             if (model.SearchReturnCaseKind.HasValue)
             {
@@ -326,6 +325,7 @@ namespace Smartstore.Admin.Controllers
         {
             Guard.NotNull(returnCase);
 
+            var dtHelper = Services.DateTimeHelper;
             var store = allStores.Get(returnCase.StoreId);
             var order = orderItem?.Order;
             var customer = returnCase.Customer;
@@ -341,14 +341,15 @@ namespace Smartstore.Admin.Controllers
             model.OrderId = orderItem?.OrderId ?? 0;
             model.OrderNumber = order?.GetOrderNumber();
             model.CustomerId = returnCase.CustomerId;
-            model.CustomerFullName = customer.GetFullName().NullEmpty() ?? customer.FindEmail().NaIfEmpty();
-            model.CanSendEmailToCustomer = customer.FindEmail().HasValue();
+            model.CustomerDeleted = customer.Deleted;
+            model.CustomerEmail = customer.FindEmail();
+            model.CustomerName = customer.GetDisplayName(T);
             model.Quantity = returnCase.Quantity;
             model.Kind = returnCase.Kind;
-            model.KindString = localization.GetLocalizedEnum(returnCase.Kind);
-            model.ReturnCaseStatusString = localization.GetLocalizedEnum(returnCase.ReturnCaseStatus);
-            model.CreatedOn = Services.DateTimeHelper.ConvertToUserTime(returnCase.CreatedOnUtc, DateTimeKind.Utc);
-            model.UpdatedOn = Services.DateTimeHelper.ConvertToUserTime(returnCase.UpdatedOnUtc, DateTimeKind.Utc);
+            model.KindStr = localization.GetLocalizedEnum(returnCase.Kind);
+            model.ReturnCaseStatusStr = localization.GetLocalizedEnum(returnCase.ReturnCaseStatus);
+            model.CreatedOn = dtHelper.ConvertToUserTime(returnCase.CreatedOnUtc, DateTimeKind.Utc);
+            model.UpdatedOn = dtHelper.ConvertToUserTime(returnCase.UpdatedOnUtc, DateTimeKind.Utc);
             model.EditUrl = Url.Action(nameof(Edit), "ReturnCase", new { id = returnCase.Id });
 
             if (customer != null)
@@ -374,7 +375,7 @@ namespace Smartstore.Admin.Controllers
 
                 if (returnCase.RequestedActionUpdatedOnUtc.HasValue)
                 {
-                    model.RequestedActionUpdated = Services.DateTimeHelper.ConvertToUserTime(returnCase.RequestedActionUpdatedOnUtc.Value, DateTimeKind.Utc);
+                    model.RequestedActionUpdated = dtHelper.ConvertToUserTime(returnCase.RequestedActionUpdatedOnUtc.Value, DateTimeKind.Utc);
                 }
 
                 model.CustomerComments = returnCase.CustomerComments;

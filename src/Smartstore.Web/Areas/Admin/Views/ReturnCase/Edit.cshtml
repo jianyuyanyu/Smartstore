@@ -3,6 +3,7 @@
 @model ReturnCaseModel
 
 @{
+    var rtl = WorkContext.WorkingLanguage.Rtl;
     var isWithdrawal = Model.Kind == ReturnCaseKind.Withdrawal;
     ViewBag.Title = T(isWithdrawal ? "Admin.Withdrawal.EditWithdrawal" : "Admin.ReturnRequests.EditReturnRequestDetails");
 }
@@ -14,17 +15,12 @@
         <div class="title">
             <a sm-backto asp-action="List"></a>
             <i class="fa @(isWithdrawal ? "fa-reply" : "fa-truck-moving")"></i>
-            @* <span class="badge badge-subtle badge-ring fs-sm @Model.KindLabelClass">@Model.KindString</span> *@
             <span>@ViewBag.Title</span>
         </div>
         <div class="options">
             <zone name="admin_button_toolbar_before" />
 
-            @if (isWithdrawal)
-            {
-                    
-            }
-            else
+            @if (!isWithdrawal)
             {
                 <button sm-if="Model.CanAccept" type="button" name="accept" class="btn btn-secondary btn-to-danger accept-returncase-button"
                     data-toggle="modal"
@@ -32,7 +28,7 @@
                     <i class="fa fa-check"></i>
                     <span>@T("Admin.ReturnRequests.Accept")</span>
                 </button>
-                <button sm-if="Model.CanSendEmailToCustomer" type="submit" name="notify-customer" value="notify-customer" class="btn btn-secondary btn-to-danger confirm">
+                <button sm-if="Model.CustomerEmail.HasValue()" type="submit" name="notify-customer" value="notify-customer" class="btn btn-secondary btn-to-danger confirm">
                     <i class="fa fa-envelope"></i>
                     <span>@T("Admin.ReturnRequests.NotifyCustomer")</span>
                 </button>
@@ -99,9 +95,10 @@
                         <smart-label asp-for="CustomerId" />
                     </div>
                     <div class="adminData">
-                        <div class="form-control-plaintext">
-                            <a href="@Model.CustomerEditUrl">@Model.CustomerFullName</a> (@Model.CustomerId)
-                        </div>
+                        <a href="@Url.Action("Edit", "Customer", new { id = @Model.CustomerId })" class="btn btn-link p-0" attr-class='(Model.CustomerDeleted, "disabled")'>
+                            <span attr-dir='(rtl, "rtl")'>@Model.CustomerName</span>
+                            <span sm-if="Model.CustomerEmail.HasValue()">(@Model.CustomerEmail)</span>
+                        </a>
                     </div>
                 </div>
                 <div class="adminRow">
@@ -124,16 +121,6 @@
                 </div>
                 @if (isWithdrawal)
                 {
-                    <div class="adminRow">
-                        <div class="adminTitle">
-                            <smart-label asp-for="ReturnCaseStatusString" />
-                        </div>
-                        <div class="adminData">
-                            <div class="form-control-plaintext">
-                                <span class="@Model.ReturnCaseStatusLabelClass">@Model.ReturnCaseStatusString</span>
-                            </div>
-                        </div>
-                    </div>
                     <div class="adminRow">
                         <div class="adminTitle">
                             <smart-label asp-for="Quantity" />

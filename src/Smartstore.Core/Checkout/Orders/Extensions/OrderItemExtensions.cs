@@ -52,10 +52,10 @@ public static partial class OrderItemExtensions
 
         var returnCases = Guard.NotNull(orderItem?.Order?.Customer?.ReturnCases);
 
-        var existingQuantity = returnCases
+        var returnedQuantity = returnCases
             .Where(x => x.OrderItemId == orderItem.Id)
             .Sum(x => x.Quantity);
 
-        return Math.Max((quantity ?? orderItem.Quantity) - existingQuantity, 0);
+        return Math.Max((quantity ?? orderItem.Quantity) - returnedQuantity, 0);
     }
 }

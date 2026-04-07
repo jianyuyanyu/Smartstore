@@ -29,7 +29,7 @@
     <columns>
         <column for="Id" halign="center" hideable="false">
             <display-template>
-                <span class="badge badge-subtle badge-ring mr-1" :class="item.row.KindLabelClass">{{ item.row.KindString }}</span>
+                <span class="badge badge-subtle badge-ring mr-1" :class="item.row.KindLabelClass">{{ item.row.KindStr }}</span>
                 <div class="text-truncate"><a :href="item.row.EditUrl" class="text-truncate">{{ item.value }}</a></div>
             </display-template>
         </column>
@@ -41,17 +41,18 @@
         <column for="Quantity" halign="center" />
         <column for="CustomerId" sortable="false">
             <display-template>
-                <div class="text-truncate"><a :href="item.row.CustomerEditUrl" class="text-truncate">{{ item.row.CustomerFullName }}</a></div>
+                <div class="text-truncate"><a :href="item.row.CustomerEditUrl" class="text-truncate">{{ item.row.CustomerName }}</a></div>
             </display-template>
         </column>
+        <column for="CustomerEmail" sortable="false" />
         <column for="OrderId" sortable="false" halign="center">
             <display-template>
                 <div class="text-truncate"><a :href="item.row.OrderEditUrl" class="text-truncate">{{ item.row.OrderNumber }}</a></div>
             </display-template>
         </column>
-        <column for="ReturnCaseStatusString" entity-member="ReturnCaseStatusId">
+        <column for="ReturnCaseStatusStr" entity-member="ReturnCaseStatusId">
             <display-template>
-                <span v-bind:class="item.row.ReturnCaseStatusLabelClass" class="text-truncate">{{ item.row.ReturnCaseStatusString }}</span>
+                <span v-bind:class="item.row.ReturnCaseStatusLabelClass" class="text-truncate">{{ item.row.ReturnCaseStatusStr }}</span>
             </display-template>
         </column>
         <column for="CreatedOn" entity-member="CreatedOnUtc" />

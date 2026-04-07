@@ -126,5 +126,4 @@ public class OrderOverviewModel : TabbableModel
         => UpdatedOn.ToString("g");
 
     public string EditUrl { get; set; }
-    public string CustomerEditUrl { get; set; }
 }

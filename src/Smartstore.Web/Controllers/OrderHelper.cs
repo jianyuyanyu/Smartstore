@@ -158,6 +158,8 @@ namespace Smartstore.Web.Controllers
                 product.MergeWithCombination(attributeCombination);
             }
 
+            var quantityUnit = await _db.QuantityUnits.FindByIdAsync(product.QuantityUnitId ?? 0, false);
+
             var model = new OrderDetailsModel.OrderItemModel
             {
                 Id = orderItem.Id,
@@ -168,11 +170,14 @@ namespace Smartstore.Web.Controllers
                 ProductSeName = await product.GetActiveSlugAsync(),
                 ProductType = product.ProductType,
                 Quantity = orderItem.Quantity,
-                AttributeInfo = HtmlUtility.FormatPlainText(HtmlUtility.ConvertHtmlToPlainText(orderItem.AttributeDescription))
+                AttributeInfo = HtmlUtility.FormatPlainText(HtmlUtility.ConvertHtmlToPlainText(orderItem.AttributeDescription)),
+                QuantityUnit = quantityUnit == null ? string.Empty : quantityUnit.GetLocalized(x => x.Name),
+                MaxReturnQuantity = orderItem.GetMaxReturnQuantity(),
+                ReturnCases = await order.Customer.ReturnCases
+                    .Where(x => x.OrderItemId == orderItem.Id)
+                    .SelectAwait(async x => await x.MapAsync(orderItem))
+                    .ToListAsync()
             };
-
-            var quantityUnit = await _db.QuantityUnits.FindByIdAsync(product.QuantityUnitId ?? 0, false);
-            model.QuantityUnit = quantityUnit == null ? string.Empty : quantityUnit.GetLocalized(x => x.Name);
 
             if (product.ProductType == ProductType.BundledProduct && orderItem.BundleData.HasValue())
             {
@@ -333,7 +338,6 @@ namespace Smartstore.Web.Controllers
                 CreatedOn = dtHelper.ConvertToUserTime(o.CreatedOnUtc, DateTimeKind.Utc),
                 OrderStatus = _services.Localization.GetLocalizedEnum(o.OrderStatus),
                 IsReOrderAllowed = orderSettings.IsReOrderAllowed,
-                CanReturnItems = _orderProcessingService.CanReturnItems(o) && o.OrderItems.Any(x => x.GetMaxReturnQuantity() > 0),
                 DisplayPdfInvoice = pdfSettings.Enabled,
                 RenderOrderNotes = pdfSettings.RenderOrderNotes,
                 ShippingStatus = _services.Localization.GetLocalizedEnum(o.ShippingStatus),
@@ -571,7 +575,7 @@ namespace Smartstore.Web.Controllers
             {
                 var createdOn = dtHelper.ConvertToUserTime(orderNote.CreatedOnUtc, DateTimeKind.Utc);
 
-                model.OrderNotes.Add(new OrderDetailsModel.OrderNote
+                model.OrderNotes.Add(new()
                 {
                     Note = orderNote.FormatOrderNoteText(),
                     CreatedOn = createdOn,
@@ -585,11 +589,29 @@ namespace Smartstore.Web.Controllers
             model.ShowProductBundleImages = shoppingCartSettings.ShowProductBundleImagesOnShoppingCart;
             model.BundleThumbSize = mediaSettings.CartThumbBundleItemPictureSize;
 
+            // Order items.
+            var hasItemsToReturn = false;
+            var isOrderWithdrawn = true;
+
             foreach (var orderItem in o.OrderItems)
             {
-                var orderItemModel = await PrepareOrderItemModelAsync(o, orderItem, catalogSettings, shoppingCartSettings, mediaSettings, customerCurrency);
-                model.Items.Add(orderItemModel);
+                var oiModel = await PrepareOrderItemModelAsync(o, orderItem, catalogSettings, shoppingCartSettings, mediaSettings, customerCurrency);
+
+                if (oiModel.MaxReturnQuantity > 0)
+                {
+                    hasItemsToReturn = true;
+                    isOrderWithdrawn = false;
+                }
+                if (isOrderWithdrawn && !oiModel.ReturnCases.Any(rc => rc.Kind == ReturnCaseKind.Withdrawal))
+                {
+                    isOrderWithdrawn = false;
+                }
+
+                model.Items.Add(oiModel);
             }
+
+            model.CanReturnItems = hasItemsToReturn && _orderProcessingService.CanReturnItems(o);
+            model.IsOrderWithdrawn = isOrderWithdrawn;
 
             // Custom mapping
             await MapperFactory.MapWithRegisteredMapperAsync(o, model, new { Context = context });

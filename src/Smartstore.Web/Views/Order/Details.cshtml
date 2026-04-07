@@ -1,5 +1,6 @@
-﻿@using Smartstore.Web.Models.Orders;
-@using Smartstore.Core.Catalog.Products;
+﻿@using Smartstore.Web.Models.Orders
+@using Smartstore.Core.Catalog.Products
+@using Smartstore.Core.Checkout.Orders
 
 @model OrderDetailsModel
 
@@ -9,6 +10,10 @@
     var bundleItemThumbSize = Math.Min(Model.BundleThumbSize, 60);
     var hasOrderDetails1 = Model.BillingAddress != null || (Model.IsShippable && Model.ShippingAddress != null);
     var hasOrderDetails2 = Model.PaymentMethod.HasValue() || Model.IsShippable || Model.VatNumber.HasValue();
+
+    var orderWithdrawalCase = Model.IsOrderWithdrawn && Model.Items.Count > 1
+        ? Model.Items.SelectMany(x => x.ReturnCases).Where(x => x.Kind == ReturnCaseKind.Withdrawal).FirstOrDefault() 
+        : null;
 
     var partialViewData = new ViewDataDictionary(this.ViewData);
     partialViewData["Parent"] = Model;
@@ -87,6 +92,10 @@
                     </div>
 
                     <zone name="orderdetails_page_after_item_data" model="item.Id" />
+
+                    <div sm-if="item.ReturnCases.Count > 0 && !Model.IsOrderWithdrawn" class="alert alert-info small mt-2 mb-0" role="status" aria-live="polite">
+                        <partial name="ReturnCase.Infos" model="item.ReturnCases" />
+                    </div>
                 </div>
             </div>
         </div>
@@ -276,6 +285,21 @@
 
                 @* Order Items *@
                 <div class="col-lg-7 col-xl-8">
+                    @* Show a single message if the entire order has been withdrawn. *@
+                    <div sm-if="orderWithdrawalCase != null" class="alert alert-info" role="status" aria-live="polite">
+                        <div class="mb-1">@T("ReturnCase.OrderWithdrawn")</div>
+                        <dl class="row mb-0">
+                            <dt class="col-sm-3">@T("Common.Status")</dt>
+                            <dd class="col-sm-9 mb-0">@T("ReturnCase.WithdrawalSubmitted").</dd>
+                            <dt class="col-sm-3">@T("ReturnCase.NextStep")</dt>
+                            <dd class="col-sm-9 mb-0">@T("ReturnCase.ReviewWithdrawal")</dd>
+                            <dt class="col-sm-3">@T("Account.CustomerReturnRequests.Date")</dt>
+                            <dd class="col-sm-9 mb-0">
+                                <time asp-for="@orderWithdrawalCase.CreatedOn" sm-format="g"></time>
+                            </dd>
+                        </dl>
+                    </div>
+
                     <div id="cart-items" class="cart">
                         <div class="cart-body">
                             @foreach (var item in Model.Items)

@@ -19,8 +19,11 @@ namespace Smartstore.Admin.Models.Orders
 
         [LocalizedDisplay("*Customer")]
         public int CustomerId { get; set; }
-        public string CustomerFullName { get; set; }
-        public bool CanSendEmailToCustomer { get; set; }
+        public string CustomerName { get; set; }
+        public bool CustomerDeleted { get; set; }
+
+        [LocalizedDisplay("Admin.Orders.List.CustomerEmail")]
+        public string CustomerEmail { get; set; }
 
         public int ProductId { get; set; }
         public string ProductSku { get; set; }
@@ -61,7 +64,7 @@ namespace Smartstore.Admin.Models.Orders
         [LocalizedDisplay("*Status")]
         public int ReturnCaseStatusId { get; set; }
         [LocalizedDisplay("*Status")]
-        public string ReturnCaseStatusString { get; set; }
+        public string ReturnCaseStatusStr { get; set; }
 
         public string ReturnCaseStatusLabelClass
         {
@@ -71,6 +74,7 @@ namespace Smartstore.Admin.Models.Orders
                 {
                     case ReturnCaseStatus.Pending:
                         return "fw-600";
+                    case ReturnCaseStatus.ItemsRepaired:
                     case ReturnCaseStatus.ItemsRefunded:
                         return "text-success";
                     case ReturnCaseStatus.RequestRejected:
@@ -79,7 +83,7 @@ namespace Smartstore.Admin.Models.Orders
                         return "muted";
                     default:
                         return string.Empty;
-                }
+                }                
             }
         }
 
@@ -93,7 +97,7 @@ namespace Smartstore.Admin.Models.Orders
             => Id != 0 && (ReturnCaseStatus)ReturnCaseStatusId < ReturnCaseStatus.ReturnAuthorized;
 
         public ReturnCaseKind Kind { get; set; }
-        public string KindString { get; set; }
+        public string KindStr { get; set; }
 
         [NotMapped]
         public string KindLabelClass

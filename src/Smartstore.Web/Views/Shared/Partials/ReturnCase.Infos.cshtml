@@ -15,33 +15,32 @@
 
     async Task ReturnCases(List<ReturnCaseModel> returnCases, bool isWithdrawal)
     {
-        foreach (var rr in returnCases)
+        foreach (var rc in returnCases)
         {
             <dl class="row mb-0">
-                <dt class="col-sm-3">@T(isWithdrawal ? "ReturnCase.WithdrawalQuantity" : "ReturnRequests.Products.Quantity")</dt>
-                <dd class="col-sm-9 mb-0">@rr.Quantity.ToString("N0")</dd>
-                @if (!isWithdrawal)
-                {
-                    <dt class="col-sm-3">@T("Common.Status")</dt>
-                    <dd class="col-sm-9 mb-0">@rr.ReturnCaseStatusStr</dd>
-                }
+                <dt class="col-sm-3">@T("Common.Status")</dt>
+                <dd class="col-sm-9 mb-0">@(isWithdrawal? T("ReturnCase.WithdrawalSubmitted") : rc.ReturnCaseStatusStr).</dd>
+                <dt class="col-sm-3">@T("ReturnCase.NextStep")</dt>
+                <dd class="col-sm-9 mb-0">@T(isWithdrawal ? "ReturnCase.ReviewWithdrawal" : $"ReturnCase.Status.{rc.ReturnCaseStatus.ToString()}")</dd>
                 <dt class="col-sm-3">@T("Account.CustomerReturnRequests.Date")</dt>
                 <dd class="col-sm-9 mb-0">
-                    <time asp-for="@rr.CreatedOn" sm-format="g"></time>
+                    <time asp-for="@rc.CreatedOn" sm-format="g"></time>
                 </dd>
+                <dt class="col-sm-3">@T(isWithdrawal ? "ReturnCase.WithdrawalQuantity" : "ReturnRequests.Products.Quantity")</dt>
+                <dd class="col-sm-9 mb-0">@rc.Quantity.ToString("N0")</dd>
             </dl>
         }
     }
 }
 
 <div sm-if="withdrawals.Count > 0">
-    <div class="mb-1">@T("ReturnCase.WithdrawalAlreadySubmitted")</div>
+    <div class="mb-1">@T("ReturnCase.WithdrawalItemExists")</div>
     @{
         await ReturnCases(withdrawals, true);
     }
 </div>
 <div sm-if="returnCases.Count > 0">
-    <div class="mb-1">@T("ReturnRequests.Products.RequestAlreadyExists")</div>
+    <div class="mb-1">@T("ReturnCase.ReturnItemExists")</div>
     @{
         await ReturnCases(returnCases, false);
     }

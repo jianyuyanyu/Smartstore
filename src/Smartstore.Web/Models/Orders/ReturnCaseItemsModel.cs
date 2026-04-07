@@ -7,15 +7,25 @@ namespace Smartstore.Web.Models.Orders;
 public partial class ReturnCaseItemsModel : ModelBase
 {
     public bool IsEditable { get; set; } = true;
-    public bool ReturnAllItems { get; set; } = true;
     public string Warning { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value that indicates whether the customer has opted to return all items.
+    /// </summary>
+    public bool ReturnAllItems { get; set; } = true;
 
     public List<ReturnCaseItemModel> Items { get; set; } = [];
 
+    /// <summary>
+    /// Gets a value that indicates whether there are any items available to return.
+    /// </summary>
     [IgnoreDataMember]
     public bool HasItemsToReturn
         => !Items.IsNullOrEmpty() && Items.Any(x => x.MaxReturnQuantity > 0);
 
+    /// <summary>
+    /// Gets or sets a value indicating whether there is exactly one item available to return.
+    /// </summary>
     [IgnoreDataMember]
     public bool HasSingleItemToReturn { get; set; }
 

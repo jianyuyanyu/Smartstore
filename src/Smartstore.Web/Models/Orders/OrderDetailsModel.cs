@@ -19,7 +19,6 @@ namespace Smartstore.Web.Models.Orders
         public DateTime CreatedOn { get; set; }
         public string OrderStatus { get; set; }
         public bool IsReOrderAllowed { get; set; }
-        public bool CanReturnItems { get; set; }
         public bool IsShippable { get; set; }
         public string ShippingStatus { get; set; }
         public AddressModel BillingAddress { get; set; }
@@ -29,6 +28,16 @@ namespace Smartstore.Web.Models.Orders
         public string VatNumber { get; set; }
         public string PaymentMethod { get; set; }
         public string PaymentMethodSystemName { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether at least one item in the order can be returned.
+        /// </summary>
+        public bool CanReturnItems { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the entire order has been withdrawn.
+        /// </summary>
+        public bool IsOrderWithdrawn { get; set; }
 
         [IgnoreDataMember]
         public Order Order { get; set; }
@@ -99,6 +108,9 @@ namespace Smartstore.Web.Models.Orders
             public bool BundlePerItemShoppingCart { get; set; }
             public ImageModel Image { get; set; }
             public List<BundleItemModel> BundleItems { get; set; } = [];
+
+            public int MaxReturnQuantity { get; set; }
+            public List<ReturnCaseModel> ReturnCases { get; set; } = [];
         }
 
         public partial class BundleItemModel : ModelBase
