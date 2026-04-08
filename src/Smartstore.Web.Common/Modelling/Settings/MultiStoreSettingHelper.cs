@@ -20,9 +20,11 @@ namespace Smartstore.Web.Modelling.Settings
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IViewDataAccessor _viewDataAccessor;
         private readonly SmartDbContext _db;
+        private readonly ISettingFactory _settingFactory;
         private readonly ISettingService _settingService;
         private readonly ILocalizedEntityService _leService;
         private readonly bool _isSingleStoreMode;
+        private readonly int _defaultStoreScope;
 
         private MultiStoreSettingData _data;
 
@@ -30,16 +32,25 @@ namespace Smartstore.Web.Modelling.Settings
             IHttpContextAccessor httpContextAccessor,
             IViewDataAccessor viewDataAccessor,
             SmartDbContext db,
+            ISettingFactory settingFactory,
             ISettingService settingService,
             ILocalizedEntityService leService,
-            IStoreContext storeContext)
+            IStoreContext storeContext,
+            IWorkContext workContext)
         {
             _httpContextAccessor = httpContextAccessor;
             _viewDataAccessor = viewDataAccessor;
             _db = db;
+            _settingFactory = settingFactory;
             _settingService = settingService;
             _leService = leService;
             _isSingleStoreMode = storeContext.IsSingleStoreMode();
+
+            if (!_isSingleStoreMode)
+            {
+                var storeId = workContext.CurrentCustomer.GenericAttributes.AdminAreaStoreScopeConfiguration;
+                _defaultStoreScope = storeContext.GetStoreById(storeId)?.Id ?? 0;
+            }
         }
 
         public void Contextualize(int storeScope)
@@ -60,6 +71,16 @@ namespace Smartstore.Web.Modelling.Settings
             {
                 throw new InvalidOperationException("Call 'Contextualize(int storeScope)' before calling any store bound method.");
             }
+        }
+
+        private int EnsureContextualized()
+        {
+            if (_data == null)
+            {
+                Contextualize(_defaultStoreScope);
+            }
+
+            return _data.StoreScope;
         }
 
         public ViewDataDictionary ViewData
@@ -355,6 +376,51 @@ namespace Smartstore.Web.Modelling.Settings
                 var key = settingType.Name + "." + settingName;
                 await _settingService.RemoveSettingAsync(key, _data.StoreScope);
             }
+        }
+
+        public async Task<TSetting> MapModelAsync<TModel, TSetting>(
+            TModel model,
+            IFormCollection form,
+            string prefix,
+            Action<TSetting> onBeforeMap)
+            where TSetting : class, ISettings, new()
+            where TModel : ModelBase
+        {
+            var storeScope = EnsureContextualized();
+            var settings = await _settingFactory.LoadSettingsAsync<TSetting>(storeScope);
+
+            return await MapModelAsync(model, settings, form, prefix, onBeforeMap);
+        }
+
+        public async Task<TSetting> MapModelAsync<TModel, TSetting>(
+            TModel model,
+            TSetting settings,
+            IFormCollection form,
+            string prefix,
+            Action<TSetting> onBeforeMap)
+            where TSetting : class, ISettings, new()
+            where TModel : ModelBase
+        {
+            var mapper = MapperFactory.GetMapper<TModel, TSetting>();
+            var settingsProperties = FastProperty.GetProperties(typeof(TSetting)).Values;
+
+            onBeforeMap?.Invoke(settings);
+
+            settings = settings.Clone() as TSetting;
+            await mapper.MapAsync(model, settings);
+
+            foreach (var prop in settingsProperties)
+            {
+                await ApplySettingAsync(
+                    $"{prefix}.{prop.Name}",
+                    prop.Name,
+                    settings,
+                    form);
+            }
+
+            await _db.SaveChangesAsync();
+
+            return settings;
         }
     }
 }
