@@ -54,12 +54,12 @@
         Pending = 0,
 
         /// <summary>
-        /// Received.
+        /// Item(s) received.
         /// </summary>
         Received = 10,
 
         /// <summary>
-        /// Return authorized.
+        /// Return accepted.
         /// </summary>
         ReturnAuthorized = 20,
 

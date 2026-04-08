@@ -1166,7 +1166,6 @@ namespace Smartstore.Web.Controllers
                         OrderNumber = o.GetOrderNumber(),
                         CreatedOn = _dateTimeHelper.ConvertToUserTime(o.CreatedOnUtc, DateTimeKind.Utc),
                         OrderStatus = _localizationService.GetLocalizedEnum(o.OrderStatus),
-                        CanReturnItems = _orderProcessingService.CanReturnItems(o) && o.OrderItems.Any(x => x.GetMaxReturnQuantity() > 0),
                         OrderTotal = orderTotal
                     };
 

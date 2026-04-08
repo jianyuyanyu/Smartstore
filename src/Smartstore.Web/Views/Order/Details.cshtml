@@ -11,7 +11,7 @@
     var hasOrderDetails1 = Model.BillingAddress != null || (Model.IsShippable && Model.ShippingAddress != null);
     var hasOrderDetails2 = Model.PaymentMethod.HasValue() || Model.IsShippable || Model.VatNumber.HasValue();
 
-    var orderWithdrawalCase = Model.IsOrderWithdrawn && Model.Items.Count > 1
+    var orderWithdrawalReturnCase = Model.IsOrderWithdrawn && Model.Items.Count > 1
         ? Model.Items.SelectMany(x => x.ReturnCases).Where(x => x.Kind == ReturnCaseKind.Withdrawal).FirstOrDefault() 
         : null;
 
@@ -286,16 +286,14 @@
                 @* Order Items *@
                 <div class="col-lg-7 col-xl-8">
                     @* Show a single message if the entire order has been withdrawn. *@
-                    <div sm-if="orderWithdrawalCase != null" class="alert alert-info" role="status" aria-live="polite">
+                    <div sm-if="orderWithdrawalReturnCase != null" class="alert alert-info" role="status" aria-live="polite">
                         <div class="mb-1">@T("ReturnCase.OrderWithdrawn")</div>
                         <dl class="row mb-0">
                             <dt class="col-sm-3">@T("Common.Status")</dt>
-                            <dd class="col-sm-9 mb-0">@T("ReturnCase.WithdrawalSubmitted").</dd>
-                            <dt class="col-sm-3">@T("ReturnCase.NextStep")</dt>
-                            <dd class="col-sm-9 mb-0">@T("ReturnCase.ReviewWithdrawal")</dd>
+                            <dd class="col-sm-9 mb-0">@T("ReturnCase.ReceivedWithdrawal")</dd>
                             <dt class="col-sm-3">@T("Account.CustomerReturnRequests.Date")</dt>
                             <dd class="col-sm-9 mb-0">
-                                <time asp-for="@orderWithdrawalCase.CreatedOn" sm-format="g"></time>
+                                <time asp-for="@orderWithdrawalReturnCase.CreatedOn" sm-format="g"></time>
                             </dd>
                         </dl>
                     </div>

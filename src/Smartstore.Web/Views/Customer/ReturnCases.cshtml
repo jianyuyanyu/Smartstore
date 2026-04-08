@@ -32,10 +32,13 @@
                             <span class="badge @(complete ? "badge-secondary" : "badge-warning") mr-1">
                                 @T(complete ? "ReturnCase.Complete" : "ReturnCase.Open")
                             </span>
-                            <span>@(isWithdrawal? T("ReturnCase.WithdrawalSubmitted") : rc.ReturnCaseStatusStr).</span>
+                            <span>@(isWithdrawal? T("ReturnCase.ReceivedWithdrawal") : rc.ReturnCaseStatusStr)</span>
                         </dd>
-                        <dt class="col-sm-4 fwn text-muted">@T("ReturnCase.NextStep")</dt>
-                        <dd class="col-sm-8">@T(isWithdrawal ? "ReturnCase.ReviewWithdrawal" : $"ReturnCase.Status.{rc.ReturnCaseStatus.ToString()}")</dd>
+                        @if(!isWithdrawal)
+                        {
+                            <dt class="col-sm-4 fwn text-muted">@T("ReturnCase.NextStep")</dt>
+                            <dd class="col-sm-8">@T($"ReturnCase.NextStep.{rc.ReturnCaseStatus}")</dd>
+                        }
                         <dt class="col-sm-4 fwn text-muted">@T("Account.CustomerReturnRequests.Date")</dt>
                         <dd class="col-sm-8">
                             <time asp-for="@rc.CreatedOn" sm-format="g"></time>

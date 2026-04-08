@@ -5,6 +5,7 @@
 @{
     var rtl = WorkContext.WorkingLanguage.Rtl;
     var isWithdrawal = Model.Kind == ReturnCaseKind.Withdrawal;
+    var originatesFromWithdrawal = Model.WithdrawalId.GetValueOrDefault() != 0;
     ViewBag.Title = T(isWithdrawal ? "Admin.Withdrawal.EditWithdrawal" : "Admin.ReturnRequests.EditReturnRequestDetails");
 }
 
@@ -20,13 +21,20 @@
         <div class="options">
             <zone name="admin_button_toolbar_before" />
 
-            @if (!isWithdrawal)
+            @if (isWithdrawal)
             {
-                <button sm-if="Model.CanAccept" type="button" name="accept" class="btn btn-secondary btn-to-danger accept-returncase-button"
+                <button type="submit" name="convert" value="convert" class="btn btn-primary btn-convert-returncase confirm" title="@T("ReturnCase.StartProcessing.Hint")">
+                    <i class="fa fa-reply-all"></i>
+                    <span>@T("ReturnCase.StartProcessing")</span>
+                </button>                    
+            }
+            else
+            {
+                <button sm-if="Model.CanAccept" type="button" name="accept" class="btn btn-primary btn-to-danger accept-returncase-button"
                     data-toggle="modal"
                     data-target="#update-orderitem-dialog">
                     <i class="fa fa-check"></i>
-                    <span>@T("Admin.ReturnRequests.Accept")</span>
+                    <span>@T("Admin.ReturnRequests.Accept")…</span>
                 </button>
                 <button sm-if="Model.CustomerEmail.HasValue()" type="submit" name="notify-customer" value="notify-customer" class="btn btn-secondary btn-to-danger confirm">
                     <i class="fa fa-envelope"></i>
@@ -186,7 +194,7 @@
                         <div class="form-control-plaintext">@Model.RequestedActionUpdated</div>
                     </div>
                 </div>
-                <div class="adminRow">
+                <div sm-if="!originatesFromWithdrawal" class="adminRow">
                     <div class="adminTitle">
                         <smart-label asp-for="CustomerComments" />
                     </div>

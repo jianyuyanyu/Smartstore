@@ -488,17 +488,25 @@ namespace Smartstore.Core.Messaging
             Guard.NotNull(messageContext);
             Guard.NotNull(part);
 
+            var langId = messageContext.Language.Id;
+            var nextStep = part.Kind == ReturnCaseKind.Return 
+                ? _localizationService.GetResource($"ReturnCase.NextStep.{part.ReturnCaseStatus}", langId)
+                : string.Empty;
+
             var m = new Dictionary<string, object>
             {
                 { "Id", part.Id },
+                { "Kind", part.Kind },
                 { "Reason", part.ReasonForReturn.NullEmpty() },
-                { "Status", part.ReturnCaseStatus.GetLocalizedEnum(messageContext.Language.Id) },
+                { "Status", part.ReturnCaseStatus.GetLocalizedEnum(langId) },
                 { "RequestedAction", part.RequestedAction.NullEmpty() },
                 { "CustomerComments", HtmlUtility.StripTags(part.CustomerComments).NullEmpty() },
                 { "StaffNotes", HtmlUtility.StripTags(part.StaffNotes).NullEmpty() },
                 { "Quantity", part.Quantity },
                 { "RefundToWallet", part.RefundToWallet },
-                { "Url", _helper.BuildActionUrl("Edit", "ReturnCase", new { id = part.Id, area = "Admin" }, messageContext) }
+                { "Url", _helper.BuildActionUrl("Edit", "ReturnCase", new { id = part.Id, area = "Admin" }, messageContext) },
+                { "CreatedOn", _helper.ToUserDate(part.CreatedOnUtc, messageContext) },
+                { "NextStep", nextStep }
             };
 
             await _helper.PublishModelPartCreatedEventAsync(part, m);

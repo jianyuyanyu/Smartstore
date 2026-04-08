@@ -280,6 +280,32 @@ namespace Smartstore.Admin.Controllers
             return RedirectToAction(nameof(Edit), new { id = returnCase.Id });
         }
 
+        [HttpPost, ActionName("Edit")]
+        [FormValueRequired("convert")]
+        [Permission(Permissions.Order.ReturnCase.Update)]
+        public async Task<IActionResult> Convert(ReturnCaseModel model, IFormCollection form)
+        {
+            var returnCase = await _db.ReturnCases.FindByIdAsync(model.Id);
+            if (returnCase == null)
+            {
+                return NotFound();
+            }
+
+            if (returnCase.Kind == ReturnCaseKind.Withdrawal)
+            {
+                returnCase.Kind = ReturnCaseKind.Return;
+                returnCase.ReturnCaseStatus = ReturnCaseStatus.Pending;
+
+                await _db.SaveChangesAsync();
+
+                await Services.EventPublisher.PublishAsync(new ModelBoundEvent(model, returnCase, form));
+                Services.ActivityLogger.LogActivity(KnownActivityLogTypes.EditReturnCase, T("ActivityLog.EditReturnRequest"), returnCase.Id);
+                NotifyInfo(T("ReturnCase.ConvertedWithdrawal", returnCase.ReturnCaseStatus.GetLocalizedEnum()));
+            }
+
+            return RedirectToAction(nameof(Edit), returnCase.Id);
+        }
+
         [HttpPost]
         [Permission(Permissions.Order.ReturnCase.Delete)]
         public async Task<IActionResult> Delete(int id)
@@ -332,6 +358,7 @@ namespace Smartstore.Admin.Controllers
             var localization = Services.Localization;
 
             model.Id = returnCase.Id;
+            model.WithdrawalId = returnCase.WithdrawalId;
             model.ProductId = orderItem?.ProductId ?? 0;
             model.ProductSku = orderItem?.Sku?.NullEmpty() ?? orderItem?.Product?.Sku;
             model.ProductName = orderItem?.Product?.Name;

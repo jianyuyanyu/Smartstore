@@ -75,7 +75,9 @@ internal class Withdrawal : Migration, ILocaleResourcesProvider, IDataSeeder<Sma
             "Admin.ReturnRequests.Fields.CreatedOn.Hint",
             "Admin.ReturnRequests.Fields.Status.Hint",
             "Account.CustomerReturnRequests.Title",
-            "ReturnRequests.Products.RequestAlreadyExists");
+            "ReturnRequests.Products.RequestAlreadyExists",
+            "Admin.ReturnRequests.Accept.Caption",
+            "Account.CustomerOrders.ReturnItems");
 
         builder.AddOrUpdate("Admin.Catalog.Products.Fields.WithdrawalPeriodDays",
             "Withdrawal period (in days)",
@@ -101,18 +103,17 @@ internal class Withdrawal : Migration, ILocaleResourcesProvider, IDataSeeder<Sma
         builder.AddOrUpdate("ReturnCase.Case", "Case #{0}", "Fall #{0}");
         builder.AddOrUpdate("ReturnCase.NextStep", "Next step", "Nächster Schritt");
         builder.AddOrUpdate("ReturnCase.WithdrawalQuantity", "Withdrawal quantity", "Widerrufsmenge");
-        builder.AddOrUpdate("ReturnCase.WithdrawalSubmitted", "Withdrawal submitted", "Widerruf übermittelt");
-        builder.AddOrUpdate("ReturnCase.ReviewWithdrawal", "We are reviewing your withdrawal.", "Wir prüfen Ihren Widerruf.");
+        builder.AddOrUpdate("ReturnCase.ReceivedWithdrawal", "We have received your withdrawal.", "Ihr Widerruf ist bei uns eingegangen.");
         builder.AddOrUpdate("ReturnCase.Open", "Open", "Offen");
         builder.AddOrUpdate("ReturnCase.Complete", "Complete", "Abgeschlossen");
 
-        builder.AddOrUpdate("ReturnCase.Status.Pending", "We are reviewing your return request.", "Wir prüfen Ihren Retourenantrag.");
-        builder.AddOrUpdate("ReturnCase.Status.Received", "We are processing your return request.", "Wir bearbeiten Ihren Retourenantrag.");
-        builder.AddOrUpdate("ReturnCase.Status.ReturnAuthorized", "Please return the item(s) to us.", "Bitte senden Sie den/die Artikel an uns zurück.");
-        builder.AddOrUpdate("ReturnCase.Status.ItemsRepaired", "We will send the repaired item(s) back to you.", "Wir senden Ihnen den/die reparierten Artikel zurück.");
-        builder.AddOrUpdate("ReturnCase.Status.ItemsRefunded", "The refund has been processed.", "Die Gutschrift wurde veranlasst.");
-        builder.AddOrUpdate("ReturnCase.Status.RequestRejected", "The return request was denied.", "Der Retourenantrag wurde abgelehnt.");
-        builder.AddOrUpdate("ReturnCase.Status.Cancelled", "The return request has been canceled.", "Der Retourenantrag wurde storniert.");
+        builder.AddOrUpdate("ReturnCase.NextStep.Pending", "Please return the items.", "Bitte senden Sie die Artikel zurück.");
+        builder.AddOrUpdate("ReturnCase.NextStep.Received", "We are processing your return.", "Wir bearbeiten Ihre Rücksendung.");
+        builder.AddOrUpdate("ReturnCase.NextStep.ReturnAuthorized", "We will deal with the matter further.", "Wir veranlassen die weitere Bearbeitung.");
+        builder.AddOrUpdate("ReturnCase.NextStep.ItemsRepaired", "We will send the repaired items back to you.", "Wir senden Ihnen die reparierten Artikel zurück.");
+        builder.AddOrUpdate("ReturnCase.NextStep.ItemsRefunded", "The refund has been processed.", "Die Erstattung wurde veranlasst.");
+        builder.AddOrUpdate("ReturnCase.NextStep.RequestRejected", "No further action is required.", "Es ist keine weitere Aktion erforderlich.");
+        builder.AddOrUpdate("ReturnCase.NextStep.Cancelled", "No further action is required.", "Es ist keine weitere Aktion erforderlich.");
 
         builder.AddOrUpdate("ReturnCase.OrderWithdrawn",
             "The order has been withdrawn.",
@@ -126,6 +127,15 @@ internal class Withdrawal : Migration, ILocaleResourcesProvider, IDataSeeder<Sma
             "This item has been requested for return.",
             "Für diesen Artikel liegen Retourenanträge vor.");
 
+        builder.AddOrUpdate("ReturnCase.StartProcessing",
+            "Start processing",
+            "Verarbeitung starten",
+            "Converts the withdrawal into a return for further processing.",
+            "Wandelt den Widerruf in eine Retoure zur weiteren Bearbeitung.");
+        builder.AddOrUpdate("ReturnCase.ConvertedWithdrawal",
+            "The withdrawal has been converted to a return. Status: <b>{0}</b>.",
+            "Der Widerruf wurde in eine Retoure umgewandelt. Status: <b>{0}</b>.");
+
         // Renaming, typos, fixes.
         builder.AddOrUpdate("Products.Details", "Product details", "Produktdetails");
         builder.AddOrUpdate("Account.CustomerReturnRequests", "Withdrawals and Returns", "Widerrufe und Retouren");
@@ -133,8 +143,7 @@ internal class Withdrawal : Migration, ILocaleResourcesProvider, IDataSeeder<Sma
 
         builder.AddOrUpdate("Enums.ReturnRequestStatus.RequestRejected")
             .Value("de", "Antrag abgewiesen");
-        builder.AddOrUpdate("Enums.ReturnRequestStatus.ReturnAuthorized")
-            .Value("de", "Retoure genehmigt");
+        builder.AddOrUpdate("Enums.ReturnRequestStatus.Received", "Received items", "Ware erhalten");
 
         builder.AddOrUpdate("PageTitle.OrderDetails")
             .Value("de", "Bestelldetails");
@@ -155,15 +164,17 @@ internal class Withdrawal : Migration, ILocaleResourcesProvider, IDataSeeder<Sma
             "Anzahl der zurückzusendenden Artikel");
 
         builder.AddOrUpdate("Admin.ReturnRequests.Deleted",
-            "The return item has been deleted",
-            "Der Retourenartikel wurde gelöscht");
+            "The return has been deleted",
+            "Die Retoure wurde gelöscht");
 
         builder.AddOrUpdate("Admin.ReturnRequests.MaxRefundAmount.Hint",
             "The maximum amount that can be refunded for this item.",
             "Der maximale Betrag, der für diesen Retourenartikel erstattet werden kann.");
 
         builder.AddOrUpdate("Admin.ReturnRequests.Updated",
-            "The item has been successfully processed",
-            "Der Retourenartikel wurde erfolgreich bearbeitet");
+            "The return has been successfully processed",
+            "Der Retoure wurde erfolgreich bearbeitet");
+
+        builder.AddOrUpdate("Admin.ReturnRequests.Accept.Caption", "Accept the return", "Retoure genehmigen");
     }
 }

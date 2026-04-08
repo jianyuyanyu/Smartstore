@@ -4,11 +4,13 @@ using Smartstore.Core.Checkout.Orders;
 
 namespace Smartstore.Admin.Models.Orders
 {
+    [CustomModelPart]
     [LocalizedDisplay("Admin.ReturnRequests.Fields.")]
     public class ReturnCaseModel : TabbableModel
     {
         [LocalizedDisplay("*ID")]
         public override int Id { get; set; }
+        public int? WithdrawalId { get; set; }
 
         [LocalizedDisplay("Admin.Customers.Customers.Orders.Store")]
         public string StoreName { get; set; }
