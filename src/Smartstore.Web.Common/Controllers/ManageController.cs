@@ -100,7 +100,7 @@ namespace Smartstore.Web.Controllers
         protected internal virtual int GetActiveStoreScopeConfiguration()
         {
             // Ensure that we have 2 (or more) stores
-            if (Services.StoreContext.GetAllStores().Count < 2)
+            if (Services.StoreContext.IsSingleStoreMode())
                 return 0;
 
             var storeId = Services.WorkContext.CurrentCustomer.GenericAttributes.AdminAreaStoreScopeConfiguration;
