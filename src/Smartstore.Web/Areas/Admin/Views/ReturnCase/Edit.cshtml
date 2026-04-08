@@ -166,6 +166,10 @@
                     <div class="adminData">
                         <select asp-for="ReturnCaseStatusId" asp-items="Html.GetLocalizedEnumSelectList(typeof(ReturnCaseStatus))"></select>
                         <span asp-validation-for="ReturnCaseStatusId"></span>
+                        <span class="d-inline-block text-muted pt-2">
+                            <span>@T("ReturnCase.NextStep"):</span>
+                            <span>@Model.NextStep</span>
+                        </span>
                     </div>
                 </div>
                 <div class="adminRow">

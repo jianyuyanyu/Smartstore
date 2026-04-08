@@ -65,6 +65,11 @@ internal class Withdrawal : Migration, ILocaleResourcesProvider, IDataSeeder<Sma
     public async Task SeedAsync(SmartDbContext context, CancellationToken cancelToken = default)
     {
         await context.MigrateLocaleResourcesAsync(MigrateLocaleResources);
+
+        // Fix "RequestedActionUpdatedOnUtc" where no "RequestedAction" is set.
+        await context.ReturnCases
+            .Where(x => x.RequestedActionUpdatedOnUtc != null && string.IsNullOrEmpty(x.RequestedAction))
+            .ExecuteUpdateAsync(x => x.SetProperty(rc => rc.RequestedActionUpdatedOnUtc, rc => null), cancelToken);
     }
 
     public void MigrateLocaleResources(LocaleResourcesBuilder builder)
@@ -124,8 +129,8 @@ internal class Withdrawal : Migration, ILocaleResourcesProvider, IDataSeeder<Sma
             "Für diesen Artikel wurde ein Widerruf eingereicht.");
 
         builder.AddOrUpdate("ReturnCase.ReturnItemExists",
-            "This item has been requested for return.",
-            "Für diesen Artikel liegen Retourenanträge vor.");
+            "This item has returns.",
+            "Für diesen Artikel liegen Retouren vor.");
 
         builder.AddOrUpdate("ReturnCase.StartProcessing",
             "Start processing",

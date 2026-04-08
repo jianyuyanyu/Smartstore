@@ -182,14 +182,17 @@ namespace Smartstore.Admin.Controllers
             {
                 var utcNow = DateTime.UtcNow;
 
+                model.ReasonForReturn = model.ReasonForReturn.NullEmpty();
+                model.RequestedAction = model.RequestedAction.NullEmpty();
+
                 if (returnCase.RequestedAction != model.RequestedAction)
                 {
                     returnCase.RequestedActionUpdatedOnUtc = utcNow;
                 }
 
                 returnCase.Quantity = model.Quantity;
-                returnCase.ReasonForReturn = model.ReasonForReturn.EmptyNull();
-                returnCase.RequestedAction = model.RequestedAction.EmptyNull();
+                returnCase.ReasonForReturn = model.ReasonForReturn;
+                returnCase.RequestedAction = model.RequestedAction;
                 returnCase.CustomerComments = model.CustomerComments;
                 returnCase.StaffNotes = model.StaffNotes;
                 returnCase.AdminComment = model.AdminComment;
@@ -375,6 +378,7 @@ namespace Smartstore.Admin.Controllers
             model.Kind = returnCase.Kind;
             model.KindStr = localization.GetLocalizedEnum(returnCase.Kind);
             model.ReturnCaseStatusStr = localization.GetLocalizedEnum(returnCase.ReturnCaseStatus);
+            model.NextStep = returnCase.Kind == ReturnCaseKind.Return ? T($"ReturnCase.NextStep.{returnCase.ReturnCaseStatus}") : string.Empty;
             model.CreatedOn = dtHelper.ConvertToUserTime(returnCase.CreatedOnUtc, DateTimeKind.Utc);
             model.UpdatedOn = dtHelper.ConvertToUserTime(returnCase.UpdatedOnUtc, DateTimeKind.Utc);
             model.EditUrl = Url.Action(nameof(Edit), "ReturnCase", new { id = returnCase.Id });
@@ -430,17 +434,17 @@ namespace Smartstore.Admin.Controllers
                 ViewBag.ReasonForReturn = reasonForReturn;
                 ViewBag.ActionsForReturn = actionsForReturn;
 
-                model.UpdateOrderItem = new UpdateOrderItemModel
+                model.UpdateOrderItem = new()
                 {
                     Id = returnCase.Id,
                     Caption = T("Admin.ReturnRequests.Accept.Caption"),
-                    PostUrl = Url.Action("Accept", "ReturnCase"),
+                    PostUrl = Url.Action(nameof(Accept), "ReturnCase"),
                 };
 
                 if (order != null)
                 {
                     model.UpdateOrderItem.UpdateRewardPoints = order.RewardPointsWereAdded;
-                    model.UpdateOrderItem.UpdateTotals = order.OrderStatusId <= (int)OrderStatus.Pending;
+                    model.UpdateOrderItem.UpdateTotals = false;
                     model.UpdateOrderItem.ShowUpdateTotals = order.OrderStatusId <= (int)OrderStatus.Pending;
                     model.UpdateOrderItem.ShowUpdateRewardPoints = order.OrderStatusId > (int)OrderStatus.Pending && order.RewardPointsWereAdded;
                 }

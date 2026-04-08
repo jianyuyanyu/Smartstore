@@ -81,12 +81,12 @@
                     </div>
 
                     @* Quantity *@
-                    <div class="cart-item-qty pd-muted">
+                    <div sm-if="item.Quantity > 0" class="cart-item-qty pd-muted">
                         <span>@T("Order.Product(s).Quantity"):</span> <span>@item.Quantity @item.QuantityUnit</span>
                     </div>
 
                     @* Subtotal *@
-                    <div sm-if="item.UnitPrice != item.SubTotal" class="pd-subtotal pd-muted">
+                    <div sm-if="item.UnitPrice != item.SubTotal && item.SubTotal != 0" class="pd-subtotal pd-muted">
                         <span class="pd-subtotal-label">@T("Order.Product(s).Total"):</span>
                         <data asp-for="@item.SubTotal" class="pd-subtotal-amount fwm"></data>
                     </div>

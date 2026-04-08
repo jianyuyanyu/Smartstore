@@ -67,6 +67,7 @@ namespace Smartstore.Admin.Models.Orders
         public int ReturnCaseStatusId { get; set; }
         [LocalizedDisplay("*Status")]
         public string ReturnCaseStatusStr { get; set; }
+        public string NextStep { get; set; }
 
         public string ReturnCaseStatusLabelClass
         {

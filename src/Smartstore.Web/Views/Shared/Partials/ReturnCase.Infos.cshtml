@@ -25,12 +25,12 @@
                     <dt class="col-sm-3">@T("ReturnCase.NextStep")</dt>
                     <dd class="col-sm-9 mb-0">@T($"ReturnCase.NextStep.{rc.ReturnCaseStatus}")</dd>
                 }
+                <dt class="col-sm-3">@T(isWithdrawal ? "ReturnCase.WithdrawalQuantity" : "ReturnRequests.Products.Quantity")</dt>
+                <dd class="col-sm-9 mb-0">@rc.Quantity.ToString("N0")</dd>
                 <dt class="col-sm-3">@T("Account.CustomerReturnRequests.Date")</dt>
                 <dd class="col-sm-9 mb-0">
                     <time asp-for="@rc.CreatedOn" sm-format="g"></time>
                 </dd>
-                <dt class="col-sm-3">@T(isWithdrawal ? "ReturnCase.WithdrawalQuantity" : "ReturnRequests.Products.Quantity")</dt>
-                <dd class="col-sm-9 mb-0">@rc.Quantity.ToString("N0")</dd>
             </dl>
         }
     }
