@@ -1,4 +1,7 @@
-﻿using System.Reflection;
+﻿#nullable enable
+
+using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Smartstore.ComponentModel;
@@ -26,7 +29,7 @@ namespace Smartstore.Web.Modelling.Settings
         private readonly bool _isSingleStoreMode;
         private readonly int _defaultStoreScope;
 
-        private MultiStoreSettingData _data;
+        private MultiStoreSettingData? _data;
 
         public MultiStoreSettingHelper(
             IHttpContextAccessor httpContextAccessor,
@@ -53,6 +56,12 @@ namespace Smartstore.Web.Modelling.Settings
             }
         }
 
+        /// <summary>
+        /// Configures the current instance to use the specified store scope.
+        /// </summary>
+        /// <remarks>If the current store scope is already set to the specified value, this method
+        /// performs no action.</remarks>
+        /// <param name="storeScope">The store scope identifier to apply. Must be zero or a positive integer.</param>
         public void Contextualize(int storeScope)
         {
             Guard.NotNegative(storeScope);
@@ -80,22 +89,22 @@ namespace Smartstore.Web.Modelling.Settings
                 Contextualize(_defaultStoreScope);
             }
 
-            return _data.StoreScope;
+            return _data!.StoreScope;
         }
 
-        public ViewDataDictionary ViewData
+        public ViewDataDictionary? ViewData
         {
             get => _viewDataAccessor.ViewData;
         }
 
-        public MultiStoreSettingData Data
+        public MultiStoreSettingData? Data
         {
             get => _data;
         }
 
-        internal async Task<string> FindOverridenSettingKey(
+        internal async Task<string?> FindOverridenSettingKey(
             string settingName, // PriceSettings
-            string fieldPrefix, // CustomProperties[PriceSettings]
+            string? fieldPrefix, // CustomProperties[PriceSettings]
             string fieldName, // SomePropName
             bool isRootModel, 
             bool allowEmpty, 
@@ -103,7 +112,7 @@ namespace Smartstore.Web.Modelling.Settings
         {
             var request = _httpContextAccessor.HttpContext?.Request;
 
-            if (!request.HasFormContentType || request.Form == null)
+            if (request?.Form == null || !request.HasFormContentType)
             {
                 // This is a GET operation (no form posted), so check against storage
                 var key = settingName + '.' + fieldName;
@@ -126,10 +135,29 @@ namespace Smartstore.Web.Modelling.Settings
             return null;
         }
 
+        /// <summary>
+        /// Determines whether the override checkbox for a specified setting property is checked in the provided form
+        /// collection.
+        /// </summary>
+        /// <typeparam name="TSetting">The type of the settings object. Must implement the ISettings interface.</typeparam>
+        /// <param name="settingInstance">The instance of the settings object containing the property to check.</param>
+        /// <param name="name">The name of the setting property for which to check the override status.</param>
+        /// <param name="form">The form collection containing the submitted values.</param>
+        /// <returns>true if the override checkbox for the specified setting property is checked; otherwise, false.</returns>
         public static bool IsOverrideChecked<TSetting>(TSetting settingInstance, string name, IFormCollection form) 
             where TSetting : ISettings
             => IsOverrideChecked(Guard.NotNull(settingInstance).GetType(), name, form);
 
+        /// <summary>
+        /// Determines whether the override checkbox for a given form field is checked, using the specified prefix and
+        /// field name.
+        /// </summary>
+        /// <remarks>The method checks for an override using both the prefixed and unprefixed field names.
+        /// The key is constructed by appending '_OverrideForStore' to the field name. The checkbox is considered
+        /// checked if the corresponding form value contains 'on' or 'true' (case-insensitive).</remarks>
+        /// <param name="name">The name of the form field to check for an override.</param>
+        /// <param name="form">The form collection containing the submitted values.</param>
+        /// <returns>true if the override checkbox is checked for the specified field; otherwise, false.</returns>
         public static bool IsOverrideChecked(Type settingType, string name, IFormCollection form)
         {
             Guard.NotNull(settingType);
@@ -139,7 +167,7 @@ namespace Smartstore.Web.Modelling.Settings
             return IsOverrideChecked(settingType.Name, name, form, out _);
         }
 
-        internal static bool IsOverrideChecked(string prefix, string name, IFormCollection form, out string key)
+        internal static bool IsOverrideChecked(string? prefix, string name, IFormCollection form, [MaybeNullWhen(false)] out string? key)
         {
             if (prefix.HasValue())
             {
@@ -173,19 +201,42 @@ namespace Smartstore.Web.Modelling.Settings
             }
         }
 
-        public void AddOverrideKey(object settings, string name)
+        /// <summary>
+        /// Adds an override key for the specified settings object and property name to the collection of overridden
+        /// keys.
+        /// </summary>
+        /// <remarks>The override key is constructed using the type name of the settings object and the
+        /// specified property name. This method is typically used to track which settings properties have been
+        /// explicitly overridden.</remarks>
+        /// <param name="settings">The settings object whose property is being overridden. Can be null.</param>
+        /// <param name="name">The name of the property to mark as overridden. Cannot be null or empty.</param>
+        public void AddOverrideKey(object? settings, string name)
         {
             CheckContextualized();
 
             var key = (settings?.GetType()?.Name.EmptyNull() + '.' + name).Trim('.');
-            _data.OverriddenKeys.Add(key);
+            _data!.OverriddenKeys.Add(key);
         }
 
+        /// <summary>
+        /// Detects and records the keys of settings properties that are overridden for a specific store or locale
+        /// within the provided model hierarchy.
+        /// </summary>
+        /// <remarks>This method traverses the model's properties and, for each property that corresponds
+        /// to a configurable setting, determines if an override exists for the current store or locale. If the model
+        /// implements ILocalizedModel, the method recursively processes all localized locale models. In single store
+        /// mode, override detection is skipped.</remarks>
+        /// <param name="settings">The settings object containing the configuration properties to check for overrides.</param>
+        /// <param name="model">The model instance whose properties are examined for override detection. May represent a root or localized
+        /// model.</param>
+        /// <param name="isRootModel">true if the model is the root model in the hierarchy; otherwise, false.</param>
+        /// <param name="propertyNameMapper">A function that maps property names to their corresponding field names in the settings object. Used to
+        /// resolve property name differences between the model and settings.</param>
         public Task DetectOverrideKeysAsync(
             object settings,
             object model,
             bool isRootModel = true,
-            Func<string, string> propertyNameMapper = null)
+            Func<string, string>? propertyNameMapper = null)
         {
             return DetectOverrideKeysInternal(settings, model, isRootModel, propertyNameMapper, null);
         }
@@ -194,7 +245,7 @@ namespace Smartstore.Web.Modelling.Settings
             object settings,
             object model,
             bool isRootModel,
-            Func<string, string> propertyNameMapper,
+            Func<string, string>? propertyNameMapper,
             int? localeIndex)
         {
             if (_isSingleStoreMode)
@@ -214,7 +265,7 @@ namespace Smartstore.Web.Modelling.Settings
 
             foreach (var prop in modelProperties)
             {
-                string key = null;
+                string? key = null;
                 var fieldName = propertyNameMapper?.Invoke(prop.Name) ?? prop.Name;
                 var settingProperty = settingType.GetProperty(fieldName, BindingFlags.Public | BindingFlags.Instance);
 
@@ -232,7 +283,7 @@ namespace Smartstore.Web.Modelling.Settings
                         fieldName,
                         isRootModel: isRootModel,
                         allowEmpty: true, 
-                        storeAccessor: x => _settingService.GetSettingByKeyAsync<string>(x, storeId: _data.StoreScope));
+                        storeAccessor: x => _settingService.GetSettingByKeyAsync<string>(x, storeId: _data!.StoreScope));
                 }
                 else if (localeIndex.HasValue)
                 {
@@ -243,12 +294,12 @@ namespace Smartstore.Web.Modelling.Settings
                         localeKey,
                         isRootModel: isRootModel,
                         allowEmpty: true,
-                        storeAccessor: x => _leService.GetLocalizedValueAsync(localizedModelLocal.LanguageId, _data.StoreScope, settingName, fieldName));
+                        storeAccessor: x => _leService.GetLocalizedValueAsync(localizedModelLocal.LanguageId, _data!.StoreScope, settingName, fieldName));
                 }
 
                 if (key != null)
                 {
-                    _data.OverriddenKeys.Add(key);
+                    _data!.OverriddenKeys.Add(key);
                 }
             }
 
@@ -297,7 +348,7 @@ namespace Smartstore.Web.Modelling.Settings
             CheckContextualized();
 
             var key = formKey;
-            if (await _settingService.GetSettingByKeyAsync<string>(fullSettingName, storeId: _data.StoreScope) == null)
+            if (await _settingService.GetSettingByKeyAsync<string>(fullSettingName, storeId: _data!.StoreScope) == null)
             {
                 key = null;
             }
@@ -318,7 +369,7 @@ namespace Smartstore.Web.Modelling.Settings
         public async Task UpdateSettingsAsync(
             object settings,
             IFormCollection form,
-            Func<string, string> propertyNameMapper = null)
+            Func<string, string>? propertyNameMapper = null)
         {
             CheckContextualized();
 
@@ -337,9 +388,9 @@ namespace Smartstore.Web.Modelling.Settings
 
                 var key = settingName + "." + name;
 
-                if (_data.StoreScope == 0 || IsOverrideChecked(settingName, name, form, out _))
+                if (_data!.StoreScope == 0 || IsOverrideChecked(settingName, name, form, out _))
                 {
-                    dynamic value = prop.GetValue(settings);
+                    dynamic value = prop.GetValue(settings)!;
                     await _settingService.ApplySettingAsync(key, value ?? string.Empty, _data.StoreScope);
                 }
                 else if (_data.StoreScope > 0)
@@ -351,6 +402,16 @@ namespace Smartstore.Web.Modelling.Settings
             await _db.SaveChangesAsync();
         }
 
+        /// <summary>
+        /// Applies a setting value based on the specified form input and store scope asynchronously.
+        /// </summary>
+        /// <remarks>If the store scope is zero or the override is checked in the form, the method applies
+        /// the setting value. Otherwise, it removes the setting for the specified store scope. This method is typically
+        /// used in configuration scenarios where settings can be overridden per store.</remarks>
+        /// <param name="formKey">The key of the form field used to determine whether the setting should be overridden.</param>
+        /// <param name="settingName">The name of the setting property to apply or remove.</param>
+        /// <param name="settings">An object containing the settings from which the property value is retrieved.</param>
+        /// <param name="form">The form collection containing submitted values and override indicators.</param>
         public async Task ApplySettingAsync(
             string formKey,
             string settingName,
@@ -361,14 +422,14 @@ namespace Smartstore.Web.Modelling.Settings
             
             var settingType = settings.GetType();
 
-            if (_data.StoreScope == 0 || IsOverrideChecked(null, formKey, form, out _))
+            if (_data!.StoreScope == 0 || IsOverrideChecked(null, formKey, form, out _))
             {
                 var prop = settingType.GetProperty(settingName);
                 if (prop != null)
                 {
-                    dynamic value = prop.GetValue(settings);
+                    dynamic value = prop.GetValue(settings)!;
                     var key = settingType.Name + "." + settingName;
-                    await _settingService.ApplySettingAsync(key, value ?? string.Empty, _data.StoreScope);
+                    await _settingService.ApplySettingAsync(key, value ?? string.Empty, _data!.StoreScope);
                 }
             }
             else if (_data.StoreScope > 0)
@@ -378,6 +439,7 @@ namespace Smartstore.Web.Modelling.Settings
             }
         }
 
+        /// <inheritdoc cref="MapModelAsync{TModel, TSetting}(TModel, TSetting, IFormCollection, string, Action{TSetting})" />
         public async Task<TSetting> MapModelAsync<TModel, TSetting>(
             TModel model,
             IFormCollection form,
@@ -392,21 +454,34 @@ namespace Smartstore.Web.Modelling.Settings
             return await MapModelAsync(model, settings, form, prefix, onBeforeMap);
         }
 
+        /// <summary>
+        /// Maps values from the specified model to the provided settings instance, applies additional form values, and
+        /// persists changes asynchronously.
+        /// </summary>
+        /// <remarks>The method clones the provided settings instance before mapping and applies form
+        /// values using the specified prefix. Changes are saved to the database asynchronously.</remarks>
+        /// <typeparam name="TModel">The type of the source model. Must inherit from ModelBase.</typeparam>
+        /// <typeparam name="TSetting">The type of the settings object. Must implement ISettings and have a parameterless constructor.</typeparam>
+        /// <param name="model">The source model containing values to map to the settings.</param>
+        /// <param name="settings">The settings instance to update with mapped values. A clone of this instance is used for mapping.</param>
+        /// <param name="form">The form collection containing additional values to apply to the settings.</param>
+        /// <param name="prefix">The prefix used to identify relevant form fields for the settings.</param>
+        /// <param name="onBeforeMap">An optional action to perform on the settings instance before mapping occurs.</param>
+        /// <returns>A settings instance of type TSetting with values mapped from the model and form, after changes have been persisted.</returns>
         public async Task<TSetting> MapModelAsync<TModel, TSetting>(
             TModel model,
             TSetting settings,
             IFormCollection form,
             string prefix,
-            Action<TSetting> onBeforeMap)
+            Action<TSetting>? onBeforeMap)
             where TSetting : class, ISettings, new()
             where TModel : ModelBase
         {
             var mapper = MapperFactory.GetMapper<TModel, TSetting>();
             var settingsProperties = FastProperty.GetProperties(typeof(TSetting)).Values;
 
+            settings = (TSetting)settings.Clone();
             onBeforeMap?.Invoke(settings);
-
-            settings = settings.Clone() as TSetting;
             await mapper.MapAsync(model, settings);
 
             foreach (var prop in settingsProperties)

@@ -27,12 +27,16 @@ internal class Withdrawal : Migration, ILocaleResourcesProvider, IDataSeeder<Sma
 
         if (!Schema.Table(nameof(Order)).Column(nameof(Order.CompletedOn)).Exists())
         {
-            Create.Column(nameof(Order.CompletedOn)).OnTable(nameof(Order)).AsDateTime2().Nullable();
+            Create.Column(nameof(Order.CompletedOn)).OnTable(nameof(Order))
+                .AsDateTime2()
+                .Nullable();
         }
 
         if (!Schema.Table(nameof(Product)).Column(nameof(Product.WithdrawalPeriodDays)).Exists())
         {
-            Create.Column(nameof(Product.WithdrawalPeriodDays)).OnTable(nameof(Product)).AsInt32().Nullable();
+            Create.Column(nameof(Product.WithdrawalPeriodDays)).OnTable(nameof(Product))
+                .AsInt32()
+                .Nullable();
         }
 
         if (!Schema.Table(nameof(Category)).Column(nameof(Category.WithdrawalPeriodDays)).Exists())
