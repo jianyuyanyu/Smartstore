@@ -106,8 +106,8 @@ namespace Smartstore.Web.Modelling.Settings
             string settingName, // PriceSettings
             string? fieldPrefix, // CustomProperties[PriceSettings]
             string fieldName, // SomePropName
-            bool isRootModel, 
-            bool allowEmpty, 
+            bool isRootModel,
+            bool allowEmpty,
             Func<string, Task<string>> storeAccessor)
         {
             var request = _httpContextAccessor.HttpContext?.Request;
@@ -144,7 +144,7 @@ namespace Smartstore.Web.Modelling.Settings
         /// <param name="name">The name of the setting property for which to check the override status.</param>
         /// <param name="form">The form collection containing the submitted values.</param>
         /// <returns>true if the override checkbox for the specified setting property is checked; otherwise, false.</returns>
-        public static bool IsOverrideChecked<TSetting>(TSetting settingInstance, string name, IFormCollection form) 
+        public static bool IsOverrideChecked<TSetting>(TSetting settingInstance, string name, IFormCollection form)
             where TSetting : ISettings
             => IsOverrideChecked(Guard.NotNull(settingInstance).GetType(), name, form);
 
@@ -282,7 +282,7 @@ namespace Smartstore.Web.Modelling.Settings
                         fieldPrefix,
                         fieldName,
                         isRootModel: isRootModel,
-                        allowEmpty: true, 
+                        allowEmpty: true,
                         storeAccessor: x => _settingService.GetSettingByKeyAsync<string>(x, storeId: _data!.StoreScope));
                 }
                 else if (localeIndex.HasValue)
@@ -419,7 +419,7 @@ namespace Smartstore.Web.Modelling.Settings
             IFormCollection form)
         {
             CheckContextualized();
-            
+
             var settingType = settings.GetType();
 
             if (_data!.StoreScope == 0 || IsOverrideChecked(null, formKey, form, out _))
