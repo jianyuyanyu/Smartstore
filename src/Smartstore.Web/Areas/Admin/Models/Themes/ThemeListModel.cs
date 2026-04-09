@@ -5,9 +5,9 @@ namespace Smartstore.Admin.Models.Themes
     [LocalizedDisplay("Admin.Configuration.Themes.Option.")]
     public class ThemeListModel : TabbableModel
     {
-        public List<SelectListItem> AvailableBundleOptimizationValues { get; set; } = new();
+        public List<SelectListItem> AvailableBundleOptimizationValues { get; set; } = [];
 
-        public List<SelectListItem> AvailableAssetCachingValues { get; set; } = new();
+        public List<SelectListItem> AvailableAssetCachingValues { get; set; } = [];
 
         [LocalizedDisplay("*BundleOptimizationEnabled")]
         public int BundleOptimizationEnabled { get; set; }
@@ -17,7 +17,7 @@ namespace Smartstore.Admin.Models.Themes
 
         [LocalizedDisplay("*DefaultDesktopTheme")]
         public string DefaultTheme { get; set; }
-        public List<ThemeDescriptorModel> Themes { get; set; } = new();
+        public List<ThemeDescriptorModel> Themes { get; set; } = [];
 
         [LocalizedDisplay("*AllowCustomerToSelectTheme")]
         public bool AllowCustomerToSelectTheme { get; set; }

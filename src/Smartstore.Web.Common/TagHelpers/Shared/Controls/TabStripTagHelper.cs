@@ -24,6 +24,24 @@ namespace Smartstore.Web.TagHelpers.Shared
         Material
     }
 
+    public enum TabSelectionHandling
+    {
+        /// <summary>
+        /// Don't restore last selected tab if the model is transient (Id == 0), otherwise restore. Default = Auto.
+        /// </summary>
+        Auto = 0,
+
+        /// <summary>
+        /// Always restore last selected tab.
+        /// </summary>
+        Restore = 1,
+
+        /// <summary>
+        /// Never restore last selected tab.
+        /// </summary>
+        None = -1
+    }
+
     public class SelectedTabInfo
     {
         public string TabId { get; set; }
@@ -92,7 +110,7 @@ namespace Smartstore.Web.TagHelpers.Shared
         /// Whether to reselect active tab on page reload. Default = true.
         /// </summary>
         [HtmlAttributeName(SmartTabSelectionAttributeName)]
-        public bool SmartTabSelection { get; set; } = true;
+        public TabSelectionHandling SmartTabSelection { get; set; } = TabSelectionHandling.Auto;
 
         [HtmlAttributeName(OnAjaxBeginAttributeName)]
         public string OnAjaxBegin { get; set; }
@@ -169,7 +187,7 @@ namespace Smartstore.Web.TagHelpers.Shared
                 classList.Add("tabs-{0}".FormatInvariant(Position.ToString().ToLower()));
             }
 
-            if (SmartTabSelection)
+            if (SmartTabSelection > TabSelectionHandling.None)
             {
                 classList.Add("tabs-autoselect");
                 // TODO: (core) Rethink SetSelectedTab in StateController (after we handle DataGrid states with model binders now).
@@ -217,7 +235,7 @@ namespace Smartstore.Web.TagHelpers.Shared
 
             // Enable smart tab selection
             string selector = null;
-            if (SmartTabSelection)
+            if (SmartTabSelection > TabSelectionHandling.None)
             {
                 selector = TrySelectRememberedTab();
             }
@@ -625,9 +643,9 @@ namespace Smartstore.Web.TagHelpers.Shared
             if (Id.IsEmpty())
                 return null;
 
-            if (ViewContext.ViewData.Model is EntityModelBase model && model.Id == 0)
+            if (ViewContext.ViewData.Model is EntityModelBase model && model.Id == 0 && SmartTabSelection == TabSelectionHandling.Auto)
             {
-                // it's a "create" operation: don't select
+                // It's a "CREATE" operation: don't select
                 return null;
             }
 

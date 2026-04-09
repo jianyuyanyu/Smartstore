@@ -550,7 +550,7 @@ namespace Smartstore.Web.Rendering
                 {
                     ViewContext = helper.ViewContext,
                     Id = name,
-                    SmartTabSelection = false,
+                    SmartTabSelection = TabSelectionHandling.None,
                     Style = TabsStyle.Tabs,
                     PublishEvent = false
                 };
