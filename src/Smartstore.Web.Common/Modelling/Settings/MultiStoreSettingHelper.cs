@@ -409,22 +409,24 @@ namespace Smartstore.Web.Modelling.Settings
         /// the setting value. Otherwise, it removes the setting for the specified store scope. This method is typically
         /// used in configuration scenarios where settings can be overridden per store.</remarks>
         /// <param name="formKey">The key of the form field used to determine whether the setting should be overridden.</param>
-        /// <param name="settingName">The name of the setting property to apply or remove.</param>
+        /// <param name="settingNameOrProp">The name of the setting property or the PropertyInfo object to apply.</param>
         /// <param name="settings">An object containing the settings from which the property value is retrieved.</param>
         /// <param name="form">The form collection containing submitted values and override indicators.</param>
         public async Task ApplySettingAsync(
             string formKey,
-            string settingName,
+            object settingNameOrProp,
             object settings,
             IFormCollection form)
         {
             CheckContextualized();
 
+            var settingName = (settingNameOrProp as string ?? (settingNameOrProp as PropertyInfo)?.Name)!;
+            var prop = settingNameOrProp as PropertyInfo;
             var settingType = settings.GetType();
 
             if (_data!.StoreScope == 0 || IsOverrideChecked(null, formKey, form, out _))
             {
-                var prop = settingType.GetProperty(settingName);
+                prop ??= settingType.GetProperty(settingName);
                 if (prop != null)
                 {
                     dynamic value = prop.GetValue(settings)!;
@@ -444,7 +446,7 @@ namespace Smartstore.Web.Modelling.Settings
             TModel model,
             IFormCollection form,
             string prefix,
-            Action<TSetting> onBeforeMap)
+            Action<TSetting>? onBeforeMap = null)
             where TSetting : class, ISettings, new()
             where TModel : ModelBase
         {
@@ -473,22 +475,23 @@ namespace Smartstore.Web.Modelling.Settings
             TSetting settings,
             IFormCollection form,
             string prefix,
-            Action<TSetting>? onBeforeMap)
+            Action<TSetting>? onBeforeMap = null)
             where TSetting : class, ISettings, new()
             where TModel : ModelBase
         {
-            var mapper = MapperFactory.GetMapper<TModel, TSetting>();
-            var settingsProperties = FastProperty.GetProperties(typeof(TSetting)).Values;
-
             settings = (TSetting)settings.Clone();
             onBeforeMap?.Invoke(settings);
+
+            var mapper = MapperFactory.GetMapper<TModel, TSetting>();
             await mapper.MapAsync(model, settings);
 
-            foreach (var prop in settingsProperties)
+            var settingProps = FastProperty.GetProperties(typeof(TSetting)).Values;
+
+            foreach (var prop in settingProps)
             {
                 await ApplySettingAsync(
                     $"{prefix}.{prop.Name}",
-                    prop.Name,
+                    prop,
                     settings,
                     form);
             }
