@@ -39,10 +39,6 @@
                             <dt class="col-sm-4 fwn text-muted">@T("ReturnCase.NextStep")</dt>
                             <dd class="col-sm-8">@T($"ReturnCase.NextStep.{rc.ReturnCaseStatus}")</dd>
                         }
-                        <dt class="col-sm-4 fwn text-muted">@T("Account.CustomerReturnRequests.Date")</dt>
-                        <dd class="col-sm-8">
-                            <time asp-for="@rc.CreatedOn" sm-format="g"></time>
-                        </dd>
                         @if (!isWithdrawal && rc.ReasonForReturn.HasValue())
                         {
                             <dt class="col-sm-4 fwn text-muted">@T("Account.CustomerReturnRequests.Reason")</dt>
@@ -69,6 +65,10 @@
                         </dd>
                         <dt class="col-sm-4 fwn text-muted">@T(isWithdrawal ? "ReturnCase.WithdrawalQuantity" : "ReturnRequests.Products.Quantity")</dt>
                         <dd class="col-sm-8">@rc.Quantity.ToString("N0")</dd>
+                        <dt class="col-sm-4 fwn text-muted">@T("Account.CustomerReturnRequests.Date")</dt>
+                        <dd class="col-sm-8">
+                            <time asp-for="@rc.CreatedOn" sm-format="g"></time>
+                        </dd>
                         @if (rc.CustomerComments.HasValue())
                         {
                             <dt class="col-sm-4 fwn text-muted">@T("Account.CustomerReturnRequests.Comments")</dt>

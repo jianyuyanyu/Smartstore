@@ -286,9 +286,9 @@ namespace Smartstore.Admin.Controllers
         [HttpPost, ActionName("Edit")]
         [FormValueRequired("convert")]
         [Permission(Permissions.Order.ReturnCase.Update)]
-        public async Task<IActionResult> Convert(ReturnCaseModel model, IFormCollection form)
+        public async Task<IActionResult> Convert(int id)
         {
-            var returnCase = await _db.ReturnCases.FindByIdAsync(model.Id);
+            var returnCase = await _db.ReturnCases.FindByIdAsync(id);
             if (returnCase == null)
             {
                 return NotFound();
@@ -301,7 +301,6 @@ namespace Smartstore.Admin.Controllers
 
                 await _db.SaveChangesAsync();
 
-                await Services.EventPublisher.PublishAsync(new ModelBoundEvent(model, returnCase, form));
                 Services.ActivityLogger.LogActivity(KnownActivityLogTypes.EditReturnCase, T("ActivityLog.EditReturnRequest"), returnCase.Id);
                 NotifyInfo(T("ReturnCase.ConvertedWithdrawal", returnCase.ReturnCaseStatus.GetLocalizedEnum()));
             }
@@ -460,6 +459,16 @@ namespace Smartstore.Admin.Controllers
                         model.MaxRefundAmount = new(maxRefundAmount, _primaryCurrency, false, _taxService.GetTaxFormat(true, true));
                     }
                 }
+                
+                ViewBag.ReturnCaseStatuses = Enum.GetValues<ReturnCaseStatus>()
+                    .Select(x => new ExtendedSelectListItem 
+                    { 
+                        Value = ((int)x).ToString(), 
+                        Text = localization.GetLocalizedEnum(x),
+                        Selected = x == returnCase.ReturnCaseStatus,
+                        CustomProperties = new() { ["NextStep"] = T($"ReturnCase.NextStep.{x}").Value }
+                    })
+                    .ToList();
             }
         }
     }

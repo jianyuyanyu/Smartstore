@@ -93,7 +93,7 @@
 
                     <zone name="orderdetails_page_after_item_data" model="item.Id" />
 
-                    <div sm-if="item.ReturnCases.Count > 0 && !Model.IsOrderWithdrawn" class="alert alert-info small mt-2 mb-0" role="status" aria-live="polite">
+                    <div sm-if="item.ReturnCases.Count > 0 && orderWithdrawalReturnCase == null" class="alert alert-info small mt-2 mb-0" role="status" aria-live="polite">
                         <partial name="ReturnCase.Infos" model="item.ReturnCases" />
                     </div>
                 </div>

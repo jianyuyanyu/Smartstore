@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Runtime.Serialization;
 using Smartstore.Core.Checkout.Orders;
 
 namespace Smartstore.Admin.Models.Orders
@@ -122,6 +123,7 @@ namespace Smartstore.Admin.Models.Orders
         public string CustomerEditUrl { get; set; }
         public string ProductEditUrl { get; set; }
 
+        [NotMapped, IgnoreDataMember]
         public UpdateOrderItemModel UpdateOrderItem { get; set; }
     }
 }

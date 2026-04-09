@@ -70,7 +70,7 @@ internal class Withdrawal : Migration, ILocaleResourcesProvider, IDataSeeder<Sma
     {
         await context.MigrateLocaleResourcesAsync(MigrateLocaleResources);
 
-        // Fix "RequestedActionUpdatedOnUtc" where no "RequestedAction" is set.
+        // Fix for cases where "RequestedActionUpdatedOnUtc" is set, but "RequestedAction" is empty.
         await context.ReturnCases
             .Where(x => x.RequestedActionUpdatedOnUtc != null && string.IsNullOrEmpty(x.RequestedAction))
             .ExecuteUpdateAsync(x => x.SetProperty(rc => rc.RequestedActionUpdatedOnUtc, rc => null), cancelToken);
@@ -109,7 +109,8 @@ internal class Withdrawal : Migration, ILocaleResourcesProvider, IDataSeeder<Sma
         builder.AddOrUpdate("Enums.ReturnCaseKind.Return", "Return", "Retoure");
         builder.AddOrUpdate("Enums.ReturnCaseKind.Withdrawal", "Withdrawal", "Widerruf");
 
-        builder.AddOrUpdate("ReturnCase.Case", "Case #{0}", "Fall #{0}");
+        builder.AddOrUpdate("ReturnCase.Case", "Case {0}", "Fall {0}");
+        builder.AddOrUpdate("ReturnCase.CaseNo", "Case No.", "Fall Nr.");
         builder.AddOrUpdate("ReturnCase.NextStep", "Next step", "Nächster Schritt");
         builder.AddOrUpdate("ReturnCase.WithdrawalQuantity", "Withdrawal quantity", "Widerrufsmenge");
         builder.AddOrUpdate("ReturnCase.ReceivedWithdrawal", "We have received your withdrawal.", "Ihr Widerruf ist bei uns eingegangen.");

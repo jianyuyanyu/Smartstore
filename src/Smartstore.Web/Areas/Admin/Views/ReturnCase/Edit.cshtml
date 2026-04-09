@@ -6,6 +6,8 @@
     var rtl = WorkContext.WorkingLanguage.Rtl;
     var isWithdrawal = Model.Kind == ReturnCaseKind.Withdrawal;
     var originatesFromWithdrawal = Model.WithdrawalId.GetValueOrDefault() != 0;
+    var statusItems = ViewBag.ReturnCaseStatuses as List<ExtendedSelectListItem>;
+
     ViewBag.Title = T(isWithdrawal ? "Admin.Withdrawal.EditWithdrawal" : "Admin.ReturnRequests.EditReturnRequestDetails");
 }
 
@@ -15,7 +17,6 @@
     <div class="section-header">
         <div class="title">
             <a sm-backto asp-action="List"></a>
-            <i class="fa @(isWithdrawal ? "fa-reply" : "fa-truck-moving")"></i>
             <span>@ViewBag.Title</span>
         </div>
         <div class="options">
@@ -164,11 +165,16 @@
                         <smart-label asp-for="ReturnCaseStatusId" />
                     </div>
                     <div class="adminData">
-                        <select asp-for="ReturnCaseStatusId" asp-items="Html.GetLocalizedEnumSelectList(typeof(ReturnCaseStatus))"></select>
+                        <select asp-for="ReturnCaseStatusId">
+                            @foreach (var item in statusItems)
+                            {
+                                <option value="@item.Value" attr-selected='(item.Selected, "selected")' data-next-step="@item.CustomProperties["NextStep"]">@item.Text</option>
+                            }
+                        </select>
                         <span asp-validation-for="ReturnCaseStatusId"></span>
                         <span class="d-inline-block text-muted pt-2">
                             <span>@T("ReturnCase.NextStep"):</span>
-                            <span>@Model.NextStep</span>
+                            <span id="ReturnCaseNextStep">@Model.NextStep</span>
                         </span>
                     </div>
                 </div>
@@ -253,3 +259,13 @@
 {
     <partial name="~/Areas/Admin/Views/Order/_UpdateOrderItemDialog.cshtml" model="Model.UpdateOrderItem" />
 }
+
+<script sm-target-zone="scripts" sm-minify="true" data-origin="returncase-edit">
+    $(function () {
+        $('#@Html.IdFor(x => x.ReturnCaseStatusId)').on('change', (e) => {
+            const $el = $(e.currentTarget);
+            const nextStep = $el.find('option:selected').data('next-step');
+            $('#ReturnCaseNextStep').html(nextStep);
+        });
+    });
+</script>
