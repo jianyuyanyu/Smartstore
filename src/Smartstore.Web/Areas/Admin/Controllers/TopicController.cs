@@ -191,7 +191,7 @@ namespace Smartstore.Admin.Controllers
                 await _aclService.ApplyAclMappingsAsync(topic, model.SelectedCustomerRoleIds);
 
                 AddCookieTypes(model, model.CookieType);
-                await Services.EventPublisher.PublishAsync(new ModelBoundEvent(model, topic, Request.Form));
+                await Services.EventPublisher.PublishAsync(new ModelBoundEvent(model, topic, this));
                 NotifySuccess(T("Admin.ContentManagement.Topics.Updated"));
 
                 return continueEditing
@@ -310,7 +310,7 @@ namespace Smartstore.Admin.Controllers
                 await _db.SaveChangesAsync();
 
                 AddCookieTypes(model, model.CookieType);
-                await Services.EventPublisher.PublishAsync(new ModelBoundEvent(model, topic, Request.Form));
+                await Services.EventPublisher.PublishAsync(new ModelBoundEvent(model, topic, this));
                 NotifySuccess(T("Admin.ContentManagement.Topics.Updated"));
 
                 return continueEditing

@@ -291,8 +291,7 @@ namespace Smartstore.Web.Controllers
                     var updateResult = await _userManager.UpdateAsync(customer);
                     if (updateResult.Succeeded)
                     {
-                        await Services.EventPublisher.PublishAsync(new ModelBoundEvent(model, customer, Request.Form));
-
+                        await Services.EventPublisher.PublishAsync(new ModelBoundEvent(model, customer, Request.Form, Services.StoreContext.CurrentStoreIdIfMultiStoreMode));
                         return RedirectToAction(nameof(Info));
                     }
                     else

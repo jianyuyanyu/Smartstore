@@ -251,7 +251,7 @@ namespace Smartstore.Admin.Controllers
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [Permission(Permissions.Cms.Menu.Create)]
-        public async Task<IActionResult> Create(MenuEntityModel model, bool continueEditing, IFormCollection form)
+        public async Task<IActionResult> Create(MenuEntityModel model, bool continueEditing)
         {
             if (ModelState.IsValid)
             {
@@ -266,7 +266,7 @@ namespace Smartstore.Admin.Controllers
                 await UpdateLocalesAsync(menu, model);
                 await _db.SaveChangesAsync();
 
-                await Services.EventPublisher.PublishAsync(new ModelBoundEvent(model, menu, form));
+                await Services.EventPublisher.PublishAsync(new ModelBoundEvent(model, menu, this));
                 NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
 
                 return continueEditing
@@ -302,7 +302,7 @@ namespace Smartstore.Admin.Controllers
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [Permission(Permissions.Cms.Menu.Update)]
-        public async Task<IActionResult> Edit(MenuEntityModel model, bool continueEditing, IFormCollection form)
+        public async Task<IActionResult> Edit(MenuEntityModel model, bool continueEditing)
         {
             var menu = await _db.Menus.FindByIdAsync(model.Id);
             if (menu == null)
@@ -320,7 +320,7 @@ namespace Smartstore.Admin.Controllers
                 await UpdateLocalesAsync(menu, model);
                 await _db.SaveChangesAsync();
 
-                await Services.EventPublisher.PublishAsync(new ModelBoundEvent(model, menu, form));
+                await Services.EventPublisher.PublishAsync(new ModelBoundEvent(model, menu, this));
                 NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
 
                 return continueEditing
@@ -391,7 +391,7 @@ namespace Smartstore.Admin.Controllers
         // Do not name parameter "model" because of property of same name.
         [HttpPost, ParameterBasedOnFormName("save-item-continue", "continueEditing")]
         [Permission(Permissions.Cms.Menu.Update)]
-        public async Task<IActionResult> CreateItem(MenuItemModel itemModel, bool continueEditing, IFormCollection form)
+        public async Task<IActionResult> CreateItem(MenuItemModel itemModel, bool continueEditing)
         {
             if (ModelState.IsValid)
             {
@@ -408,7 +408,7 @@ namespace Smartstore.Admin.Controllers
                 await UpdateLocalesAsync(item, itemModel);
                 await _db.SaveChangesAsync();
 
-                await Services.EventPublisher.PublishAsync(new ModelBoundEvent(itemModel, item, form));
+                await Services.EventPublisher.PublishAsync(new ModelBoundEvent(itemModel, item, this));
                 NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
 
                 return continueEditing
@@ -447,7 +447,7 @@ namespace Smartstore.Admin.Controllers
         // Do not name parameter "model" because of property of same name.
         [HttpPost, ParameterBasedOnFormName("save-item-continue", "continueEditing")]
         [Permission(Permissions.Cms.Menu.Update)]
-        public async Task<IActionResult> EditItem(MenuItemModel itemModel, bool continueEditing, IFormCollection form)
+        public async Task<IActionResult> EditItem(MenuItemModel itemModel, bool continueEditing)
         {
             var item = await _db.MenuItems.FindByIdAsync(itemModel.Id);
             if (item == null)
@@ -467,7 +467,7 @@ namespace Smartstore.Admin.Controllers
                 await UpdateLocalesAsync(item, itemModel);
                 await _db.SaveChangesAsync();
 
-                await Services.EventPublisher.PublishAsync(new ModelBoundEvent(itemModel, item, form));
+                await Services.EventPublisher.PublishAsync(new ModelBoundEvent(itemModel, item, this));
                 NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
 
                 if (continueEditing)

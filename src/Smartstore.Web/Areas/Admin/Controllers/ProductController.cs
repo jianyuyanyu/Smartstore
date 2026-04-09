@@ -191,7 +191,7 @@ namespace Smartstore.Admin.Controllers
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [Permission(Permissions.Catalog.Product.Create)]
-        public async Task<IActionResult> Create(ProductModel model, bool continueEditing, IFormCollection form)
+        public async Task<IActionResult> Create(ProductModel model, bool continueEditing)
         {
             if (model.DownloadFileVersion.HasValue() && model.DownloadId != null)
             {
@@ -209,7 +209,7 @@ namespace Smartstore.Admin.Controllers
             {
                 var product = new Product();
 
-                await MapModelToProductAsync(model, product, form);
+                await MapModelToProductAsync(model, product);
 
                 product.StockQuantity = 10000;
                 product.OrderMinimumQuantity = 1;
@@ -294,7 +294,7 @@ namespace Smartstore.Admin.Controllers
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [Permission(Permissions.Catalog.Product.Update)]
-        public async Task<IActionResult> Edit(ProductModel model, bool continueEditing, IFormCollection form)
+        public async Task<IActionResult> Edit(ProductModel model, bool continueEditing)
         {
             var product = await _db.Products
                 .AsSplitQuery()
@@ -318,7 +318,7 @@ namespace Smartstore.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                await MapModelToProductAsync(model, product, form);
+                await MapModelToProductAsync(model, product);
                 await UpdateDataOfExistingProductAsync(product, model, true);
 
                 Services.ActivityLogger.LogActivity(KnownActivityLogTypes.EditProduct, T("ActivityLog.EditProduct"), product.Name);
@@ -2096,7 +2096,7 @@ namespace Smartstore.Admin.Controllers
 
         #region Update[...]
 
-        private async Task MapModelToProductAsync(ProductModel model, Product product, IFormCollection form)
+        private async Task MapModelToProductAsync(ProductModel model, Product product)
         {
             if (model.LoadedTabs == null || model.LoadedTabs.Length == 0)
             {
@@ -2134,7 +2134,7 @@ namespace Smartstore.Admin.Controllers
                 }
             }
 
-            await Services.EventPublisher.PublishAsync(new ModelBoundEvent(model, product, form));
+            await Services.EventPublisher.PublishAsync(new ModelBoundEvent(model, product, this));
         }
 
         private void UpdateProductGeneralInfo(Product product, ProductModel model)

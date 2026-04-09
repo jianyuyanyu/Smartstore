@@ -239,7 +239,7 @@ namespace Smartstore.Admin.Controllers
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [Permission(Permissions.Configuration.Country.Create)]
-        public async Task<IActionResult> Create(CountryModel model, bool continueEditing, IFormCollection form)
+        public async Task<IActionResult> Create(CountryModel model, bool continueEditing)
         {
             if (ModelState.IsValid)
             {
@@ -251,7 +251,7 @@ namespace Smartstore.Admin.Controllers
                 await _storeMappingService.ApplyStoreMappingsAsync(country, model.SelectedStoreIds);
                 await _db.SaveChangesAsync();
 
-                await Services.EventPublisher.PublishAsync(new ModelBoundEvent(model, country, form));
+                await Services.EventPublisher.PublishAsync(new ModelBoundEvent(model, country, this));
                 NotifySuccess(T("Admin.Configuration.Countries.Added"));
 
                 return continueEditing
@@ -290,7 +290,7 @@ namespace Smartstore.Admin.Controllers
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [Permission(Permissions.Configuration.Country.Update)]
-        public async Task<IActionResult> Edit(CountryModel model, bool continueEditing, IFormCollection form)
+        public async Task<IActionResult> Edit(CountryModel model, bool continueEditing)
         {
             var country = await _db.Countries
                 .Include(x => x.StateProvinces)
@@ -308,7 +308,7 @@ namespace Smartstore.Admin.Controllers
                 await _storeMappingService.ApplyStoreMappingsAsync(country, model.SelectedStoreIds);
                 await _db.SaveChangesAsync();
 
-                await Services.EventPublisher.PublishAsync(new ModelBoundEvent(model, country, form));
+                await Services.EventPublisher.PublishAsync(new ModelBoundEvent(model, country, this));
                 NotifySuccess(T("Admin.Configuration.Countries.Updated"));
 
                 return continueEditing

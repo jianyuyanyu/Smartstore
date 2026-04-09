@@ -308,7 +308,7 @@ namespace Smartstore.Admin.Controllers
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [Permission(Permissions.Catalog.Category.Create)]
-        public async Task<IActionResult> Create(CategoryModel model, bool continueEditing, IFormCollection form)
+        public async Task<IActionResult> Create(CategoryModel model, bool continueEditing)
         {
             if (ModelState.IsValid)
             {
@@ -330,7 +330,7 @@ namespace Smartstore.Admin.Controllers
 
                 await _db.SaveChangesAsync();
 
-                await Services.EventPublisher.PublishAsync(new ModelBoundEvent(model, category, form));
+                await Services.EventPublisher.PublishAsync(new ModelBoundEvent(model, category, this));
 
                 Services.ActivityLogger.LogActivity(KnownActivityLogTypes.AddNewCategory, T("ActivityLog.AddNewCategory"), category.Name);
                 NotifySuccess(T("Admin.Catalog.Categories.Added"));
@@ -382,7 +382,7 @@ namespace Smartstore.Admin.Controllers
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [Permission(Permissions.Catalog.Category.Update)]
-        public async Task<IActionResult> Edit(CategoryModel model, bool continueEditing, IFormCollection form)
+        public async Task<IActionResult> Edit(CategoryModel model, bool continueEditing)
         {
             var category = await _db.Categories
                 .AsSplitQuery()
@@ -413,7 +413,7 @@ namespace Smartstore.Admin.Controllers
                 _db.Categories.Update(category);
                 await _db.SaveChangesAsync();
 
-                await Services.EventPublisher.PublishAsync(new ModelBoundEvent(model, category, form));
+                await Services.EventPublisher.PublishAsync(new ModelBoundEvent(model, category, this));
 
                 Services.ActivityLogger.LogActivity(KnownActivityLogTypes.EditCategory, T("ActivityLog.EditCategory"), category.Name);
                 NotifySuccess(T("Admin.Catalog.Categories.Updated"));

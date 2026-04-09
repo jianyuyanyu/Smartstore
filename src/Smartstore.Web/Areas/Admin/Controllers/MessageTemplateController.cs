@@ -225,7 +225,7 @@ namespace Smartstore.Admin.Controllers
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [FormValueRequired("save", "save-continue")]
         [Permission(Permissions.Cms.MessageTemplate.Update)]
-        public async Task<IActionResult> Edit(MessageTemplateModel model, bool continueEditing, IFormCollection form)
+        public async Task<IActionResult> Edit(MessageTemplateModel model, bool continueEditing)
         {
             var messageTemplate = await _db.MessageTemplates.FindByIdAsync(model.Id);
             if (messageTemplate == null)
@@ -240,7 +240,7 @@ namespace Smartstore.Admin.Controllers
                 await UpdateLocalesAsync(messageTemplate, model);
                 await _db.SaveChangesAsync();
 
-                await Services.EventPublisher.PublishAsync(new ModelBoundEvent(model, messageTemplate, form));
+                await Services.EventPublisher.PublishAsync(new ModelBoundEvent(model, messageTemplate, this));
                 NotifySuccess(T("Admin.ContentManagement.MessageTemplates.Updated"));
 
                 return continueEditing

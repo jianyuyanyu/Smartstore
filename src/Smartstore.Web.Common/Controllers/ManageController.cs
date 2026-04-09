@@ -9,7 +9,7 @@ namespace Smartstore.Web.Controllers
 {
     [TrackActivity(Order = 100)]
     [SaveChanges<SmartDbContext>(Order = int.MaxValue)]
-    public abstract class ManageController : SmartController
+    public abstract class ManageController : SmartController, IStoreScoped
     {
         /// <summary>
         /// Add locales for localizable entities
@@ -92,6 +92,8 @@ namespace Smartstore.Web.Controllers
             await Services.Resolve<IAclService>().ApplyAclMappingsAsync(entity, selectedCustomerRoleIds);
             return await Services.DbContext.SaveChangesAsync();
         }
+
+        int IStoreScoped.StoreScope => GetActiveStoreScopeConfiguration();
 
         /// <summary>
         /// Get active store scope (for multi-store configuration mode)

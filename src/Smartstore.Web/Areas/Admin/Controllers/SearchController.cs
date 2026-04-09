@@ -227,7 +227,7 @@ namespace Smartstore.Admin.Controllers
                 await Services.EventPublisher.PublishAsync(new CategoryTreeChangedEvent(categoriesChange.Value));
             }
 
-            await Services.EventPublisher.PublishAsync(new ModelBoundEvent(model, settings, form));
+            await Services.EventPublisher.PublishAsync(new ModelBoundEvent(model, settings, form, storeScope));
 
             NotifySuccess(T("Admin.Configuration.Updated"));
             return RedirectToAction(nameof(SearchSettings));
