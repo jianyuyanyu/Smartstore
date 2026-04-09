@@ -112,7 +112,7 @@ namespace Smartstore.Web.Modelling.Settings
         {
             var request = _httpContextAccessor.HttpContext?.Request;
 
-            if (request?.Form == null || !request.HasFormContentType)
+            if (request == null || !request.HasFormContentType || request.Form == null)
             {
                 // This is a GET operation (no form posted), so check against storage
                 var key = settingName + '.' + fieldName;
@@ -491,7 +491,7 @@ namespace Smartstore.Web.Modelling.Settings
             {
                 await ApplySettingAsync(
                     $"{prefix}.{prop.Name}",
-                    prop,
+                    prop.Property,
                     settings,
                     form);
             }
