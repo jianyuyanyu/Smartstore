@@ -148,7 +148,7 @@ namespace Smartstore.Admin.Controllers
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [Permission(Permissions.Configuration.PaymentMethod.Update)]
-        public async Task<IActionResult> Edit(string systemName, bool continueEditing, PaymentMethodEditModel model, IFormCollection form)
+        public async Task<IActionResult> Edit(string systemName, bool continueEditing, PaymentMethodEditModel model)
         {
             var provider = _providerManager.GetProvider<IPaymentMethod>(systemName);
             if (provider == null)
@@ -188,7 +188,7 @@ namespace Smartstore.Admin.Controllers
 
             await _db.SaveChangesAsync();
 
-            await Services.EventPublisher.PublishAsync(new ModelBoundEvent(model, paymentMethod, form));
+            await Services.EventPublisher.PublishAsync(new ModelBoundEvent(model, paymentMethod, this));
             NotifySuccess(T("Admin.Common.DataEditSuccess"));
 
             return continueEditing

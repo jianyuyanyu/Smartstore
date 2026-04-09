@@ -331,6 +331,9 @@
                         if (copyFrom.is('input, select, textarea')) {
                             text = copyFrom.val();
                         }
+                        else if (copyFrom.is('pre')) {
+                            text = copyFrom.text();
+                        }
                         else {
                             text = copyFrom.html();
                         }

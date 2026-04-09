@@ -525,6 +525,16 @@ button:where(.reset) {
 }
 
 
+// btn-pure 
+// (combination of btn-clear-dark and btn-no-border)
+// --------------------------------------------------
+
+.btn-plain {
+    @extend .btn-clear-dark;
+    @extend .btn-no-border;
+}
+
+
 // .mf-dropdown (Mobile Friendly dropdown)
 // --------------------------------------------------
 

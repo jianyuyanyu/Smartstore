@@ -9,7 +9,7 @@ namespace Smartstore.Web.Controllers
 {
     [TrackActivity(Order = 100)]
     [SaveChanges<SmartDbContext>(Order = int.MaxValue)]
-    public abstract class ManageController : SmartController
+    public abstract class ManageController : SmartController, IStoreScoped
     {
         /// <summary>
         /// Add locales for localizable entities
@@ -93,6 +93,8 @@ namespace Smartstore.Web.Controllers
             return await Services.DbContext.SaveChangesAsync();
         }
 
+        int IStoreScoped.StoreScope => GetActiveStoreScopeConfiguration();
+
         /// <summary>
         /// Get active store scope (for multi-store configuration mode)
         /// </summary>
@@ -100,7 +102,7 @@ namespace Smartstore.Web.Controllers
         protected internal virtual int GetActiveStoreScopeConfiguration()
         {
             // Ensure that we have 2 (or more) stores
-            if (Services.StoreContext.GetAllStores().Count < 2)
+            if (Services.StoreContext.IsSingleStoreMode())
                 return 0;
 
             var storeId = Services.WorkContext.CurrentCustomer.GenericAttributes.AdminAreaStoreScopeConfiguration;

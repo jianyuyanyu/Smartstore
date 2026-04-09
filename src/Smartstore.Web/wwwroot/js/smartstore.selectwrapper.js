@@ -333,7 +333,7 @@
                                     .parent()
                                     .attr('href', item.url.replace('__id__', item.id))
                                     .attr('title', item.urlTitle)
-                                    .addClass('btn btn-clear-dark btn-no-border btn-sm btn-icon rounded-circle prevent-selection')
+                                    .addClass('btn btn-plain btn-sm btn-icon rounded-circle prevent-selection')
                                     .wrap('<span class="select2-item-btn">')
                                     .parent();
                             }

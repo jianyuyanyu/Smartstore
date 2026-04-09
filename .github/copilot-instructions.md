@@ -11,7 +11,9 @@
 ## Code Style
 - Use specific formatting rules
 - Follow naming conventions
+- Enable nullable reference types explicitly at file level in new or modified C# files using `#nullable enable`, but only if really necessary.
 - New admin model properties must be decorated with `LocalizedDisplayAttribute` using a resource key. For locale resources, use the `AddOrUpdate` overload (key, value, deValue, hint, deHint) where value/deValue are the short visible labels and hint/deHint are the help tooltip texts for a property.
+- Prefer existing utilities like `Smartstore.Utilities.HashCodeCombiner` over ad-hoc hash implementations, provided they cover the use case or can be sensibly extended.
 
 ## Project-Specific Rules
 - For Smartstore Multimap, the indexer is intentionally designed to auto-create and store a new value collection for missing keys (convenience to reduce repetitive code). Do not propose removing this behavior; propose improvements that preserve it.

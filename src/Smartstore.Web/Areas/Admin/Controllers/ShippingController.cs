@@ -197,7 +197,7 @@ namespace Smartstore.Admin.Controllers
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [Permission(Permissions.Configuration.Shipping.Update)]
-        public async Task<IActionResult> Edit(ShippingMethodModel model, bool continueEditing, IFormCollection form)
+        public async Task<IActionResult> Edit(ShippingMethodModel model, bool continueEditing)
         {
             var shippingMethod = await _db.ShippingMethods
                 .Include(x => x.RuleSets)
@@ -218,7 +218,7 @@ namespace Smartstore.Admin.Controllers
                 await UpdateLocalesAsync(shippingMethod, model);
                 await _db.SaveChangesAsync();
 
-                await Services.EventPublisher.PublishAsync(new ModelBoundEvent(model, shippingMethod, form));
+                await Services.EventPublisher.PublishAsync(new ModelBoundEvent(model, shippingMethod, this));
                 NotifySuccess(T("Admin.Configuration.Shipping.Methods.Updated"));
 
                 return continueEditing

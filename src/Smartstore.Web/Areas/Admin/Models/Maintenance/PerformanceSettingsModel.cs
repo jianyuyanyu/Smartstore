@@ -61,6 +61,12 @@ namespace Smartstore.Admin.Models.Maintenance
 
             [LocalizedDisplay("*TrafficLimitGlobal")]
             public int? PeakTrafficLimitGlobal { get; set; }
+
+            [LocalizedDisplay("*MailSendRateWindow")]
+            public TimeSpan MailSendRateWindow { get; set; }
+
+            [LocalizedDisplay("*MailSendRateLimit")]
+            public int? MailSendRateLimit { get; set; }
         }
     }
 
@@ -98,6 +104,9 @@ namespace Smartstore.Admin.Models.Maintenance
                 RuleFor(x => x.PeakTrafficLimitBot).GreaterThan(0);
                 RuleFor(x => x.PeakTrafficLimitGuest).GreaterThan(0);
                 RuleFor(x => x.PeakTrafficLimitGlobal).GreaterThan(0);
+
+                RuleFor(x => x.MailSendRateWindow).GreaterThan(TimeSpan.FromSeconds(0));
+                RuleFor(x => x.MailSendRateLimit).GreaterThan(0);
             }
         }
     }

@@ -282,8 +282,7 @@ namespace Smartstore.Admin.Controllers
         public async Task<IActionResult> TaskExecutionInfoDelete(GridSelection selection)
         {
             var numDeleted = await _taskStore.DeleteExecutionInfosByIdsAsync(selection.GetEntityIds());
-
-            return Json(new { Success = true, Count = numDeleted });
+            return Json(new { Success = numDeleted > 0, Count = numDeleted });
         }
 
         [HttpPost]

@@ -1904,7 +1904,7 @@ public class OrderController : AdminController
             }
         }
 
-        await Services.EventPublisher.PublishAsync(new ModelBoundEvent(model, settings, Request.Form));
+        await Services.EventPublisher.PublishAsync(new ModelBoundEvent(model, settings, Request.Form, storeScope));
 
         NotifySuccess(T("Admin.Configuration.Updated"));
         return RedirectToAction(nameof(OrderSettings));

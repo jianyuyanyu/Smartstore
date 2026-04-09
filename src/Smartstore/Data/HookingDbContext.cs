@@ -361,6 +361,12 @@ namespace Smartstore.Data
                 return;
             }
 
+            if (entityType.GetContainerColumnName() != null)
+            {
+                // JSON-owned entity: lives in a JSON column on the owner's table, not in its own table.
+                return;
+            }
+
             var conventionAnnotation = entityType.FindAnnotation(RelationalAnnotationNames.TableName) as IConventionAnnotation;
             if (conventionAnnotation == null || conventionAnnotation.GetConfigurationSource() == ConfigurationSource.Convention)
             {

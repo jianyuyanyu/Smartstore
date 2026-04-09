@@ -361,7 +361,7 @@ namespace Smartstore.Scheduling
                     )
                     .ToListAsync();
 
-                if (history.Any())
+                if (history.Count > 0)
                 {
                     string abnormalAbort = T("Admin.System.ScheduleTasks.AbnormalAbort");
                     foreach (var entry in history)
@@ -568,7 +568,7 @@ namespace Smartstore.Scheduling
                 idsToDelete.AddRange(ids);
             }
 
-            if (!idsToDelete.Any())
+            if (idsToDelete.Count == 0)
             {
                 return 0;
             }
@@ -577,16 +577,14 @@ namespace Smartstore.Scheduling
 
             try
             {
-                using (var scope = new DbContextScope(Db, retainConnection: true))
+                using var scope = new DbContextScope(Db, retainConnection: true);
+                foreach (var batch in idsToDelete.Chunk(128))
                 {
-                    foreach (var batch in idsToDelete.Chunk(128))
+                    if (!cancelToken.IsCancellationRequested)
                     {
-                        if (!cancelToken.IsCancellationRequested)
-                        {
-                            numDeleted += await Db.TaskExecutionInfos
-                                .Where(x => batch.Contains(x.Id))
-                                .ExecuteDeleteAsync(cancelToken);
-                        }
+                        numDeleted += await Db.TaskExecutionInfos
+                            .Where(x => batch.Contains(x.Id))
+                            .ExecuteDeleteAsync(cancelToken);
                     }
                 }
             }

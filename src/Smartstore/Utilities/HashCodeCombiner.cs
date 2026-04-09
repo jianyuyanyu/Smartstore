@@ -38,6 +38,11 @@ public struct HashCodeCombiner
     public static HashCodeCombiner StartNonDeterministic()
         => new(CurrentSeed);
 
+    public long CombinedHashL
+    {
+        get => _combinedHash64;
+    }
+
     public int CombinedHash
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -192,7 +192,7 @@ namespace Smartstore.Admin.Controllers
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [Permission(Permissions.Catalog.Manufacturer.Create)]
-        public async Task<IActionResult> Create(ManufacturerModel model, bool continueEditing, IFormCollection form)
+        public async Task<IActionResult> Create(ManufacturerModel model, bool continueEditing)
         {
             if (ModelState.IsValid)
             {
@@ -213,7 +213,7 @@ namespace Smartstore.Admin.Controllers
 
                 await _db.SaveChangesAsync();
 
-                await Services.EventPublisher.PublishAsync(new ModelBoundEvent(model, manufacturer, form));
+                await Services.EventPublisher.PublishAsync(new ModelBoundEvent(model, manufacturer, this));
 
                 Services.ActivityLogger.LogActivity(KnownActivityLogTypes.AddNewManufacturer, T("ActivityLog.AddNewManufacturer"), manufacturer.Name);
                 NotifySuccess(T("Admin.Catalog.Manufacturers.Added"));
@@ -261,7 +261,7 @@ namespace Smartstore.Admin.Controllers
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [Permission(Permissions.Catalog.Manufacturer.Update)]
-        public async Task<IActionResult> Edit(ManufacturerModel model, bool continueEditing, IFormCollection form)
+        public async Task<IActionResult> Edit(ManufacturerModel model, bool continueEditing)
         {
             var manufacturer = await _db.Manufacturers
                 .Include(x => x.AppliedDiscounts)
@@ -288,7 +288,7 @@ namespace Smartstore.Admin.Controllers
                 _db.Manufacturers.Update(manufacturer);
                 await _db.SaveChangesAsync();
 
-                await Services.EventPublisher.PublishAsync(new ModelBoundEvent(model, manufacturer, form));
+                await Services.EventPublisher.PublishAsync(new ModelBoundEvent(model, manufacturer, this));
 
                 Services.ActivityLogger.LogActivity(KnownActivityLogTypes.EditManufacturer, T("ActivityLog.EditManufacturer"), manufacturer.Name);
                 NotifySuccess(T("Admin.Catalog.Manufacturers.Updated"));

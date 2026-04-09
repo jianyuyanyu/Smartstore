@@ -9,6 +9,8 @@ namespace Smartstore.Core.Security
     /// </summary>
     public class ResiliencySettings : ISettings
     {
+        #region Traffic
+
         /// <summary>
         /// Gets or sets a value indicating whether overload protection is enabled.
         /// When set to <c>true</c>, the system applies the defined traffic limits and overload protection policies.
@@ -119,5 +121,22 @@ namespace Smartstore.Core.Security
         /// individual user type fairness.
         /// </remarks>
         public int? PeakTrafficLimitGlobal { get; set; } = 50;
+
+        #endregion
+
+        #region Email
+
+        /// <summary>
+        /// Gets or sets the duration of the mail send rate observation window.
+        /// </summary>
+        public TimeSpan MailSendRateWindow { get; set; } = TimeSpan.FromMinutes(1);
+
+        /// <summary>
+        /// Gets or sets the maximum number of mails that may be sent during the <see cref="MailSendRateWindow"/>.
+        /// A value of <c>null</c> means there is no queued mail rate limit.
+        /// </summary>
+        public int? MailSendRateLimit { get; set; } = 500;
+
+        #endregion
     }
 }

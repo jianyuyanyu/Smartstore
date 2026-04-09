@@ -48,7 +48,7 @@ namespace Smartstore.Core.Migrations
                     .AsInt32()
                     .Nullable()
                     .Indexed()
-                    .ForeignKey(mappingTableName, nameof(BaseEntity.Id))
+                    .ForeignKey("FK_SpecAttribute_CollectionGroupMapping_Id", mappingTableName, nameof(BaseEntity.Id))
                     .OnDelete(Rule.SetNull);
             }
         }

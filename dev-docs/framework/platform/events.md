@@ -24,7 +24,7 @@ Event handler methods are used to perform pre- or post-processing tasks for an e
   * For async handlers: `HandleAsync, HandleEventAsync` or `ConsumeAsync.`
   * For sync handlers: `Handle, HandleEvent` or `Consume`
 
-The first parameter of the method must **always** be the event message, or an instance of [ConsumeContext\<TMessage>](../../../src/Smartstore/Events/ConsumeContext.cs).
+The first parameter of the method must **always** be the event message or an instance of [IConsumeContext\<TMessage>](../../../src/Smartstore/Events/ConsumeContext.cs).
 
 The [IConsumerInvoker](../../../src/Smartstore/Events/IConsumerInvoker.cs) interface decides how to call the method based on its signature:
 
@@ -104,6 +104,34 @@ internal class ValidatingCartEventConsumer : IConsumer
 
 {% hint style="info" %}
 **For module developers:** It is good practice to add a file _Events.cs_ to the root of the module and implement all handler methods in it. The class should be internal. If it becomes too large, you should split/group the methods: either many or just partial classes.
+{% endhint %}
+
+### Consuming events by base type or interface
+
+The first parameter does not have to be the exact published type. Declaring a base class or interface instead causes the handler to be invoked for **all published types that derive from it**:
+
+```csharp
+// Called for OrderPlacedEvent, OrderShippedEvent, and any other OrderEventBase subclass
+public void Handle(OrderEventBase message)
+{
+    // message holds the concrete published instance
+}
+```
+
+When several handlers match (e.g. one for `OrderPlacedEvent` and one for `OrderEventBase`), they are all invoked — starting with the most specific type first.
+
+To receive request context alongside the message, declare the parameter as [IConsumeContext\<TMessage>](../../../src/Smartstore/Events/ConsumeContext.cs). Base types work here too:
+
+```csharp
+// Receives request context for OrderPlacedEvent, OrderShippedEvent, etc.
+public void Handle(IConsumeContext<OrderEventBase> context)
+{
+    var message = context.Message; // typed as OrderEventBase
+}
+```
+
+{% hint style="info" %}
+`context.Message` is statically typed as the declared base type. Cast to the concrete type if you need access to derived properties.
 {% endhint %}
 
 ## Publishing events

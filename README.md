@@ -8,7 +8,7 @@
 </h3>
 <h3 align="center"><strong>Ready. Sell. Grow.</strong></h3>
 <p align="center">
-    A modular, scalable and ultra-fast open-source all-in-one eCommerce platform built on ASP.NET Core 9.
+    A modular, scalable and ultra-fast open-source all-in-one eCommerce platform built on ASP.NET Core 10.
 </p>
 <p align="center">
 	<a href="#try-it-online">Try Online</a> ∙
@@ -25,7 +25,7 @@
 </p>
 <br/>
 
-Smartstore is a cross-platform, modular, scalable and ultra-fast open source all-in-one eCommerce platform based on ASP.NET Core 9, Entity Framework, Vue.js, Sass, Bootstrap and more.
+Smartstore is a cross-platform, modular, scalable and ultra-fast open source all-in-one eCommerce platform based on ASP.NET Core 10, Entity Framework, Vue.js, Sass, Bootstrap and more.
 
 **Smartstore includes all the essential features to create multi-language, multi-store, multi-currency shops** targeting desktop or mobile devices and enables SEO-optimised, rich product catalogs with support for unlimited number of products and categories, variants, bundles, datasheets, ESD, discounts, coupons and much more.
 
@@ -33,7 +33,7 @@ A comprehensive set of tools for CRM & CMS, Sales, Marketing, Payment & Shipping
 
 **Smartstore delivers a beautiful and configurable shop frontend out-of-the-box**, built with a high level design approach, including components like `Sass`, `Bootstrap` and others. The included *Flex* theme is modern, clean and fully responsive, giving shoppers the best possible shopping experience on any device.
 
-The state-of-the-art architecture of Smartstore - with `ASP.NET Core 9`, `Entity Framework Core 9` and Domain Driven Design approach - makes it easy to extend, extremely flexible and basically fun to work with ;-)
+The state-of-the-art architecture of Smartstore - with `ASP.NET Core 10`, `Entity Framework Core 10` and Domain Driven Design approach - makes it easy to extend, extremely flexible and basically fun to work with ;-)
 
 * :house: **Website:** [http://www.smartstore.com](http://www.smartstore.com)
 * :orange_book: **Developer Guide:** [Smartstore Developer Guide in English](https://dev.smartstore.com/)
@@ -46,7 +46,7 @@ The state-of-the-art architecture of Smartstore - with `ASP.NET Core 9`, `Entity
 
 ## Technology & Design
 
-* State-of-the-art architecture with `ASP.NET Core 9`, `Entity Framework Core 9` and domain-driven design
+* State-of-the-art architecture with `ASP.NET Core 10`, `Entity Framework Core 10` and domain-driven design
 * Cross-platform: run it on Windows, Linux, or Mac
 * Supports `Docker` out of the box for easy deployment
 * Composable, extensible and highly flexible due to modular design
@@ -117,7 +117,7 @@ The state-of-the-art architecture of Smartstore - with `ASP.NET Core 9`, `Entity
 
 ### Upgrade from Smartstore.NET 4.2
 
-Smartstore 5+ is a port of [Smartstore.NET 4](https://github.com/smartstore/SmartStoreNET) - based on the classic .NET Framework 4.7.2 – to the new `ASP.NET Core 9` platform. Smartstore instances based on classic `ASP.NET MVC` can be upgraded seamlessly. To [upgrade](https://smartstore.atlassian.net/wiki/spaces/SMNET50/pages/1956118609/Updating+from+Previous+Versions), all you need to do is replace the application files on your server - except for the `App_Data` directory - and **all your data will automatically be transferred to the new system**. [See the documentation for detailed information on installing or upgrading your store](https://smartstore.atlassian.net/wiki/spaces/SMNET50/pages/1956118822/Installing+Smartstore).
+Smartstore 5+ is a port of [Smartstore.NET 4](https://github.com/smartstore/SmartStoreNET) - based on the classic .NET Framework 4.7.2 – to the new `ASP.NET Core 10` platform. Smartstore instances based on classic `ASP.NET MVC` can be upgraded seamlessly. To [upgrade](https://smartstore.atlassian.net/wiki/spaces/SMNET50/pages/1956118609/Updating+from+Previous+Versions), all you need to do is replace the application files on your server - except for the `App_Data` directory - and **all your data will automatically be transferred to the new system**. [See the documentation for detailed information on installing or upgrading your store](https://smartstore.atlassian.net/wiki/spaces/SMNET50/pages/1956118822/Installing+Smartstore).
 
  :information_source: Upgrading from versions older than 4.2 is not possible. Therefore, you should migrate Smartstore.NET to version 4.2 first and then upgrade to Smartstore 5+.
 

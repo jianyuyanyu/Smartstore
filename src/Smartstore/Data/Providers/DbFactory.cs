@@ -101,7 +101,7 @@ namespace Smartstore.Data.Providers
 
         public static string[] GetSupportedProviders()
         {
-            return new[] { "Smartstore.Data.SqlServer", "Smartstore.Data.MySql", "Smartstore.Data.PostgreSql", "Smartstore.Data.Sqlite" };
+            return ["Smartstore.Data.SqlServer", "Smartstore.Data.MySql", "Smartstore.Data.PostgreSql", "Smartstore.Data.Sqlite"];
         }
 
         /// <summary>
@@ -111,8 +111,8 @@ namespace Smartstore.Data.Providers
         /// <param name="provider">The provider to find</param>
         public static DbFactory Load(string provider, ITypeScanner typeScanner)
         {
-            Guard.NotEmpty(provider, nameof(provider));
-            Guard.NotNull(typeScanner, nameof(typeScanner));
+            Guard.NotEmpty(provider);
+            Guard.NotNull(typeScanner);
 
             return _loadedFactories.GetOrAdd(provider, key =>
             {
@@ -143,10 +143,10 @@ namespace Smartstore.Data.Providers
                 var path = Path.Combine(baseDirectory, $"{assemblyName}.dll");
                 var assembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(path);
 
-                var dbFactoryType = typeScanner.FindTypes<DbFactory>(new[] { assembly }).FirstOrDefault();
+                var dbFactoryType = typeScanner.FindTypes<DbFactory>([assembly]).FirstOrDefault();
                 if (dbFactoryType == null)
                 {
-                    throw new SystemException($"The data provider assembly '${assemblyName}' does not contain any concrete '${typeof(DbFactory)}' implementation.");
+                    throw new SystemException($"The data provider assembly '{assemblyName}' does not contain any concrete '{typeof(DbFactory)}' implementation.");
                 }
 
                 return (DbFactory)Activator.CreateInstance(dbFactoryType);

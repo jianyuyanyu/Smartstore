@@ -368,7 +368,7 @@ namespace Smartstore.Web.Rendering
 
             var btnTag = new TagBuilder("a");
             btnTag.Attributes["href"] = "javascript:;";
-            btnTag.Attributes["class"] = "btn btn-clear-dark btn-no-border btn-sm btn-icon rounded-circle input-group-icon ai-dialog-opener no-chevron tooltip-toggle";
+            btnTag.Attributes["class"] = "btn btn-plain btn-sm btn-icon rounded-circle input-group-icon ai-dialog-opener no-chevron tooltip-toggle";
             btnTag.Attributes["data-original-title"] = title;
             btnTag.AppendCssClass(isDropdown ? "dropdown-toggle" : additionalClasses);
 

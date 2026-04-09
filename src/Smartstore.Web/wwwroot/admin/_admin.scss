@@ -365,6 +365,11 @@ body {
         height: 28px;
         width: 33px;
 
+        @media (max-width: 390px) {
+            // Otherwise menu items do not fit horizontally
+            display: none;
+        }
+
         @include media-breakpoint-up(lg) {
             height: 28px;
             width: 160px;
@@ -385,6 +390,17 @@ body {
 
     #navbar-menu .nav-item > .dropdown-menu {
         @include bubble("top", "near", 8, var(--dropdown-bg), var(--dropdown-border-color), 10px);
+
+        @include media-breakpoint-only(xs) {
+            &:not(.show) {
+                left: -300px;
+            }
+        }
+
+        &.overflown {
+            --bubble-offset: calc(calc(var(--menu-offset) * -1) + 10px);
+            left: var(--menu-offset, 0px) !important;
+        }
     }
 
     [data-id="nav-modules"] li:not([data-id="modules-manage"]) .dropdown-item {
@@ -736,6 +752,9 @@ legend {
 }
 
 .adminContent {
+    --adminRow-width: 1000px;
+    --adminTitle-width: 0.4;
+    --adminContent-width: 0.6;
     --adminRow-margin-y: 0.8rem;
 
     display: block;
@@ -757,24 +776,21 @@ legend {
     .adminRow {
         display: flex;
         flex-wrap: wrap;
-        margin-top: 0.4rem;
-        margin-bottom: 0.4rem;
-        margin-left: 0 !important;
-        margin-right: 0 !important;
+        margin-block: 0.4rem;
+        margin-inline: 0 !important;
     }
 
     div.adminRow {
-        // div type rows do margin collapse, fix it.
+        // DIV type rows do margin collapse, fix it.
         margin-block: var(--adminRow-margin-y, 0.8rem);
     }
 
     .adminTitle,
     .adminData {
         position: relative;
-        @include make-col-ready();
-        padding-right: 0;
-        padding-left: 0;
         display: block;
+        @include make-col-ready();
+        padding-inline: 0;
     }
 
     .adminTitle {
@@ -823,14 +839,15 @@ legend {
 
         @include media-breakpoint-up(lg) {
             > .adminTitle {
-                flex-basis: calc(400px - var(--adminContent-padding, 0px));
-                max-width: 40%;
+                flex-basis: calc(calc(var(--adminRow-width) * var(--adminTitle-width)) - var(--adminContent-padding, 0px));
+                max-width: calc(var(--adminTitle-width) * 100%);
             }
 
             > .adminData {
-                flex-basis: 600px;
-                width: 600px;
-                max-width: 60%;
+                --w: calc(var(--adminRow-width) * var(--adminContent-width));
+                flex-basis: var(--w);
+                width: var(--w);
+                max-width: calc(var(--adminContent-width) * 100%);
 
                 &.wide {
                     flex-grow: 1;
@@ -838,13 +855,18 @@ legend {
                     max-width: 100%;
                 }
             }
+
+            .adminContainer {
+                flex-basis: var(--adminRow-width);
+                width: var(--adminRow-width);
+                max-width: 100%;
+            }
         }
     }
 
     &.adminContent-boxed {
         --adminContent-padding: 1rem;
-        padding-left: 1rem;
-        padding-right: 1rem;
+        padding-inline: 1rem;
     }
 }
 
@@ -1110,7 +1132,11 @@ legend {
         font-family: $headings-font-family;
         font-weight: $headings-font-weight;
         color: $gray-600;
-        border-bottom: 1px solid rgba(#000, 0.11);
+        border-bottom: 1px solid rgba($black, 0.11);
+    }
+
+    .info {
+        color: $gray-600;
     }
 
     .sub-title {
@@ -1415,7 +1441,6 @@ a.editable {
 // Attributes
 // --------------------------------------------------------------
 
-
 #order-edit .checkout-attributes {
     .attr-caption {
         font-weight: $font-weight-medium;
@@ -1669,3 +1694,57 @@ a.editable {
 .ai-dialog-opener-root .fu-remove {
     margin-inline-end: 2.25em;
 }
+
+
+// Stacktrace formatting (GitHub style)
+// --------------------------------------------------------------
+
+.stacktrace-root {
+    --st-bg-color: var(--gray-150);
+    --st-base-color: var(--body-color);
+    --st-type-color: var(--st-base-color);
+    --st-method-color: #8250df;
+    --st-param-color: var(--st-base-color);
+    --st-param-type-color: #2b91af;
+    --st-param-name-color: var(--st-base-color);
+    --st-file-color: #f68a00;
+    --st-line-color: var(--st-base-color);
+
+    position: relative;
+}
+
+.stacktrace-header {
+    position: sticky;
+    top: var(--content-offset, 0px);
+    background-color: var(--st-bg-color);
+    border-bottom: 1px solid #fff;
+    @include border-top-radius(var(--border-radius-lg));
+}
+
+.stacktrace {
+    background-color: var(--st-bg-color);
+    color: var(--st-base-color);
+    font-size: inherit;
+    @include border-top-radius(0);
+    @include border-bottom-radius(var(--border-radius-lg));
+
+    &:has(> .st-frame) {
+        font-weight: bold;
+    }
+
+    &.wrapped {
+        white-space: pre-wrap;
+    }
+
+    > [class^='st-'] {
+        font-weight: normal;
+    }
+}
+
+.st-type            { color: var(--st-type-color); } 
+.st-method          { color: var(--st-method-color); } 
+.st-frame-params    { color: var(--st-param-color); } 
+.st-param-type      { color: var(--st-param-type-color); } 
+.st-param-name      { color: var(--st-param-name-color); }
+.st-file            { color: var(--st-file-color); }
+.st-line            { color: var(--st-line-color); font-weight: 600 !important; }

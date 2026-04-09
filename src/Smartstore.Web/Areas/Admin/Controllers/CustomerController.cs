@@ -569,7 +569,7 @@ namespace Smartstore.Admin.Controllers
         [FormValueRequired("save", "save-continue")]
         [Permission(Permissions.Customer.Create)]
         [SaveChanges<SmartDbContext>(false)]
-        public async Task<IActionResult> Create(CustomerModel model, bool continueEditing, IFormCollection form)
+        public async Task<IActionResult> Create(CustomerModel model, bool continueEditing)
         {
             var customer = new Customer
             {
@@ -627,7 +627,7 @@ namespace Smartstore.Admin.Controllers
                     await _storeMappingService.ApplyStoreMappingsAsync(customer, model.SelectedStoreIds);
                     await _db.SaveChangesAsync();
 
-                    await Services.EventPublisher.PublishAsync(new ModelBoundEvent(model, customer, form));
+                    await Services.EventPublisher.PublishAsync(new ModelBoundEvent(model, customer, this));
                     Services.ActivityLogger.LogActivity(KnownActivityLogTypes.AddNewCustomer, T("ActivityLog.AddNewCustomer"), customer.Id);
                     NotifySuccess(T("Admin.Customers.Customers.Added"));
 
@@ -674,7 +674,7 @@ namespace Smartstore.Admin.Controllers
         [FormValueRequired("save", "save-continue")]
         [Permission(Permissions.Customer.Update)]
         [SaveChanges<SmartDbContext>(false)]
-        public async Task<IActionResult> Edit(CustomerModel model, bool continueEditing, IFormCollection form)
+        public async Task<IActionResult> Edit(CustomerModel model, bool continueEditing)
         {
             var customer = await _db.Customers
                 .IncludeCustomerRoles()
@@ -814,7 +814,7 @@ namespace Smartstore.Admin.Controllers
                         await _storeMappingService.ApplyStoreMappingsAsync(customer, model.SelectedStoreIds);
                         await _db.SaveChangesAsync();
 
-                        await Services.EventPublisher.PublishAsync(new ModelBoundEvent(model, customer, form));
+                        await Services.EventPublisher.PublishAsync(new ModelBoundEvent(model, customer, this));
                         Services.ActivityLogger.LogActivity(KnownActivityLogTypes.EditCustomer, T("ActivityLog.EditCustomer"), customer.Id);
 
                         NotifySuccess(T("Admin.Customers.Customers.Updated"));

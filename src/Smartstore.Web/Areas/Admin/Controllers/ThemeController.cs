@@ -140,7 +140,7 @@ namespace Smartstore.Admin.Controllers
 
             await MapperFactory.MapAsync(model, themeSettings);
             await Services.SettingFactory.SaveSettingsAsync(themeSettings, model.StoreId);
-            await Services.EventPublisher.PublishAsync(new ModelBoundEvent(model, themeSettings, form));
+            await Services.EventPublisher.PublishAsync(new ModelBoundEvent(model, themeSettings, form, model.StoreId));
 
             NotifySuccess(T("Admin.Configuration.Updated"));
 
@@ -371,7 +371,7 @@ namespace Smartstore.Admin.Controllers
 
             if (returnUrl.IsEmpty())
             {
-                returnUrl = Services.WebHelper.GetUrlReferrer()?.PathAndQuery;
+                returnUrl = Services.WebHelper.ClientInfo.UrlReferrer?.PathAndQuery;
             }
 
             TempData["PreviewModeReturnUrl"] = returnUrl;

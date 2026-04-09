@@ -31,10 +31,7 @@
     gtag('js', new Date());
 
     gtag('config', '{GOOGLEID}', { 'anonymize_ip': true });
-
-    gtag('config', 'GA_MEASUREMENT_ID', {
-      'user_id': '{USERID}'
-    });    
+    gtag('config', '{GOOGLEID}', { 'user_id': '{USERID}' });    
 
 	{ECOMMERCE}
 </script>";

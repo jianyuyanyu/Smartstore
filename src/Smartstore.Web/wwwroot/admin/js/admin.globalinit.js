@@ -182,6 +182,36 @@
         var sectionHeader = $('.section-header');
         var sectionHeaderHasButtons = undefined;
 
+        navbar.find('.dropdown').on('show.bs.dropdown hidden.bs.dropdown', function (e) {
+            const toggle = e.relatedTarget;
+            const menu = toggle.nextElementSibling;
+
+            if (menu) {
+                if (e.type == 'hidden') {
+                    menu.classList.remove('overflown');
+                    menu.style.removeProperty('--menu-offset');
+                    menu.style.removeProperty("left");
+                }
+                else {
+                    // Reset any previous adjustment before measuring
+                    menu.classList.remove('overflown');
+                    menu.style.left = "0px";
+                    menu.style.removeProperty('--menu-offset');
+
+                    requestAnimationFrame(() => {
+                        const rect = menu.getBoundingClientRect();
+                        const overflow = rect.right - document.documentElement.clientWidth;
+
+                        if (overflow > 0) {
+                            menu.classList.add('overflown');
+                            menu.style.setProperty('--menu-offset', `-${overflow + 4}px`);
+                            menu.style.removeProperty("left");
+                        }
+                    });
+                }
+            }
+        });
+
         if (!sectionHeader.hasClass('nofix')) {
             $(window).on("scroll resize", function (e) {
                 if (sectionHeaderHasButtons === undefined) {
