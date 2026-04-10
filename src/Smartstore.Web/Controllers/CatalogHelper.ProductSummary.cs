@@ -11,6 +11,7 @@ using Smartstore.Core.OutputCache;
 using Smartstore.Core.Search;
 using Smartstore.Core.Security;
 using Smartstore.Core.Seo;
+using Smartstore.Core.Web;
 using Smartstore.Data;
 using Smartstore.Diagnostics;
 using Smartstore.Web.Infrastructure.Hooks;
@@ -183,6 +184,7 @@ namespace Smartstore.Web.Controllers
                     ShowDiscountBadge = _priceSettings.ShowSavingBadgeInLists,
                     ShowNewBadge = _catalogSettings.LabelAsNewForMaxDays.HasValue,
                     DeliveryTimesPresentation = settings.DeliveryTimesPresentation,
+                    IsTouchDevice = _userAgent.IsTouchDevice()
                 };
 
                 if (products.Count == 0)

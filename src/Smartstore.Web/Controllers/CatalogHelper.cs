@@ -21,6 +21,7 @@ using Smartstore.Core.Localization;
 using Smartstore.Core.Rules;
 using Smartstore.Core.Security;
 using Smartstore.Core.Seo;
+using Smartstore.Core.Web;
 using Smartstore.Web.Infrastructure.Hooks;
 using Smartstore.Web.Models.Catalog;
 using Smartstore.Web.Models.Catalog.Mappers;
@@ -64,6 +65,7 @@ namespace Smartstore.Web.Controllers
         private readonly ICatalogSearchQueryFactory _catalogSearchQueryFactory;
         private readonly HttpRequest _httpRequest;
         private readonly IUrlHelper _urlHelper;
+        private readonly IUserAgent _userAgent;
         private readonly ProductUrlHelper _productUrlHelper;
         private readonly ILocalizedEntityService _localizedEntityService;
         private readonly LocalizedEntityHelper _localizedEntityHelper;
@@ -105,6 +107,7 @@ namespace Smartstore.Web.Controllers
             ICatalogSearchService catalogSearchService,
             ICatalogSearchQueryFactory catalogSearchQueryFactory,
             IUrlHelper urlHelper,
+            IUserAgent userAgent,
             ProductUrlHelper productUrlHelper,
             ILocalizedEntityService localizedEntityService,
             LocalizedEntityHelper localizedEntityHelper,
@@ -148,6 +151,7 @@ namespace Smartstore.Web.Controllers
             _catalogSearchService = catalogSearchService;
             _catalogSearchQueryFactory = catalogSearchQueryFactory;
             _urlHelper = urlHelper;
+            _userAgent = userAgent;
             _productUrlHelper = productUrlHelper;
             _localizedEntityService = localizedEntityService;
             _localizedEntityHelper = localizedEntityHelper;

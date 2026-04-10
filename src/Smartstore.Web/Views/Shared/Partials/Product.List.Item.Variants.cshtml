@@ -1,11 +1,10 @@
-﻿@using Smartstore.Core.Web;
-@using Smartstore.Web.Models.Catalog;
+﻿@using Smartstore.Web.Models.Catalog;
 
 @model ProductSummaryItemModel
 
 @{
     var list = Model.Parent;
-    var isTouchDevice = UserAgent.IsTouchDevice();
+    var isTouchDevice = list.IsTouchDevice;
     var numTotalColorAttributes = Model.ColorAttributes?.Count ?? 0;
     var numMaxColorAttributes = Math.Min(numTotalColorAttributes, isTouchDevice ? 7 : numTotalColorAttributes);
 }

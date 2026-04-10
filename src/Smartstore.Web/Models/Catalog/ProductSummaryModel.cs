@@ -63,6 +63,8 @@ public partial class ProductSummaryModel : ModelBase, IListActions, IDisposable
     public IPageable PagedList { get; }
     public IEnumerable<int> AvailablePageSizes { get; set; } = [];
 
+    public bool IsTouchDevice { get; set; } // performance optimization to avoid multiple calls to the same method in the view
+
     public void Dispose()
     {
         Items?.Clear();
