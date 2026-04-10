@@ -1,22 +1,29 @@
-﻿@using Smartstore.Web.Models.Catalog;
+﻿@using Smartstore.Core.Web;
+@using Smartstore.Web.Models.Catalog;
 
 @model ProductSummaryItemModel
 
 @{
     var list = Model.Parent;
-    var numColorAttributes = Model.ColorAttributes?.Count ?? 0;
+    var isTouchDevice = UserAgent.IsTouchDevice();
+    var numTotalColorAttributes = Model.ColorAttributes?.Count ?? 0;
+    var numMaxColorAttributes = Math.Min(numTotalColorAttributes, isTouchDevice ? 7 : numTotalColorAttributes);
 }
 
-<div class="art-variant-info">
-    @if (numColorAttributes > 0)
+<div class="art-variant-info" attr-class='(isTouchDevice, "px-0 pt-2")'>
+    @if (numTotalColorAttributes > 0)
     {
         <nav class="art-color-opts" role="listbox" aria-orientation="horizontal" aria-label="@Model.ColorAttributes[0].AttributeName">
-        @foreach (var clr in Model.ColorAttributes)
+        @foreach (var clr in Model.ColorAttributes.Take(numMaxColorAttributes))
         {
             var title = T("Products.ChooseColorX", clr.FriendlyName, clr.AttributeName);
             <a href="@clr.ProductUrl" class="art-color-opt" style="background-color: @clr.Color" role="option" aria-label="@title" title="@title">
                 <span class="sr-only">@clr.FriendlyName</span>
             </a>
+        }
+        @if (numTotalColorAttributes > numMaxColorAttributes)
+        {
+            <span class="fwm">+@(numTotalColorAttributes - numMaxColorAttributes)</span>
         }
         </nav>
     }
