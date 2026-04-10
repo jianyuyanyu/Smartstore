@@ -500,5 +500,33 @@ namespace Smartstore.Web.Modelling.Settings
 
             return settings;
         }
+
+        /// <summary>
+        /// Loads settings of the specified type, maps them to the specified model, and returns both the populated model and the settings instance.
+        /// </summary>
+        /// <typeparam name="TSetting">The type of settings to load. Must implement <see cref="ISettings"/> and have a parameterless constructor.</typeparam>
+        /// <typeparam name="TModel">The type of model to map the settings to. Must derive from <see cref="ModelBase"/>.</typeparam>
+        /// <param name="prefix">An optional prefix to apply to the HTML field names. Also required to create proper override key names.</param>
+        /// <returns>A tuple containing the mapped model and the loaded settings instance.</returns>
+        public async Task<(TModel Model, TSetting Settings)> MapSettingsAsync<TSetting, TModel>(string? prefix = null)
+            where TSetting : class, ISettings, new()
+            where TModel : ModelBase
+        {
+            if (prefix.HasValue())
+            {
+                ViewData?.TemplateInfo?.HtmlFieldPrefix = prefix;
+            }
+
+            var storeScope = EnsureContextualized();
+            var settings = await _settingFactory.LoadSettingsAsync<TSetting>(storeScope);
+            var mapper = MapperFactory.GetMapper<TSetting, TModel>();
+            var model = Activator.CreateInstance<TModel>();
+
+            await mapper.MapAsync(settings, model);
+
+            await DetectOverrideKeysAsync(settings, model);
+
+            return (model, settings);
+        }
     }
 }

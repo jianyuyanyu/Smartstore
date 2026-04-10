@@ -54,19 +54,22 @@ else
             {
                 continue;
             }
+            var selectId = $"orderitem-select{item.Id}";
             var quantityId = $"orderitem-quantity{item.Id}";
             var maxQuantity = item.MaxReturnQuantity;
             var hasWarning = item.Warning.HasValue();
             <div class="cart-row return-item">
                 <div class="row">
                     <div sm-if="isEditable && hasItemsToReturn && !hasSingleItemToReturn" class="select-cart-item col-auto">
-                        <input name="orderitem-select@(item.Id)"
+                        <input id="@selectId"
+                               name="@selectId"
                                type="checkbox"
                                class="form-check-input select-cart-item-checkbox return-item-checkbox"
                                attr-class='(!item.CanReturnItem, "invisible")'
                                attr-checked='(returnAll || item.Selected, "checked")'
                                attr-aria-disabled='(returnAll, "true")'
                                attr-disabled='(returnAll, "disabled")' />
+                        <label for="@selectId" class="sr-only"></label>
                     </div>
                     <div class="cart-item-img col-2" sm-if="item.Image != null && item.Image.HasImage()">
                         <img sm-model="item.Image" class="img-fluid" attr-alt='(item.Image.Alt.IsEmpty(), item.ProductName)' />

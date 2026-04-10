@@ -22,10 +22,10 @@
         <li class="returncase-item mb-3" aria-labelledby="returncase-title@(rc.Id)">
             <div class="card">
                 <div class="card-body">
-                    <div id="returncase-title@(rc.Id)" class="card-title h5 mb-4">
+                    <h2 id="returncase-title@(rc.Id)" class="card-title h5 mb-4">
                         <i class="fal fa-fw fal @(isWithdrawal ? "fa-reply-all" : "fa-truck") mr-1" aria-hidden="true"></i>
                         <span>@(rc.KindStr) &middot; @T("ReturnCase.Case", rc.Id)</span>
-                    </div>
+                    </h2>
                     <dl class="row mb-0" role="presentation">
                         <dt class="col-sm-4 fwn text-muted">@T("Common.Status")</dt>
                         <dd class="col-sm-8">
