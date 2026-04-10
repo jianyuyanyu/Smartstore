@@ -27,6 +27,17 @@ public static class IUserAgentExtensions
         => userAgent.Device.Type is UserAgentDeviceType.Tablet;
 
     /// <summary>
+    /// Checks whether the agent is likely a touch-enabled device.
+    /// This includes smartphones, tablets (e.g. iPad, Android tablets, Microsoft Surface),
+    /// and wearables. Note: touch-screen desktops/laptops cannot be reliably detected
+    /// server-side; use client-side detection for precise results.
+    /// </summary>
+    public static bool IsTouchDevice(this IUserAgent userAgent)
+        => userAgent.Device.Type is UserAgentDeviceType.Smartphone
+            or UserAgentDeviceType.Tablet
+            or UserAgentDeviceType.Wearable;
+
+    /// <summary>
     /// Checks whether agent is the Smartstore application itself.
     /// </summary>
     public static bool IsApplication(this IUserAgent userAgent) 
