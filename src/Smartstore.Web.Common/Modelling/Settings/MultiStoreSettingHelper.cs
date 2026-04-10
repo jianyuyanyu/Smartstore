@@ -510,7 +510,7 @@ namespace Smartstore.Web.Modelling.Settings
         /// <returns>A tuple containing the mapped model and the loaded settings instance.</returns>
         public async Task<(TModel Model, TSetting Settings)> MapSettingsAsync<TSetting, TModel>(string? prefix = null)
             where TSetting : class, ISettings, new()
-            where TModel : ModelBase
+            where TModel : ModelBase, new()
         {
             if (prefix.HasValue())
             {
@@ -519,10 +519,7 @@ namespace Smartstore.Web.Modelling.Settings
 
             var storeScope = EnsureContextualized();
             var settings = await _settingFactory.LoadSettingsAsync<TSetting>(storeScope);
-            var mapper = MapperFactory.GetMapper<TSetting, TModel>();
-            var model = Activator.CreateInstance<TModel>();
-
-            await mapper.MapAsync(settings, model);
+            var model = await MapperFactory.MapAsync<TSetting, TModel>(settings);
 
             await DetectOverrideKeysAsync(settings, model);
 
