@@ -23,6 +23,7 @@
     --art-box-shadow: var(--box-shadow-sm);
     --art-active-bg-color: #{$art-active-bg-color};
     --art-active-border-color: #{$art-active-border-color};
+    --art-color-opt-size: 1rem;
 
     &.artlist-lines {
         --art-font-size: #{$font-size-base};
@@ -389,13 +390,17 @@
 
 .art-color-opt {
     display: block;
-    width: 1rem;
-    height: 1rem;
+    width: var(--art-color-opt-size);
+    height: var(--art-color-opt-size);
     text-decoration: none;
 
     &:hover {
-        outline: 1px solid rgba(#000, 0.3);
+        outline: 1px solid rgba($black, 0.3);
     }
+}
+
+.art-opt-plus {
+    height: var(--art-color-opt-size);
 }
 
 .art-more-opts {
