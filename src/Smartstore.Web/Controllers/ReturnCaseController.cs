@@ -138,7 +138,7 @@ namespace Smartstore.Web.Controllers
                 }
 
                 NotifySuccess(T("ReturnRequests.Submitted"));
-                return RedirectToAction(nameof(CustomerController.Orders), "Customer");
+                return RedirectToAction(nameof(OrderController.Details), "Order", new { id });
             }
 
             ModelState.AddModelError(string.Empty, T("ReturnRequests.NoItemsSubmitted"));

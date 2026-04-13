@@ -91,35 +91,35 @@ internal class Withdrawal : Migration, ILocaleResourcesProvider, IDataSeeder<Sma
         builder.AddOrUpdate("Admin.Catalog.Products.Fields.WithdrawalPeriodDays",
             "Withdrawal period (in days)",
             "Widerrufsfrist (in Tagen)",
-            "Specifies the number of days within which the product can be withdrawn. A value of 0 means that the product cannot be withdrawn (e.g., hygiene products)."
+            "Specifies the number of days within which the product can be withdrawn. A value of 0 means that the product is not eligible for withdrawal (e.g., hygiene products)."
             + " This setting is only effective when the withdrawal plugin is used.",
             "Legt die Frist in Tagen fest, bis zu der das Produkt widerrufen werden kann. Der Wert 0 bedeutet, dass das Produkt nicht widerrufbar ist (z.B. Hygieneartikel)."
-            + " Diese Einstellung ist nur wirksam, wenn das Vertragswiderrufs-Plugin verwendet wird.");
+            + " Diese Einstellung wirkt sich nur aus, wenn das Vertragswiderrufs-Plugin verwendet wird.");
 
         builder.AddOrUpdate("Admin.Catalog.Categories.Fields.WithdrawalPeriodDays",
             "Withdrawal period (in days)",
             "Widerrufsfrist (in Tagen)",
-            "Specifies the number of days within which products in this category can be withdrawn. A value of 0 means that the products cannot be withdrawn (e.g., hygiene products)."
-            + " If a product is assigned to multiple categories, it must meet the withdrawal period for each category in order to be withdrawn."
+            "Specifies the number of days within which products in this category can be withdrawn. A value of 0 means that the product is not eligible for withdrawal (e.g., hygiene products)."
+            + " If a product is assigned to multiple categories, the withdrawal period of each category must be met in order for the product to be eligible for withdrawal."
             + " This setting is only effective when the withdrawal plugin is used.",
             "Legt die Frist in Tagen fest, innerhalb derer Produkte dieser Warengruppe widerrufen werden können. Der Wert 0 bedeutet, dass die Produkte nicht widerrufbar sind"
             + " (z.B. Hygieneartikel). Wenn ein Produkt mehreren Warengruppen zugeordnet ist, müssen die Widerrufsfristen aller Warengruppen eingehalten sein, damit der Artikel"
-            + " widerrufen werden kann. Diese Einstellung ist nur wirksam, wenn das Vertragswiderrufs-Plugin verwendet wird.");
+            + " widerrufen werden kann. Diese Einstellung wirkt sich nur aus, wenn das Vertragswiderrufs-Plugin verwendet wird.");
 
         builder.AddOrUpdate("Enums.ReturnCaseKind.Return", "Return", "Retoure");
         builder.AddOrUpdate("Enums.ReturnCaseKind.Withdrawal", "Withdrawal", "Widerruf");
 
         builder.AddOrUpdate("ReturnCase.Case", "Case {0}", "Fall {0}");
-        builder.AddOrUpdate("ReturnCase.CaseNo", "Case No.", "Fall Nr.");
+        builder.AddOrUpdate("ReturnCase.CaseNo", "Case no.", "Fall Nr.");
         builder.AddOrUpdate("ReturnCase.NextStep", "Next step", "Nächster Schritt");
         builder.AddOrUpdate("ReturnCase.WithdrawalQuantity", "Withdrawal quantity", "Widerrufsmenge");
         builder.AddOrUpdate("ReturnCase.ReceivedWithdrawal", "We have received your withdrawal.", "Ihr Widerruf ist bei uns eingegangen.");
         builder.AddOrUpdate("ReturnCase.Open", "Open", "Offen");
-        builder.AddOrUpdate("ReturnCase.Complete", "Complete", "Abgeschlossen");
+        builder.AddOrUpdate("ReturnCase.Complete", "Completed", "Abgeschlossen");
 
         builder.AddOrUpdate("ReturnCase.NextStep.Pending", "Please return the items.", "Bitte senden Sie die Artikel zurück.");
         builder.AddOrUpdate("ReturnCase.NextStep.Received", "We are processing your return.", "Wir bearbeiten Ihre Rücksendung.");
-        builder.AddOrUpdate("ReturnCase.NextStep.ReturnAuthorized", "We will deal with the matter further.", "Wir veranlassen die weitere Bearbeitung.");
+        builder.AddOrUpdate("ReturnCase.NextStep.ReturnAuthorized", "We will continue processing your request.", "Wir veranlassen die weitere Bearbeitung.");
         builder.AddOrUpdate("ReturnCase.NextStep.ItemsRepaired", "We will send the repaired items back to you.", "Wir senden Ihnen die reparierten Artikel zurück.");
         builder.AddOrUpdate("ReturnCase.NextStep.ItemsRefunded", "The refund has been processed.", "Die Erstattung wurde veranlasst.");
         builder.AddOrUpdate("ReturnCase.NextStep.RequestRejected", "No further action is required.", "Es ist keine weitere Aktion erforderlich.");
@@ -134,7 +134,7 @@ internal class Withdrawal : Migration, ILocaleResourcesProvider, IDataSeeder<Sma
             "Für diesen Artikel wurde ein Widerruf eingereicht.");
 
         builder.AddOrUpdate("ReturnCase.ReturnItemExists",
-            "This item has returns.",
+            "There are returns for this item.",
             "Für diesen Artikel liegen Retouren vor.");
 
         builder.AddOrUpdate("ReturnCase.StartProcessing",
@@ -158,7 +158,7 @@ internal class Withdrawal : Migration, ILocaleResourcesProvider, IDataSeeder<Sma
         builder.AddOrUpdate("PageTitle.OrderDetails")
             .Value("de", "Bestelldetails");
 
-        builder.AddOrUpdate("Admin.ReturnRequests.EditReturnRequestDetails", "Edit return", "Retoure bearbeiten");
+        builder.AddOrUpdate("Admin.ReturnRequests.EditReturnRequestDetails", "Edit return request", "Retoure bearbeiten");
         builder.AddOrUpdate("Admin.Withdrawal.EditWithdrawal", "Edit withdrawal", "Widerruf bearbeiten");
 
         builder.AddOrUpdate("Account.CustomerReturnRequests.Date", "Requested on", "Angefragt am");
