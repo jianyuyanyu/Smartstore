@@ -203,7 +203,7 @@ namespace Smartstore.Admin.Controllers
 
                 await Services.EventPublisher.PublishAsync(new ModelBoundEvent(model, returnCase, form));
                 Services.ActivityLogger.LogActivity(KnownActivityLogTypes.EditReturnCase, T("ActivityLog.EditReturnRequest"), returnCase.Id);
-                NotifySuccess(T("Admin.ReturnRequests.Updated"));
+                NotifySuccess(T("Admin.Common.SuccessfullySaved"));
 
                 return continueEditing
                     ? RedirectToAction(nameof(Edit), returnCase.Id)
@@ -322,7 +322,7 @@ namespace Smartstore.Admin.Controllers
             await _db.SaveChangesAsync();
 
             Services.ActivityLogger.LogActivity(KnownActivityLogTypes.DeleteReturnCase, T("ActivityLog.DeleteReturnRequest"), id);
-            NotifySuccess(T("Admin.ReturnRequests.Deleted"));
+            NotifySuccess(T("Admin.Common.SuccessfullyDeleted"));
 
             return RedirectToAction(nameof(List));
         }

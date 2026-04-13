@@ -120,9 +120,28 @@ public class SmartDbContextDataSeeder : IDataSeeder<SmartDbContext>
 
         builder.AddOrUpdate("Account.CustomerOrders.ReturnItems", "Return items", "Artikel zurücksenden");
 
+        builder.Delete("Admin.ReturnRequests.Updated",
+            "Admin.ReturnRequests.Deleted");
+
         builder.AddOrUpdate("ReturnRequests.NoItemsSubmitted",
             "Please select the number of items you wish to return.",
             "Bitte wählen Sie die Menge der Artikel aus, die Sie zurücksenden möchten.");
+
+        builder.AddOrUpdate("ReturnRequests.Submit", "Submit return request", "Retourenantrag absenden");
+        builder.AddOrUpdate("ReturnRequests.Submitted", "A return request has been submitted.", "Der Retourenantrag wurde übermittelt.");
+
+        builder.AddOrUpdate("Admin.ReturnRequests.Fields.ID",
+            "ID",
+            "ID",
+            "ID of the withdrawal or return",
+            "ID des Widerrufs bzw. der Retoure");
+
+        builder.AddOrUpdate("Admin.Common.SuccessfullySaved",
+            "The changes have been saved successfully.",
+            "Die Änderungen wurden erfolgreich gespeichert.");
+        builder.AddOrUpdate("Admin.Common.SuccessfullyDeleted",
+            "The entries were successfully deleted.",
+            "Die Einträge wurden erfolgreich gelöscht.");
 
         builder.AddOrUpdate("Account.PasswordRecovery.EmailHasBeenSent",
             "If there is an account associated with this email, we have sent a link to reset your password.",

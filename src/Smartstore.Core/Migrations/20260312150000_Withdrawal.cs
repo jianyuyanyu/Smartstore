@@ -163,27 +163,13 @@ internal class Withdrawal : Migration, ILocaleResourcesProvider, IDataSeeder<Sma
 
         builder.AddOrUpdate("Account.CustomerReturnRequests.Date", "Requested on", "Angefragt am");
 
-        builder.AddOrUpdate("Admin.ReturnRequests.Fields.ID",
-            "ID",
-            "ID",
-            "Return item ID",
-            "ID des Retourenartikels");
-
         builder.AddOrUpdate("Admin.ReturnRequests.Fields.Quantity.Hint",
             "Number of items to be returned",
             "Anzahl der zurückzusendenden Artikel");
 
-        builder.AddOrUpdate("Admin.ReturnRequests.Deleted",
-            "The return has been deleted",
-            "Die Retoure wurde gelöscht");
-
         builder.AddOrUpdate("Admin.ReturnRequests.MaxRefundAmount.Hint",
             "The maximum amount that can be refunded for this item.",
             "Der maximale Betrag, der für diesen Retourenartikel erstattet werden kann.");
-
-        builder.AddOrUpdate("Admin.ReturnRequests.Updated",
-            "The return has been successfully processed",
-            "Der Retoure wurde erfolgreich bearbeitet");
 
         builder.AddOrUpdate("Admin.ReturnRequests.Accept.Caption", "Accept the return", "Retoure genehmigen");
     }
