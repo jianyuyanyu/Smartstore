@@ -21,6 +21,9 @@ public class ConsumerDescriptor
     public bool WithEnvelope { get; set; }
     public bool IsAsync { get; set; }
     public bool FireForget { get; set; }
+    public bool LogError { get; set; } = true;
+    public bool ThrowError { get; set; } = true;
+
     public IModuleDescriptor ModuleDescriptor { get; set; }
 
     public Type MessageType { get; set; }

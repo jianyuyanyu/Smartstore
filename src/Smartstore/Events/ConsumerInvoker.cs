@@ -114,16 +114,19 @@ public class ConsumerInvoker : IConsumerInvoker
             return;
         }
 
-        if (ex is AggregateException ae)
+        if (descriptor.LogError)
         {
-            ae.Flatten().InnerExceptions.Each(x => Logger.Error(x));
-        }
-        else
-        {
-            Logger.Error(ex);
+            if (ex is AggregateException ae)
+            {
+                ae.Flatten().InnerExceptions.Each(x => Logger.Error(x));
+            }
+            else
+            {
+                Logger.Error(ex);
+            }
         }
 
-        if (!descriptor.FireForget)
+        if (descriptor.ThrowError && !descriptor.FireForget)
         {
             ex.ReThrow();
         }

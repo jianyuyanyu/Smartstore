@@ -39,10 +39,14 @@ public class ConsumerRegistry : IConsumerRegistry
 
             foreach (var method in methods)
             {
+                var handleErrorAttr = method.GetCustomAttribute<HandleErrorAttribute>(false);
+
                 var descriptor = new ConsumerDescriptor(metadata)
                 {
                     IsAsync = method.ReturnType == typeof(Task),
-                    FireForget = method.HasAttribute<FireForgetAttribute>(false)
+                    FireForget = method.HasAttribute<FireForgetAttribute>(false),
+                    LogError = handleErrorAttr?.Log ?? true,
+                    ThrowError = handleErrorAttr?.Throw ?? true
                 };
 
                 //if (descriptor.IsAsync && descriptor.FireForget)
