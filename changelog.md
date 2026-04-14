@@ -11,7 +11,10 @@
 ### New Features
 
 - Updated to **.NET 10**
-  - Increased overall performance
+  - Increased overall performance.
+- **Withdrawal** plugin (commercial)
+  - Enables customers to submit withdrawals online for eligible orders and items.
+  - Supports compliance with EU rules for digital withdrawal.
 - **AI**
   - New HTML text optimization command: **Organize**: Improves document structure and cleans up HTML markup.
   - #1445 Create a new image using the Media Manager.
