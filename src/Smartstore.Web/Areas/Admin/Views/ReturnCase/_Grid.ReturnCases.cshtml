@@ -29,8 +29,8 @@
     <columns>
         <column for="Id" halign="center" hideable="false">
             <display-template>
-                <span class="badge badge-subtle badge-ring mr-1" :class="item.row.KindLabelClass">{{ item.row.KindStr }}</span>
-                <div class="text-truncate"><a :href="item.row.EditUrl" class="text-truncate">{{ item.value }}</a></div>
+                <span class="badge rounded-pill px-2 mr-1" :class="item.row.KindLabelClass" style="width: 78px; max-width: 78px">{{ item.row.KindStr }}</span>
+                <div class="text-truncate"><a :href="item.row.EditUrl" class="text-truncate fwm">{{ item.value }}</a></div>
             </display-template>
         </column>
         <column for="ProductName" width="2fr" sortable="false">

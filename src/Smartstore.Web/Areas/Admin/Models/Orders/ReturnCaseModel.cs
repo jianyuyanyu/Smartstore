@@ -110,8 +110,8 @@ namespace Smartstore.Admin.Models.Orders
             {
                 return Kind switch
                 {
-                    ReturnCaseKind.Return => "badge-info",
-                    ReturnCaseKind.Withdrawal => "badge-warning",
+                    ReturnCaseKind.Return => "badge-ring badge-secondary",
+                    ReturnCaseKind.Withdrawal => "badge-outline badge-danger",
                     _ => string.Empty,
                 };
             }

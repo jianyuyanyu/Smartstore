@@ -39,22 +39,22 @@
 // --------------------------------------------------
 
 @mixin make-art-row() {
-  --gutter-x: 0;
-  --gutter-y: 0;
-  display: flex;
-  flex-wrap: wrap;
-  margin-top: calc(-1 * var(--gutter-y));
-  margin-right: calc(-.5 * var(--gutter-x));
-  margin-left: calc(-.5 * var(--gutter-x));
+    --gutter-x: 0;
+    --gutter-y: 0;
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: calc(-1 * var(--gutter-y));
+    margin-right: calc(-.5 * var(--gutter-x));
+    margin-left: calc(-.5 * var(--gutter-x));
 }
 
 @mixin make-art-col-ready() {
-  box-sizing: border-box;
-  flex-shrink: 0;
-  width: 100%;
-  max-width: 100%; // Prevent `.col-auto`, `.col` (& responsive variants) from breaking out the grid
-  margin-inline: calc(var(--gutter-x) * .5);
-  margin-top: var(--gutter-y);
+    box-sizing: border-box;
+    flex-shrink: 0;
+    width: 100%;
+    max-width: 100%; // Prevent `.col-auto`, `.col` (& responsive variants) from breaking out the grid
+    margin-inline: calc(var(--gutter-x) * .5);
+    margin-top: var(--gutter-y);
 }
 
 @mixin make-art-col($cols) {

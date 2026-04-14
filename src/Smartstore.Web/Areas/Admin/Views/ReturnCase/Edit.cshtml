@@ -24,10 +24,11 @@
 
             @if (isWithdrawal)
             {
-                <button type="submit" name="convert" value="convert" class="btn btn-primary btn-convert-returncase confirm" title="@T("ReturnCase.StartProcessing.Hint")">
+                <button type="submit" name="convert" value="convert" class="btn btn-secondary btn-convert-returncase confirm" title="@T("ReturnCase.StartProcessing.Hint")">
                     <i class="fa fa-reply-all"></i>
                     <span>@T("ReturnCase.StartProcessing")</span>
-                </button>                    
+                </button>   
+                <span class="vr"></span>
             }
             else
             {
@@ -41,6 +42,7 @@
                     <i class="fa fa-envelope"></i>
                     <span>@T("Admin.ReturnRequests.NotifyCustomer")</span>
                 </button>
+                <span class="vr"></span>
             }
             <button type="submit" name="save" value="save" class="btn btn-warning">
                 <i class="fa fa-check"></i>

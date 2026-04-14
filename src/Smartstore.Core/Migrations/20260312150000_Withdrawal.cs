@@ -113,7 +113,7 @@ internal class Withdrawal : Migration, ILocaleResourcesProvider, IDataSeeder<Sma
         builder.AddOrUpdate("ReturnCase.CaseNo", "Case no.", "Fall Nr.");
         builder.AddOrUpdate("ReturnCase.NextStep", "Next step", "Nächster Schritt");
         builder.AddOrUpdate("ReturnCase.WithdrawalQuantity", "Withdrawal quantity", "Widerrufsmenge");
-        builder.AddOrUpdate("ReturnCase.ReceivedWithdrawal", "We have received your withdrawal.", "Ihr Widerruf ist bei uns eingegangen.");
+        builder.AddOrUpdate("ReturnCase.ReceivedWithdrawal", "Received withdrawal", "Widerruf eingegangen");
         builder.AddOrUpdate("ReturnCase.Open", "Open", "Offen");
         builder.AddOrUpdate("ReturnCase.Complete", "Completed", "Abgeschlossen");
 

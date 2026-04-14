@@ -17,18 +17,18 @@
     {
         foreach (var rc in returnCases)
         {
-            <dl class="row mb-0">
-                <dt class="col-sm-3">@T("Common.Status")</dt>
-                <dd class="col-sm-9 mb-0">@(isWithdrawal? T("ReturnCase.ReceivedWithdrawal") : rc.ReturnCaseStatusStr)</dd>
+            <dl class="cart-item-attrs mb-0">
+                <dt class="fwm text-truncate">@T("Common.Status")</dt>
+                <dd class="mb-0">@(isWithdrawal ? T("ReturnCase.ReceivedWithdrawal") : rc.ReturnCaseStatusStr)</dd>
                 @if(!isWithdrawal)
                 {
-                    <dt class="col-sm-3">@T("ReturnCase.NextStep")</dt>
-                    <dd class="col-sm-9 mb-0">@T($"ReturnCase.NextStep.{rc.ReturnCaseStatus}")</dd>
+                    <dt class="fwm text-truncate">@T("ReturnCase.NextStep")</dt>
+                    <dd class="mb-0">@T($"ReturnCase.NextStep.{rc.ReturnCaseStatus}")</dd>
                 }
-                <dt class="col-sm-3">@T(isWithdrawal ? "ReturnCase.WithdrawalQuantity" : "ReturnRequests.Products.Quantity")</dt>
-                <dd class="col-sm-9 mb-0">@rc.Quantity.ToString("N0")</dd>
-                <dt class="col-sm-3">@T("Account.CustomerReturnRequests.Date")</dt>
-                <dd class="col-sm-9 mb-0">
+                <dt class="fwm text-truncate">@T(isWithdrawal ? "ReturnCase.WithdrawalQuantity" : "ReturnRequests.Products.Quantity")</dt>
+                <dd class="mb-0">@rc.Quantity.ToString("N0")</dd>
+                <dt class="fwm text-truncate">@T("Account.CustomerReturnRequests.Date")</dt>
+                <dd class="mb-0">
                     <time asp-for="@rc.CreatedOn" sm-format="g"></time>
                 </dd>
             </dl>
