@@ -1136,6 +1136,7 @@ namespace Smartstore.Web.Controllers
 
             var store = Services.StoreContext.CurrentStore;
             var model = new CustomerOrderListModel();
+            var paymentMethods = await _paymentService.GetAllPaymentMethodsAsync();
 
             var orders = await _db.Orders
                 .AsNoTracking()
@@ -1155,11 +1156,11 @@ namespace Smartstore.Web.Controllers
             var orderModels = await orders
                 .SelectAwait(async o =>
                 {
-                    customerCurrencies.TryGetValue(o.CustomerCurrencyCode, out var customerCurrency);
+                    var customerCurrency = customerCurrencies.Get(o.CustomerCurrencyCode.EmptyNull());
+                    var paymentMethod = paymentMethods.Get(o.PaymentMethodSystemName.EmptyNull());
+                    (var orderTotal, _) = await _orderService.GetOrderTotalInCustomerCurrencyAsync(o, customerCurrency, paymentMethod);
 
-                    (var orderTotal, _) = await _orderService.GetOrderTotalInCustomerCurrencyAsync(o, customerCurrency);
-
-                    var orderModel = new CustomerOrderListModel.OrderDetailsModel
+                    return new CustomerOrderListModel.OrderDetailsModel
                     {
                         Id = o.Id,
                         OrderNumber = o.GetOrderNumber(),
@@ -1167,8 +1168,6 @@ namespace Smartstore.Web.Controllers
                         OrderStatus = _localizationService.GetLocalizedEnum(o.OrderStatus),
                         OrderTotal = orderTotal
                     };
-
-                    return orderModel;
                 })
                 .ToListAsync();
 

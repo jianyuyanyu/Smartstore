@@ -111,20 +111,26 @@ namespace Smartstore.Core.Checkout.Orders
 
         #endregion
 
-        public async Task<(Money OrderTotal, Money RoundingAmount)> GetOrderTotalInCustomerCurrencyAsync(Order order, Currency targetCurrency)
+        public async Task<(Money OrderTotal, Money RoundingAmount)> GetOrderTotalInCustomerCurrencyAsync(
+            Order order, 
+            Currency targetCurrency,
+            PaymentMethod paymentMethod = null)
         {
             Guard.NotNull(order);
 
             var roundingAmount = order.OrderTotalRounding;
             var orderTotal = order.OrderTotal * order.CurrencyRate;
 
-            // Avoid rounding a rounded value. It would zero roundingAmount.
+            // Avoid rounding the rounded order total again. This would result in a "RoundingAmount" of 0.
             if (orderTotal != order.OrderTotal &&
                 targetCurrency != null &&
                 targetCurrency.RoundOrderTotalEnabled &&
                 order.PaymentMethodSystemName.HasValue())
             {
-                var paymentMethod = await _db.PaymentMethods.AsNoTracking().FirstOrDefaultAsync(x => x.PaymentMethodSystemName == order.PaymentMethodSystemName);
+                paymentMethod ??= await _db.PaymentMethods
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(x => x.PaymentMethodSystemName == order.PaymentMethodSystemName);
+
                 if (paymentMethod?.RoundOrderTotalEnabled ?? false)
                 {
                     orderTotal = _roundingHelper.ToNearest(orderTotal, out roundingAmount, targetCurrency);
