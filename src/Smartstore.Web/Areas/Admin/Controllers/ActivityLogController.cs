@@ -100,11 +100,9 @@ namespace Smartstore.Admin.Controllers
         [Permission(Permissions.Configuration.ActivityLog.Read)]
         public async Task<IActionResult> ActivityLogList(GridCommand command, ActivityLogListModel model)
         {
-            DateTime? startDateValue = (model.CreatedOnFrom == null) ? null
-                : _dateTimeHelper.ConvertToUtcTime(model.CreatedOnFrom.Value, _dateTimeHelper.CurrentTimeZone);
-
-            DateTime? endDateValue = (model.CreatedOnTo == null) ? null
-                : _dateTimeHelper.ConvertToUtcTime(model.CreatedOnTo.Value, _dateTimeHelper.CurrentTimeZone).AddDays(1);
+            var dtHelper = _dateTimeHelper;
+            DateTime? createdFrom = model.CreatedOnFrom == null ? null : dtHelper.ConvertToUtcTime(model.CreatedOnFrom.Value, dtHelper.CurrentTimeZone);
+            DateTime? createdTo = model.CreatedOnTo == null ? null : dtHelper.ConvertToUtcTime(model.CreatedOnTo.Value, dtHelper.CurrentTimeZone).AddDays(1);
 
             var query = _db.ActivityLogs
                 .Include(x => x.Customer)
@@ -117,7 +115,7 @@ namespace Smartstore.Admin.Controllers
             }
 
             var activityLogs = await query
-                .ApplyDateFilter(startDateValue, endDateValue)
+                .ApplyDateFilter(createdFrom, createdTo)
                 .ApplyCustomerFilter(model.CustomerEmail, model.CustomerSystemAccount)
                 .OrderByDescending(x => x.CreatedOnUtc)
                 .ApplyGridCommand(command)
@@ -137,39 +135,40 @@ namespace Smartstore.Admin.Controllers
             };
 
             var mapper = MapperFactory.GetMapper<ActivityLog, ActivityLogModel>();
-            var activityLogModels = await activityLogs.SelectAwait(async x =>
-            {
-                var model = await mapper.MapAsync(x);
-                var systemCustomer = systemAccountCustomers.Get(x.CustomerId);
-
-                model.CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc);
-
-                if (systemCustomer != null)
+            var activityLogModels = await activityLogs
+                .SelectAwait(async x =>
                 {
-                    model.IsSystemAccount = true;
+                    var model = await mapper.MapAsync(x);
+                    var systemCustomer = systemAccountCustomers.Get(x.CustomerId);
+
+                    model.CreatedOn = dtHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc);
                     model.CustomerEditUrl = Url.Action("Edit", "Customer", new { id = x.CustomerId, area = "Admin" });
 
-                    if (systemCustomer.IsBot())
+                    if (systemCustomer != null)
                     {
-                        model.SystemAccountName = resMap["SearchEngine"];
-                    }
-                    else if (systemCustomer.IsBackgroundTaskAccount())
-                    {
-                        model.SystemAccountName = resMap["BackgroundTask"];
-                    }
-                    else if (systemCustomer.IsPdfConverter())
-                    {
-                        model.SystemAccountName = resMap["PdfConverter"];
-                    }
-                    else
-                    {
-                        model.SystemAccountName = string.Empty;
-                    }
-                }
+                        model.IsSystemAccount = true;
 
-                return model;
-            })
-            .ToListAsync();
+                        if (systemCustomer.IsBot())
+                        {
+                            model.SystemAccountName = resMap["SearchEngine"];
+                        }
+                        else if (systemCustomer.IsBackgroundTaskAccount())
+                        {
+                            model.SystemAccountName = resMap["BackgroundTask"];
+                        }
+                        else if (systemCustomer.IsPdfConverter())
+                        {
+                            model.SystemAccountName = resMap["PdfConverter"];
+                        }
+                        else
+                        {
+                            model.SystemAccountName = string.Empty;
+                        }
+                    }
+
+                    return model;
+                })
+                .ToListAsync();
 
             var gridModel = new GridModel<ActivityLogModel>
             {
