@@ -124,8 +124,8 @@ public class SmartDbContextDataSeeder : IDataSeeder<SmartDbContext>
             "Admin.ReturnRequests.Deleted");
 
         builder.AddOrUpdate("ReturnRequests.NoItemsSubmitted",
-            "Please select the number of items you wish to return.",
-            "Bitte wählen Sie die Menge der Artikel aus, die Sie zurücksenden möchten.");
+            "Please select the items you wish to return and specify the quantity.",
+            "Wählen Sie bitte die Artikel und die Menge aus, die Sie zurücksenden möchten.");
 
         builder.AddOrUpdate("ReturnRequests.Submit", "Submit return request", "Retourenantrag absenden");
         builder.AddOrUpdate("ReturnRequests.Submitted", "A return request has been submitted.", "Der Retourenantrag wurde übermittelt.");
@@ -154,7 +154,7 @@ public class SmartDbContextDataSeeder : IDataSeeder<SmartDbContext>
             "Admin.Configuration.Settings.Order.OrderSettings");
 
         builder.AddOrUpdate("Admin.Configuration.Settings.Order.NumberOfDaysReturnRequestAvailable",
-            "Allowed period for return requests (days)",
+            "Allowed period for return requests (in days)",
             "Erlaubter Zeitraum für Retourenanträge (in Tagen)");
 
         builder.AddOrUpdate("Admin.Configuration.Settings.Order.NumberOfDaysReturnRequestAvailable.Hint",
@@ -164,15 +164,15 @@ public class SmartDbContextDataSeeder : IDataSeeder<SmartDbContext>
             + " Dies gilt nur für Retourenanträge im Rahmen des RMA-Verfahrens und nicht für den gesetzlichen Widerruf. Der Wert 0 bedeutet \"unbegrenzt\".");
 
         builder.AddOrUpdate("Admin.Configuration.Settings.Order.ReturnRequestReasons.Hint")
-            .Value("de", "Eine kommaseparierte Liste von Retourengründen, die der Benutzer auswählen kann, wenn er einen Rücksendeantrag übermittelt.");
+            .Value("de", "Eine kommaseparierte Liste von Retourengründen, die der Benutzer auswählen kann, wenn er einen Retourenantrag übermittelt.");
 
         builder.AddOrUpdate("Admin.Configuration.Settings.Order.ReturnRequestActions")
-            .Value("en", "Requested action for return");
+            .Value("en", "Available return actions");
        
         builder.AddOrUpdate("Admin.Configuration.Settings.Order.ReturnRequestActions.Hint",
             "A comma-separated list of the actions that a customer will be able to select when submitting a return request. This is not used for legal withdrawal.",
-            "Eine kommaseparierte Liste von Aktionen, die ein Benutzer auswählen kann, wenn er einen Rücksendeantrag übermittelt. Beispiel: \"Ersatz\", \"Gutschein\" usw."
-            + " Dies wird nicht für den gesetzlichen Widerspruch verwendet.");
+            "Eine kommaseparierte Liste von Aktionen, aus denen der Benutzer wählen kann, wenn er einen Retourenantrag übermittelt. Beispiel: \"Ersatz\", \"Gutschein\" usw."
+            + " Dies wird nicht für den gesetzlichen Widerruf verwendet.");
 
         builder.AddOrUpdate("Admin.Configuration.Settings.Order.ReturnRequestSettings", "Returns", "Retouren");
 
