@@ -21,6 +21,9 @@ namespace Smartstore.Core.Checkout.Rules
         public Customer Customer { get; set; }
         public Store Store { get; set; }
 
+        /// <summary>
+        /// Gets or sets the current shopping cart for the <see cref="Customer"/>, containing only active cart items.
+        /// </summary>
         public ShoppingCart ShoppingCart
         {
             get => _cart ??= ShoppingCartService.GetCartAsync(Customer, storeId: Store.Id).Await();

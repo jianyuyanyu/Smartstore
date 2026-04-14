@@ -460,6 +460,15 @@ namespace Smartstore.Core.Checkout.Rules
                     SelectList = new RemoteRuleValueSelectList(KnownRuleOptionDataSourceNames.DeliveryTime) { Multiple = true },
                     IsComparingSequences = true
                 },
+                new()
+                {
+                    Name = "AllProductsWithDeliveryTimeInCart",
+                    DisplayName = T("Admin.Rules.FilterDescriptor.AllProductsWithDeliveryTimeInCart"),
+                    GroupKey = "ShoppingCart",
+                    RuleType = RuleType.IntArray,
+                    ProcessorType = typeof(AllProductsWithDeliveryTimeInCartRule),
+                    SelectList = new RemoteRuleValueSelectList(KnownRuleOptionDataSourceNames.DeliveryTime) { Multiple = true }
+                },
 
                 new()
                 {

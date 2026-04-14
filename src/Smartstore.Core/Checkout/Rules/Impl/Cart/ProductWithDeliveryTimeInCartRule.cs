@@ -2,6 +2,9 @@
 
 namespace Smartstore.Core.Checkout.Rules.Impl
 {
+    /// <summary>
+    /// Checks whether at least one of the products in the shopping cart has the specified delivery time assigned to it.
+    /// </summary>
     internal class ProductWithDeliveryTimeInCartRule : IRule<CartRuleContext>
     {
         public Task<bool> MatchAsync(CartRuleContext context, RuleExpression expression)

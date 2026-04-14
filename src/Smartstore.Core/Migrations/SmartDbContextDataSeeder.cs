@@ -196,5 +196,9 @@ public class SmartDbContextDataSeeder : IDataSeeder<SmartDbContext>
             "Grenzwert",
             "The maximum number of queued emails that may be sent during the time window. Empty value means there is no limit.",
             "Die maximale Anzahl von E-Mails, die während des Zeitfensters versendet werden dürfen. Ein leerer Wert bedeutet: keine Begrenzung.");
+
+        builder.AddOrUpdate("Admin.Rules.FilterDescriptor.AllProductsWithDeliveryTimeInCart",
+            "All products with delivery time in cart",
+            "Alle Produkte mit Lieferzeit im Warenkorb");
     }
 }
