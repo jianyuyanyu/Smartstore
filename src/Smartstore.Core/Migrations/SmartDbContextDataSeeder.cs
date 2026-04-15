@@ -206,5 +206,9 @@ public class SmartDbContextDataSeeder : IDataSeeder<SmartDbContext>
         builder.AddOrUpdate("RewardPoints.PointsForPurchasesInfo",
             "For every {0} net order value, {1} points are awarded.",
             "Für einen Auftragswert von je {0} netto werden {1} Punkte gewährt.");
+
+        builder.AddOrUpdate("Admin.Configuration.Settings.GeneralCommon.GoogleRecaptcha.Info",
+            "Manage keys and domains in the <a class='fwm' href='https://www.google.com/recaptcha/admin' target='_blank'>reCAPTCHA Admin Console</a>. v3 runs invisibly with a risk score; optional step-up challenges can be enabled if needed.",
+            "Keys und Domains verwalten Sie in der <a class='fwm' href='https://www.google.com/recaptcha/admin' target='_blank'>reCAPTCHA Admin Console</a>. Bei v3 erfolgt die Bewertung unsichtbar per Score; Step-Up-Prüfungen sind optional möglich.");
     }
 }
