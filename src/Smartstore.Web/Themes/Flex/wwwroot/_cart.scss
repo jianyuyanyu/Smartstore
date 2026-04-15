@@ -271,7 +271,7 @@
     display: grid !important;
     grid-template-columns: fit-content(50%) fit-content(50%); 
     gap: 4px 12px;
-    line-height: 1.2;
+    line-height: 1.25;
 
     > span:nth-child(odd) {
         font-weight: $font-weight-medium;
