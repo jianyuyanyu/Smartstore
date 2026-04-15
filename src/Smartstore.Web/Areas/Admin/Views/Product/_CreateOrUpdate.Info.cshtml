@@ -353,8 +353,9 @@
             <smart-label asp-for="WithdrawalPeriodDays" />
         </div>
         <div class="adminData">
-            @* TODO: (mg) (w) Use default period as placeholder *@
-            <editor asp-for="WithdrawalPeriodDays" sm-postfix="@T("Time.Days")" placeholder="@T("Common.Unspecified")" />
+            <editor asp-for="WithdrawalPeriodDays" 
+                    sm-postfix="@T("Time.Days")" 
+                    placeholder="@(CommonServices.Settings.GetSettingByKey<string>("WithdrawalSettings.WithdrawalPeriodDays").NullEmpty() ?? T("Common.Unlimited"))" />
             <span asp-validation-for="WithdrawalPeriodDays"></span>
         </div>
     </div>

@@ -200,5 +200,7 @@ public class SmartDbContextDataSeeder : IDataSeeder<SmartDbContext>
         builder.AddOrUpdate("Admin.Rules.FilterDescriptor.AllProductsWithDeliveryTimeInCart",
             "All products with delivery time in cart",
             "Alle Produkte mit Lieferzeit im Warenkorb");
+
+        builder.AddOrUpdate("Common.Unlimited", "Unlimited", "Unbegrenzt");
     }
 }
