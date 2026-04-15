@@ -468,6 +468,8 @@ $mixed-megamenu-bg:             $megamenu-bg;
 }
 
 [dir=rtl] {
+    --dir-factor: -1;
+
     // Overrite bootstrap's RTL dropdown menu positioning
     .megamenu-dropdown-container .dropdown-menu {
         inset-inline-start: initial;
