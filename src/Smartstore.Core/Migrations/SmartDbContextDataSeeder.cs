@@ -202,5 +202,9 @@ public class SmartDbContextDataSeeder : IDataSeeder<SmartDbContext>
             "Alle Produkte mit Lieferzeit im Warenkorb");
 
         builder.AddOrUpdate("Common.Unlimited", "Unlimited", "Unbegrenzt");
+
+        builder.AddOrUpdate("RewardPoints.PointsForPurchasesInfo",
+            "For every {0} net order value, {1} points are awarded.",
+            "Für einen Auftragswert von je {0} netto werden {1} Punkte gewährt.");
     }
 }

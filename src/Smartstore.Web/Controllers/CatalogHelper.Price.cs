@@ -96,7 +96,9 @@ public partial class CatalogHelper
 
         if (computeRewardAmount)
         {
-            var rewardPoints = _orderCalculationService.Value.GetRewardPointsForPurchase(subtotal.FinalPrice.Amount);
+            var currency = _services.WorkContext.WorkingCurrency;
+            var amount = _roundingHelper.RoundIfEnabledFor(subtotal.Tax?.PriceNet ?? subtotal.FinalPrice.Amount, currency);
+            var rewardPoints = _orderCalculationService.Value.GetRewardPointsForPurchase(amount);
             if (rewardPoints != 0)
             {
                 var rewardAmountBase = _orderCalculationService.Value.ConvertRewardPointsToAmount(rewardPoints);
@@ -104,7 +106,7 @@ public partial class CatalogHelper
                 priceModel.Reward = new()
                 {
                     Points = rewardPoints,
-                    Amount = _currencyService.ConvertFromPrimaryCurrency(rewardAmountBase.Amount, _services.WorkContext.WorkingCurrency)
+                    Amount = _currencyService.ConvertFromPrimaryCurrency(rewardAmountBase.Amount, currency)
                 };
             }
         }

@@ -732,10 +732,10 @@ namespace Smartstore.Core.Checkout.Orders
 
             if (context.UpdateRewardPoints && quantityDiff < 0)
             {
-                // We reduce but we do not award points subsequently. They can be awarded once per order anyway (see Order.RewardPointsWereAdded).
-                // UpdateRewardPoints only visible for unpending orders (see RewardPointsSettingsValidator).
-                // Note: reducing can of course only work if oi.UnitPriceExclTax has not been changed!
-                decimal reduceAmount = Math.Abs(quantityDiff) * oi.UnitPriceInclTax;
+                // INFO: We subsequently reduce the award points, but do not award them. They can be awarded once per order anyway
+                // (see "Order.RewardPointsWereAdded"). "UpdateRewardPoints" is only visible for unpending orders (see "RewardPointsSettingsValidator").
+                // Of course, reducing can only work if "oi.UnitPriceExclTax" has not been changed in the meantime.
+                decimal reduceAmount = Math.Abs(quantityDiff) * oi.UnitPriceExclTax;
                 ApplyRewardPoints(order, true, reduceAmount);
 
                 context.NewRewardPoints = order.Customer.GetRewardPointsBalance();
@@ -756,17 +756,17 @@ namespace Smartstore.Core.Checkout.Orders
         /// </summary>
         protected virtual void ApplyRewardPoints(Order order, bool decrease, decimal? amount = null)
         {
-            if (!_rewardPointsSettings.Enabled ||
-                _rewardPointsSettings.PointsForPurchases_Amount <= decimal.Zero ||
-                (!decrease && order.RewardPointsWereAdded) || 
-                (decrease && !order.RewardPointsWereAdded) ||
-                order.Customer == null ||
-                order.Customer.IsGuest())
+            if (!_rewardPointsSettings.Enabled 
+                || _rewardPointsSettings.PointsForPurchases_Amount <= decimal.Zero 
+                || (!decrease && order.RewardPointsWereAdded) 
+                || (decrease && !order.RewardPointsWereAdded) 
+                || order.Customer == null 
+                || order.Customer.IsGuest())
             {
                 return;
             }
 
-            var points = _orderCalculationService.GetRewardPointsForPurchase(amount ?? order.OrderTotal, decrease);
+            var points = _orderCalculationService.GetRewardPointsForPurchase(amount ?? order.OrderSubtotalExclTax, decrease);
 
             if (decrease)
             {
@@ -781,7 +781,7 @@ namespace Smartstore.Core.Checkout.Orders
 
                     if (!order.RewardPointsRemaining.HasValue)
                     {
-                        order.RewardPointsRemaining = _orderCalculationService.GetRewardPointsForPurchase(order.OrderTotal, true);
+                        order.RewardPointsRemaining = _orderCalculationService.GetRewardPointsForPurchase(order.OrderSubtotalExclTax, true);
                     }
 
                     order.RewardPointsRemaining = Math.Max(order.RewardPointsRemaining.Value - points, 0);

@@ -48,6 +48,7 @@
     - Added `.prose` helpers for readable long-form content: optimized measure (narrow/standard/wide) plus comfortable typography defaults.
     - Product lists now display available **color options** and other variants on **touch devices** by default, ensuring key information is visible without requiring user interaction or hover.
 - #1459 Cart sorting: The selected items must always come before the unselected ones.
+- #1503 Calculate reward points for a purchase based on the net subtotal rather than the gross total.
 - Checkout: After payment confirmation on the third-party site, you will be redirected directly to the completed page if successful. The intermediate step via the confirmation page is omitted.
 - #1465 Display the name of the applied discount on order edit page.
 - #1471 Show the customer's email address next to their name on the order edit page.

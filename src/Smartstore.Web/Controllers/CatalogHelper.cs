@@ -69,6 +69,7 @@ public partial class CatalogHelper
     private readonly ProductUrlHelper _productUrlHelper;
     private readonly ILocalizedEntityService _localizedEntityService;
     private readonly LocalizedEntityHelper _localizedEntityHelper;
+    private readonly IRoundingHelper _roundingHelper;
     private readonly IUrlService _urlService;
     private readonly ILinkResolver _linkResolver;
     private readonly ContactDataSettings _contactDataSettings;
@@ -111,6 +112,7 @@ public partial class CatalogHelper
         ProductUrlHelper productUrlHelper,
         ILocalizedEntityService localizedEntityService,
         LocalizedEntityHelper localizedEntityHelper,
+        IRoundingHelper roundingHelper,
         IUrlService urlService,
         ILinkResolver linkResolver,
         ContactDataSettings contactDataSettings,
@@ -155,6 +157,7 @@ public partial class CatalogHelper
         _productUrlHelper = productUrlHelper;
         _localizedEntityService = localizedEntityService;
         _localizedEntityHelper = localizedEntityHelper;
+        _roundingHelper = roundingHelper;
         _urlService = urlService;
         _linkResolver = linkResolver;
         _httpRequest = _urlHelper.ActionContext.HttpContext.Request;
