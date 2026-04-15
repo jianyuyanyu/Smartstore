@@ -37,7 +37,7 @@
             <!-- Prevents BuildHost folders from being copied into the project -->
             <ExcludeAssets>contentFiles</ExcludeAssets>
         </PackageReference>
-		<PackageReference Include="System.Runtime.Caching" Version="10.0.5" />
+		<PackageReference Include="System.Runtime.Caching" Version="10.0.6" />
         <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3" Version="2.1.11" />
 	</ItemGroup>
 
