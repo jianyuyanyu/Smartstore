@@ -1,7 +1,9 @@
 ﻿@using Smartstore.Core.Catalog.Products
 @using Smartstore.Core.Checkout.GiftCards
+@using Smartstore.Engine.Modularity
 
 @inject ILanguageService languageService
+@inject IModuleCatalog moduleCatalog
 
 @model ProductModel
 
@@ -346,11 +348,12 @@
             <span asp-validation-for="ProductTagNames"></span>
         </div>
     </div>
-    <div class="adminRow">
+    <div class="adminRow" sm-if="@(moduleCatalog.GetModuleByName("Smartstore.Withdrawal") != null)">
         <div class="adminTitle">
             <smart-label asp-for="WithdrawalPeriodDays" />
         </div>
         <div class="adminData">
+            @* TODO: (mg) (w) Use default period as placeholder *@
             <editor asp-for="WithdrawalPeriodDays" sm-postfix="@T("Time.Days")" placeholder="@T("Common.Unspecified")" />
             <span asp-validation-for="WithdrawalPeriodDays"></span>
         </div>

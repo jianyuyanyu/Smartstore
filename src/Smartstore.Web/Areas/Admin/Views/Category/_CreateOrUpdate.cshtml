@@ -1,5 +1,8 @@
 ﻿@using Smartstore.Core.Content.Media
 @using Smartstore.Core.Catalog.Categories
+@using Smartstore.Engine.Modularity
+
+@inject IModuleCatalog moduleCatalog
 
 @model CategoryModel
 
@@ -318,11 +321,12 @@
                     <span asp-validation-for="CategoryTemplateId"></span>
                 </div>
             </div>
-            <div class="adminRow">
+            <div class="adminRow" sm-if="@(moduleCatalog.GetModuleByName("Smartstore.Withdrawal") != null)">
                 <div class="adminTitle">
                     <smart-label asp-for="WithdrawalPeriodDays" />
                 </div>
                 <div class="adminData">
+                    @* TODO: (mg) (w) Use default period as placeholder *@
                     <editor asp-for="WithdrawalPeriodDays" sm-postfix="@T("Time.Days")" placeholder="@T("Common.Unspecified")" />
                     <span asp-validation-for="WithdrawalPeriodDays"></span>
                 </div>

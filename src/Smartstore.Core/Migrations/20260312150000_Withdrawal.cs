@@ -89,22 +89,18 @@ internal class Withdrawal : Migration, ILocaleResourcesProvider, IDataSeeder<Sma
             "Account.CustomerOrders.ReturnItems");
 
         builder.AddOrUpdate("Admin.Catalog.Products.Fields.WithdrawalPeriodDays",
-            "Withdrawal period (in days)",
-            "Widerrufsfrist (in Tagen)",
-            "Specifies the number of days within which the product can be withdrawn. A value of 0 means that the product is not eligible for withdrawal (e.g., hygiene products)."
-            + " This setting is only effective when the withdrawal plugin is used.",
-            "Legt die Frist in Tagen fest, bis zu der das Produkt widerrufen werden kann. Der Wert 0 bedeutet, dass das Produkt nicht widerrufbar ist (z.B. Hygieneartikel)."
-            + " Diese Einstellung wirkt sich nur aus, wenn das Vertragswiderrufs-Plugin verwendet wird.");
+            "Withdrawal period",
+            "Widerrufsfrist",
+            "Specifies the number of days within which the product can be withdrawn. A value of 0 means that the product is not eligible for withdrawal (e.g., hygiene products).",
+            "Legt die Frist in Tagen fest, bis zu der das Produkt widerrufen werden kann. Der Wert 0 bedeutet, dass das Produkt nicht widerrufbar ist (z.B. Hygieneartikel).");
 
         builder.AddOrUpdate("Admin.Catalog.Categories.Fields.WithdrawalPeriodDays",
-            "Withdrawal period (in days)",
-            "Widerrufsfrist (in Tagen)",
+            "Withdrawal period",
+            "Widerrufsfrist",
             "Specifies the number of days within which products in this category can be withdrawn. A value of 0 means that the product is not eligible for withdrawal (e.g., hygiene products)."
-            + " If a product is assigned to multiple categories, the withdrawal period of each category must be met in order for the product to be eligible for withdrawal."
-            + " This setting is only effective when the withdrawal plugin is used.",
+            + " If a product is assigned to multiple categories, the withdrawal period of each category must be met in order for the product to be eligible for withdrawal.",
             "Legt die Frist in Tagen fest, innerhalb derer Produkte dieser Warengruppe widerrufen werden können. Der Wert 0 bedeutet, dass die Produkte nicht widerrufbar sind"
-            + " (z.B. Hygieneartikel). Wenn ein Produkt mehreren Warengruppen zugeordnet ist, müssen die Widerrufsfristen aller Warengruppen eingehalten sein, damit der Artikel"
-            + " widerrufen werden kann. Diese Einstellung wirkt sich nur aus, wenn das Vertragswiderrufs-Plugin verwendet wird.");
+            + " (z.B. Hygieneartikel). Wenn ein Produkt mehreren Warengruppen zugeordnet ist, müssen die Widerrufsfristen aller Warengruppen eingehalten sein, damit der Artikel");
 
         builder.AddOrUpdate("Enums.ReturnCaseKind.Return", "Return", "Retoure");
         builder.AddOrUpdate("Enums.ReturnCaseKind.Withdrawal", "Withdrawal", "Widerruf");
@@ -141,7 +137,7 @@ internal class Withdrawal : Migration, ILocaleResourcesProvider, IDataSeeder<Sma
             "Start processing",
             "Verarbeitung starten",
             "Converts the withdrawal into a return for further processing.",
-            "Wandelt den Widerruf in eine Retoure zur weiteren Bearbeitung.");
+            "Wandelt den Widerruf in eine Retoure zur weiteren Bearbeitung um.");
         builder.AddOrUpdate("ReturnCase.ConvertedWithdrawal",
             "The withdrawal has been converted to a return. Status: <b>{0}</b>.",
             "Der Widerruf wurde in eine Retoure umgewandelt. Status: <b>{0}</b>.");
