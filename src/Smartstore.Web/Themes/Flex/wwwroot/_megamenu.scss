@@ -466,3 +466,14 @@ $mixed-megamenu-bg:             $megamenu-bg;
         margin-inline-start: 20px;
     }
 }
+
+[dir=rtl] {
+    // Overrite bootstrap's RTL dropdown menu positioning
+    .megamenu-dropdown-container .dropdown-menu {
+        inset-inline-start: initial;
+    }
+    // Uncomment to flip the images in RTL mode, if needed.
+    /*    .megamenu-picture-container > img {
+        transform: scaleX(-1);
+    }*/
+}
