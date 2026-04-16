@@ -210,5 +210,23 @@ public class SmartDbContextDataSeeder : IDataSeeder<SmartDbContext>
         builder.AddOrUpdate("Admin.Configuration.Settings.GeneralCommon.GoogleRecaptcha.Info",
             "Manage keys and domains in the <a class='fwm' href='https://www.google.com/recaptcha/admin' target='_blank'>reCAPTCHA Admin Console</a>. v3 runs invisibly with a risk score; optional step-up challenges can be enabled if needed.",
             "Keys und Domains verwalten Sie in der <a class='fwm' href='https://www.google.com/recaptcha/admin' target='_blank'>reCAPTCHA Admin Console</a>. Bei v3 erfolgt die Bewertung unsichtbar per Score; Step-Up-Prüfungen sind optional möglich.");
+
+        builder.AddOrUpdate("Enums.VatNumberStatus.ServiceUnavailable",
+            "Online checks are currently unavailable",
+            "Onlineprüfung derzeit nicht möglich");
+
+        builder.AddOrUpdate("Admin.Customers.Customers.Fields.VatNumberStatus", 
+            "VAT number status", 
+            "Status der Steuernummer");
+
+        builder.AddOrUpdate("Admin.Customers.CheckVatNumber",
+            "Check VAT number",
+            "Steuernummer prüfen",
+            "Checks the VAT number online and updates its status.",
+            "Prüft die Steuernummer online und aktualisiert deren Status.");
+
+        builder.AddOrUpdate("Admin.Customers.VatNumberValidationError",
+            "The following error occurred while verifying the VAT number online: {0}",
+            "Bei der Onlineprüfung der Steuernummer ist folgender Fehler aufgetreten: {0}");
     }
 }

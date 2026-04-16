@@ -60,7 +60,13 @@
         /// <summary>
         /// Invalid.
         /// </summary>
-        Invalid = 30
+        Invalid = 30,
+
+        /// <summary>
+        /// This indicates that the service used to check the status is temporarily unavailable,
+        /// possibly due to maintenance or an overload.
+        /// </summary>
+        ServiceUnavailable
     }
 
     /// <summary>

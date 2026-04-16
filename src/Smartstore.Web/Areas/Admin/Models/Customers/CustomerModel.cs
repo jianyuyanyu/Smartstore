@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using FluentValidation;
+using Smartstore.Core.Checkout.Tax;
 using Smartstore.Core.Identity;
 using Smartstore.Core.Localization;
 using Smartstore.Core.Security;
@@ -114,10 +115,29 @@ namespace Smartstore.Admin.Models.Customers
         public string TimeZoneId { get; set; }
         public bool AllowCustomersToSetTimeZone { get; set; }
 
+        public bool DisplayVatNumber { get; set; }
+
         [LocalizedDisplay("*VatNumber")]
         public string VatNumber { get; set; }
-        public string VatNumberStatusNote { get; set; }
-        public bool DisplayVatNumber { get; set; }
+
+        [LocalizedDisplay("*VatNumberStatus")]
+        public VatNumberStatus VatNumberStatus { get; set; }
+
+        public string VatNumberStatusClass 
+        {
+            get
+            {
+                return VatNumberStatus switch
+                {
+                    VatNumberStatus.Unknown => "fw-600",
+                    VatNumberStatus.Empty => "muted",
+                    VatNumberStatus.Valid => "text-success",
+                    VatNumberStatus.ServiceUnavailable => "text-warning",
+                    VatNumberStatus.Invalid => "text-danger",
+                    _ => string.Empty,
+                };
+            }
+        }
 
         [LocalizedDisplay("Account.Fields.PreferredShippingMethod")]
         public int? PreferredShippingMethodId { get; set; }

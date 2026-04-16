@@ -170,7 +170,7 @@ namespace Smartstore.Core.Checkout.Tax
             }
             catch (Exception ex)
             {
-                return new(VatNumberStatus.Unknown, fullVatNumber)
+                return new(VatNumberStatus.ServiceUnavailable, fullVatNumber)
                 {
                     Exception = ex
                 };

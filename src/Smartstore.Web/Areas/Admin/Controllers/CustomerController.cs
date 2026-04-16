@@ -1,6 +1,4 @@
-﻿using System.Text.Encodings.Web;
-using System.Text.Json;
-using Microsoft.AspNetCore.Http;
+﻿using System.Text.Json;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Options;
@@ -120,7 +118,7 @@ namespace Smartstore.Admin.Controllers
 
         #region Utilities
 
-        private async Task<List<CustomerModel.AssociatedExternalAuthModel>> GetAssociatedExternalAuthRecords(Customer customer)
+        private async Task<List<AssociatedExternalAuthModel>> GetAssociatedExternalAuthRecords(Customer customer)
         {
             Guard.NotNull(customer);
 
@@ -144,7 +142,7 @@ namespace Smartstore.Admin.Controllers
                         methodName = authScheme?.Name;
                     }
 
-                    return new CustomerModel.AssociatedExternalAuthModel
+                    return new AssociatedExternalAuthModel
                     {
                         Id = x.Id,
                         Email = x.Email,
@@ -203,7 +201,7 @@ namespace Smartstore.Admin.Controllers
                 model.DateOfBirth = customer.BirthDate;
                 model.DisplayVatNumber = _taxSettings.EuVatEnabled;
                 model.DisplayRewardPointsHistory = _rewardPointsSettings.Enabled;
-                model.VatNumberStatusNote = ((VatNumberStatus)customer.VatNumberStatusId).GetLocalizedEnum();
+                model.VatNumberStatus = (VatNumberStatus)customer.VatNumberStatusId;
                 model.CreatedOn = dtHelper.ConvertToUserTime(customer.CreatedOnUtc, DateTimeKind.Utc);
                 model.LastActivityDate = dtHelper.ConvertToUserTime(customer.LastActivityDateUtc, DateTimeKind.Utc);
                 model.LastIpAddress = customer.LastIpAddress;
@@ -263,16 +261,11 @@ namespace Smartstore.Admin.Controllers
             ViewBag.IsAdmin = customer != null && (customer.IsAdmin() || customer.IsSuperAdmin());
 
             // Countries and state provinces.
-            if (_customerSettings.CountryEnabled && model.CountryId > 0)
+            if (_customerSettings.CountryEnabled && _customerSettings.StateProvinceEnabled && model.CountryId > 0)
             {
-                if (_customerSettings.StateProvinceEnabled)
-                {
-                    var stateProvinces = await _db.StateProvinces.GetStateProvincesByCountryIdAsync((int)model.CountryId);
-                    ViewBag.AvailableStates = stateProvinces.ToSelectListItems(model.StateProvinceId) ?? new List<SelectListItem>
-                    {
-                        new() { Text = T("Address.OtherNonUS"), Value = "0" }
-                    };
-                }
+                var stateProvinces = await _db.StateProvinces.GetStateProvincesByCountryIdAsync((int)model.CountryId);
+                ViewBag.AvailableStates = stateProvinces.ToSelectListItems(model.StateProvinceId) 
+                    ?? [ new() { Text = T("Address.OtherNonUS"), Value = "0" } ];
             }
 
             if (_shoppingCartSettings.QuickCheckoutEnabled)
@@ -749,29 +742,10 @@ namespace Smartstore.Admin.Controllers
                     }
 
                     // VAT number.
-                    if (_taxSettings.EuVatEnabled)
+                    if (_taxSettings.EuVatEnabled && !customer.GenericAttributes.VatNumber.EqualsNoCase(model.VatNumber))
                     {
-                        var prevVatNumber = customer.GenericAttributes.VatNumber;
                         customer.GenericAttributes.VatNumber = model.VatNumber;
-
-                        // Set VAT number status.
-                        if (model.VatNumber.HasValue())
-                        {
-                            if (!model.VatNumber.Equals(prevVatNumber, StringComparison.InvariantCultureIgnoreCase))
-                            {
-                                var response = await _taxService.GetVatNumberStatusAsync(model.VatNumber);
-                                customer.VatNumberStatusId = (int)response.Status;
-
-                                if (response.Exception != null)
-                                {
-                                    NotifyError("Checking the VAT number with the VAT validation web service threw this exception: " + response.Exception.Message);
-                                }
-                            }
-                        }
-                        else
-                        {
-                            customer.VatNumberStatusId = (int)VatNumberStatus.Empty;
-                        }
+                        customer.VatNumberStatusId = await GetVatNumberStatus(model.VatNumber);
                     }
 
                     // Model properties.
@@ -895,9 +869,9 @@ namespace Smartstore.Admin.Controllers
         }
 
         [HttpPost]
-        [FormValueRequired("markVatNumberAsValid"), ActionName("Edit")]
+        [FormValueRequired("updateVatNumberStatus"), ActionName("Edit")]
         [Permission(Permissions.Customer.Update)]
-        public async Task<IActionResult> MarkVatNumberAsValid(CustomerModel model)
+        public async Task<IActionResult> UpdateVatNumberStatus(CustomerModel model, string command)
         {
             var customer = await _db.Customers.FindByIdAsync(model.Id);
             if (customer == null)
@@ -905,27 +879,34 @@ namespace Smartstore.Admin.Controllers
                 return NotFound();
             }
 
-            customer.VatNumberStatusId = (int)VatNumberStatus.Valid;
+            switch (command)
+            {
+                case "mark-valid":
+                    customer.VatNumberStatusId = (int)VatNumberStatus.Valid;
+                    break;
+                case "mark-invalid":
+                    customer.VatNumberStatusId = (int)VatNumberStatus.Invalid;
+                    break;
+                case "check":
+                    customer.VatNumberStatusId = await GetVatNumberStatus(model.VatNumber);
+                    break;
+            }
+
             await _db.SaveChangesAsync();
 
             return RedirectToAction(nameof(Edit), customer.Id);
         }
 
-        [HttpPost]
-        [FormValueRequired("markVatNumberAsInvalid"), ActionName("Edit")]
-        [Permission(Permissions.Customer.Update)]
-        public async Task<IActionResult> MarkVatNumberAsInvalid(CustomerModel model)
+        private async Task<int> GetVatNumberStatus(string vatNumber)
         {
-            var customer = await _db.Customers.FindByIdAsync(model.Id);
-            if (customer == null)
+            var response = await _taxService.GetVatNumberStatusAsync(vatNumber);
+            
+            if (response.Exception != null)
             {
-                return NotFound();
+                NotifyError(T("Admin.Customers.VatNumberValidationError", response.Exception.Message));
             }
 
-            customer.VatNumberStatusId = (int)VatNumberStatus.Invalid;
-            await _db.SaveChangesAsync();
-
-            return RedirectToAction(nameof(Edit), customer.Id);
+            return (int)response.Status;
         }
 
         [HttpPost]

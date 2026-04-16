@@ -1,4 +1,6 @@
-﻿@model CustomerModel
+﻿@using Smartstore.Core.Checkout.Tax
+
+@model CustomerModel
 
 @{
     var shippingMethods = (ViewBag.ShippingMethods as List<SelectListItem>) ?? new();
@@ -338,22 +340,43 @@
             </div>
         </div>
     </div>
-    <div sm-if="Model.DisplayVatNumber" class="adminRow">
-        <div class="adminTitle">
-            <smart-label asp-for="VatNumber" />
-        </div>
-        <div class="adminData">
-            <input asp-for="VatNumber" />
-            <div class="font-weight-bold py-3">
-                @T("Admin.Customers.Customers.Fields.VatNumberStatus", Model.VatNumberStatusNote)
+
+    <div sm-if="Model.DisplayVatNumber">
+        <div class="adminRow">
+            <div class="adminTitle">
+                <smart-label asp-for="VatNumber" />
             </div>
-            <button type="submit" name="markVatNumberAsValid" value="markVatNumberAsValid" class="btn btn-secondary">
-                <span>@T("Admin.Customers.Customers.Fields.VatNumber.MarkAsValid")</span>
-            </button>
-            <button type="submit" name="markVatNumberAsInvalid" value="markVatNumberAsInvalid" class="btn btn-secondary">
-                <span>@T("Admin.Customers.Customers.Fields.VatNumber.MarkAsInvalid")</span>
-            </button>
-            <span asp-validation-for="VatNumber"></span>
+            <div class="adminData">
+                <input asp-for="VatNumber" />
+                <span asp-validation-for="VatNumber"></span>
+            </div>
+        </div>
+        <div class="adminRow">
+            <div class="adminTitle">
+                <smart-label asp-for="VatNumberStatus" />
+            </div>
+            <div class="adminData wide">
+                <span class="pr-2 w-auto fwm form-control-plaintext d-inline-block @Model.VatNumberStatusClass">
+                    @Model.VatNumberStatus.GetLocalizedEnum()
+                </span>
+                <button type="submit" name="updateVatNumberStatus" value="true" asp-route-command="mark-valid" class="btn btn-sm btn-secondary"
+                        disabled="@Model.VatNumberStatus.Equals(VatNumberStatus.Valid)"
+                        title="@T("Admin.Customers.Customers.Fields.VatNumber.MarkAsValid")">
+                    <i class="fa fa-check"></i>
+                    <span>@VatNumberStatus.Valid.GetLocalizedEnum()</span>
+                </button>
+                <button type="submit" name="updateVatNumberStatus" value="true" asp-route-command="mark-invalid" class="btn btn-sm btn-secondary"
+                        disabled="@Model.VatNumberStatus.Equals(VatNumberStatus.Invalid)"
+                        title="@T("Admin.Customers.Customers.Fields.VatNumber.MarkAsInvalid")">
+                    <i class="fa fa-ban"></i>
+                    <span>@VatNumberStatus.Invalid.GetLocalizedEnum()</span>
+                </button>
+                <button type="submit" name="updateVatNumberStatus" value="true" asp-route-command="check" class="btn btn-sm btn-primary"
+                        disabled="@Model.VatNumber.IsEmpty()"
+                        title="@T("Admin.Customers.CheckVatNumber.Hint")">
+                    <span>@T("Admin.Customers.CheckVatNumber")</span>
+                </button>
+            </div>
         </div>
     </div>
 
