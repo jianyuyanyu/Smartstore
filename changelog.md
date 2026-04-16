@@ -31,6 +31,7 @@
 - **Rate limiter** for queued emails to prevent overload during email bursts.
 - New hidden system setting `CommonSettings.MinLogLevelToRetain` (for scheduled log cleanup operations)
 - #1522 Add a cart rule "All products with delivery time in cart".
+- #1512 Implement new VAT number status `ServiceUnavailable`.
 
 ### Improvements
 
