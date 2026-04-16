@@ -18,7 +18,7 @@
 
 <div class="pd-review-summary pd-group" @Html.Raw(Model.TotalReviews > 0 ? " itemprop='aggregateRating' itemscope itemtype='http://schema.org/AggregateRating'" : string.Empty)>
     @* STARS *@
-    <div class="pd-rating-box">
+    <div class="pd-rating-box mb-0">
         <div role="img" class="rating" aria-label="@ratingLabel">
             <div style="width: @(ratingPercent)%"></div>
         </div>
@@ -27,8 +27,11 @@
         </span>
     </div>
 
+    @* SEP *@
+    <div class="vr"></div>
+
     @* TEXT *@
-    <div class="pd-review-link link-dnu">
+    <div class="pd-review-link link-dnu mb-0">
         @if (Model.TotalReviews > 0)
         {
             <a href="@reviewPageUrl" class="link-dnu" attr-aria-describedby='(Model.Reward != null, "pd-points-for-review")'>@T("Reviews.Overview.AddNew")</a>

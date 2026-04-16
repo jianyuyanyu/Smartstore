@@ -1,5 +1,6 @@
 ﻿@using Smartstore.Web.Models.Catalog
 @using Smartstore.Core.Catalog.Products
+@using Smartstore.Core.Web
 
 @model ProductDetailsModel
 
@@ -7,11 +8,13 @@
     Assets.AppendTitleParts(Model.MetaTitle.HasValue() ? Model.MetaTitle : Model.Name);
     Assets.AppendMetaDescriptionParts(Model.MetaDescription);
     Assets.AppendMetaKeywordsParts(Model.MetaKeywords);
-    
+
     if (Model.CanonicalUrl.HasValue())
     {
         Assets.AppendCanonicalUrlParts(Model.CanonicalUrl);
     }
+
+    var isTouchDevice = UserAgent.IsTouchDevice();
 }
 
 <partial name="MetaProperties" model="Model.MetaProperties" />
@@ -25,7 +28,14 @@
             <form asp-route="Product" asp-route-SeName="@Model.SeName" method="post" id="pd-form">
                 <!-- Top Content: Picture, Description, Attrs, Variants, Bundle Items, Price etc. -->
                 <section class="row pd-section pd-section-top admin-actions-container">
-                    <!-- Picture -->
+                    <!-- Mobile info above gallery -->
+                    <div class="col-12 d-block d-md-none" sm-if="@isTouchDevice">
+                        <zone name="productdetails_info_mobile_top" />
+                        <partial name="Product.Info.Mobile" model="Model" />
+                        <zone name="productdetails_info_mobile_bottom" />
+                    </div>
+
+                    <!-- Gallery -->
                     <div class="col-12 col-md-6 col-lg-7 pd-data-col">
                         <div class="pd-data-col-inner">
                             <zone name="productdetails_pictures_top" />
@@ -45,7 +55,17 @@
 
                         <zone name="productdetails_info_top" />
 
-                        <partial name="Product.Info" model="Model" />
+                        <div class="pd-info-container" attr-class='(isTouchDevice, "d-none d-md-block")'>
+                            <partial name="Product.Info" model="Model" />
+                        </div>
+
+                        <!-- Short description -->
+                        @if (isTouchDevice && Model.ShortDescription.Value.HasValue())
+                        {
+                            <div sm-language-attributes-for="Model.ShortDescription" class="pd-description pd-group d-block d-md-none">
+                                @Html.Raw(Model.ShortDescription)
+                            </div>
+                        }
 
                         <div sm-if="Model.ProductType == ProductType.BundledProduct" class="pd-bundle-container pd-group card shadow-sm">
                             <partial name="Product.Bundle" model="Model" />
