@@ -355,27 +355,45 @@
             <div class="adminTitle">
                 <smart-label asp-for="VatNumberStatus" />
             </div>
-            <div class="adminData wide">
+            <div class="adminData">
                 <span class="pr-2 w-auto fwm form-control-plaintext d-inline-block @Model.VatNumberStatusClass">
                     @Model.VatNumberStatus.GetLocalizedEnum()
                 </span>
-                <button type="submit" name="updateVatNumberStatus" value="true" asp-route-command="mark-valid" class="btn btn-sm btn-secondary"
-                        disabled="@Model.VatNumberStatus.Equals(VatNumberStatus.Valid)"
-                        title="@T("Admin.Customers.Customers.Fields.VatNumber.MarkAsValid")">
-                    <i class="fa fa-check"></i>
-                    <span>@VatNumberStatus.Valid.GetLocalizedEnum()</span>
-                </button>
-                <button type="submit" name="updateVatNumberStatus" value="true" asp-route-command="mark-invalid" class="btn btn-sm btn-secondary"
-                        disabled="@Model.VatNumberStatus.Equals(VatNumberStatus.Invalid)"
-                        title="@T("Admin.Customers.Customers.Fields.VatNumber.MarkAsInvalid")">
-                    <i class="fa fa-ban"></i>
-                    <span>@VatNumberStatus.Invalid.GetLocalizedEnum()</span>
-                </button>
-                <button type="submit" name="updateVatNumberStatus" value="true" asp-route-command="check" class="btn btn-sm btn-primary"
-                        disabled="@Model.VatNumber.IsEmpty()"
-                        title="@T("Admin.Customers.CheckVatNumber.Hint")">
-                    <span>@T("Admin.Customers.CheckVatNumber")</span>
-                </button>
+                <div class="dropdown d-inline-block">
+                    <button type="button" class="btn btn-secondary btn-sm btn-icon dropdown-toggle no-chevron" data-toggle="dropdown">
+                        <i class="fa fa-ellipsis-h"></i>
+                    </button>
+                    <div class="dropdown-menu">
+                        <div class="dropdown-header">@T("Admin.Customers.Customers.Fields.VatNumber.MarkAs")...</div>
+                        <button type="submit" name="updateVatNumberStatus" value="true"
+                                asp-route-command="mark-valid"
+                                class="btn btn-sm btn-plain btn-block justify-content-start m-0"
+                                disabled="@Model.VatNumberStatus.Equals(VatNumberStatus.Valid)"
+                                title="@T("Admin.Customers.Customers.Fields.VatNumber.MarkAsValid")">
+                            <i class="fa fa-fw fa-check"></i>
+                            <span>@VatNumberStatus.Valid.GetLocalizedEnum()</span>
+                        </button>
+                        <button type="submit" name="updateVatNumberStatus" value="true"
+                                asp-route-command="mark-invalid"
+                                class="btn btn-sm btn-plain btn-block justify-content-start m-0"
+                                disabled="@Model.VatNumberStatus.Equals(VatNumberStatus.Invalid)"
+                                title="@T("Admin.Customers.Customers.Fields.VatNumber.MarkAsInvalid")">
+                            <i class="fa fa-fw fa-ban"></i>
+                            <span>@VatNumberStatus.Invalid.GetLocalizedEnum()</span>
+                        </button>
+
+                        <div class="dropdown-divider"></div>
+
+                        <button type="submit" name="updateVatNumberStatus" value="true" 
+                                asp-route-command="check" 
+                                class="btn btn-sm btn-plain btn-block justify-content-start m-0"
+                                disabled="@Model.VatNumber.IsEmpty()"
+                                title="@T("Admin.Customers.CheckVatNumber.Hint")">
+                            <i class="fa fa-fw fa-check-double"></i>
+                            <span>@T("Admin.Customers.CheckVatNumber")</span>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

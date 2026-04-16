@@ -129,8 +129,7 @@ namespace Smartstore.Admin.Models.Customers
             {
                 return VatNumberStatus switch
                 {
-                    VatNumberStatus.Unknown => "fw-600",
-                    VatNumberStatus.Empty => "muted",
+                    VatNumberStatus.Empty => "text-muted",
                     VatNumberStatus.Valid => "text-success",
                     VatNumberStatus.ServiceUnavailable => "text-warning",
                     VatNumberStatus.Invalid => "text-danger",

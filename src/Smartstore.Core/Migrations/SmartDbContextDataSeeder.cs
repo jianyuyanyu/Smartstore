@@ -27,15 +27,15 @@ public class SmartDbContextDataSeeder : IDataSeeder<SmartDbContext>
     {
         builder.AddOrUpdate("Admin.Orders.Products.AppliedDiscounts",
             "The following discounts were applied to the products: {0}.",
-            "Auf die Produkte wurden die folgenden Rabatte gewährt: {0}.");
+            "Auf die Produkte wurden die folgenden Rabatte gewÃ¤hrt: {0}.");
 
         builder.AddOrUpdate("Identity.Error.PasswordRequiresDigit",
-            "At least one number (0–9)", 
-            "Mindestens eine Ziffer (0–9)");
+            "At least one number (0â€“9)", 
+            "Mindestens eine Ziffer (0â€“9)");
 
         builder.AddOrUpdate("Identity.Error.PasswordRequiresLower",
-            "At least one lowercase letter (a–z)",
-            "Mindestens ein Kleinbuchstabe (a–z)");
+            "At least one lowercase letter (aâ€“z)",
+            "Mindestens ein Kleinbuchstabe (aâ€“z)");
 
         builder.AddOrUpdate("Identity.Error.PasswordRequiresNonAlphanumeric",
             "At least one special character (e.g. !@#$)",
@@ -46,8 +46,8 @@ public class SmartDbContextDataSeeder : IDataSeeder<SmartDbContext>
             "Mindestens {0} eindeutige Zeichen");
 
         builder.AddOrUpdate("Identity.Error.PasswordRequiresUpper",
-            "At least one uppercase letter (A–Z)",
-            "Mindestens ein Großbuchstabe (A–Z)");
+            "At least one uppercase letter (Aâ€“Z)",
+            "Mindestens ein GroÃŸbuchstabe (Aâ€“Z)");
 
         builder.AddOrUpdate("Identity.Error.PasswordTooShort",
             "At least {0} characters",
@@ -55,11 +55,11 @@ public class SmartDbContextDataSeeder : IDataSeeder<SmartDbContext>
 
         builder.AddOrUpdate("Account.Register.Result.MeetPasswordRules",
             "Password must meet these rules: {0}",
-            "Passwort muss diese Regeln erfüllen: {0}");
+            "Passwort muss diese Regeln erfÃ¼llen: {0}");
 
         builder.AddOrUpdate("Admin.OrderNotice.OrderPlacedUcp",
             "The order was placed using UCP (Agentic Commerce) \"{0}\". The payment token {1} was processed without a user interface.",
-            "Bestellung ist über UCP (Agentic Commerce) \"{0}\" eingegangen. Das Zahlungstoken {1} wurde ohne Benutzeroberfläche verarbeitet.");
+            "Bestellung ist Ã¼ber UCP (Agentic Commerce) \"{0}\" eingegangen. Das Zahlungstoken {1} wurde ohne BenutzeroberflÃ¤che verarbeitet.");
 
         builder.AddOrUpdate("Order.Product(s).OrderedQuantity", "Ordered", "Bestellt");
 
@@ -69,23 +69,23 @@ public class SmartDbContextDataSeeder : IDataSeeder<SmartDbContext>
 
         builder.AddOrUpdate("Smartstore.AI.Prompts.EnsureLogicalFlow",
             "Add headings (h2-h6) where appropriate, break long paragraphs, use lists for enumerations, ensure logical flow.",
-            "Füge passende Überschriften (h2-h6) ein, unterteile lange Absätze, nutze Listen für Aufzählungen und stelle einen logischen Ablauf sicher.");
+            "FÃ¼ge passende Ãœberschriften (h2-h6) ein, unterteile lange AbsÃ¤tze, nutze Listen fÃ¼r AufzÃ¤hlungen und stelle einen logischen Ablauf sicher.");
 
         builder.AddOrUpdate("Smartstore.AI.Prompts.AssignIdToHeader",
             "Assign each heading a unique, concise id attribute in kebab-case format based on core content keywords. On ID collision: number them (e.g., id=\"benefits-1\", id=\"benefits-2\").",
-            "Vergib für jede Überschrift ein eindeutiges, prägnantes id-Attribut im \"kebab-case\"-Format, das auf den Kern-Keywords des Textinhalts basiert. Bei ID-Kollision: nummeriere (z.B. id=\"vorteile-1\", id=\"vorteile-2\").");
+            "Vergib fÃ¼r jede Ãœberschrift ein eindeutiges, prÃ¤gnantes id-Attribut im \"kebab-case\"-Format, das auf den Kern-Keywords des Textinhalts basiert. Bei ID-Kollision: nummeriere (z.B. id=\"vorteile-1\", id=\"vorteile-2\").");
 
         builder.AddOrUpdate("Smartstore.AI.Prompts.CleanupMarkup",
             "Remove inline styles, empty elements, unnecessary span/div/font wrappers, and redundant nesting.",
-            "Entferne Inline-Styles, leere Elemente, überflüssige span/div/font-Umhüllungen und unnötige Verschachtelungen.");
+            "Entferne Inline-Styles, leere Elemente, Ã¼berflÃ¼ssige span/div/font-UmhÃ¼llungen und unnÃ¶tige Verschachtelungen.");
 
         builder.AddOrUpdate("Smartstore.AI.Prompts.PreserveSemantic",
             "Keep all semantic HTML intact (including tables, blockquotes, images, code blocks, etc.). Preserve CSS classes, links, and attributes.",
-            "Behalte sämtliche semantischen HTML-Elemente bei (inkl. Tabellen, Blockquotes, Bilder, Code-Blöcke etc.). Erhalte CSS-Klassen, Links und Attribute.");
+            "Behalte sÃ¤mtliche semantischen HTML-Elemente bei (inkl. Tabellen, Blockquotes, Bilder, Code-BlÃ¶cke etc.). Erhalte CSS-Klassen, Links und Attribute.");
 
         builder.AddOrUpdate("Smartstore.AI.Prompts.OnlyImproveStructure",
-            "Only improve structure—don't remove content or meaningful markup.",
-            "Verbessere ausschließlich die Struktur – keine Inhalte oder bedeutsames Markup entfernen.");
+            "Only improve structureâ€”don't remove content or meaningful markup.",
+            "Verbessere ausschlieÃŸlich die Struktur â€“ keine Inhalte oder bedeutsames Markup entfernen.");
 
         builder.AddOrUpdate("Admin.AI.TopicGenerate", "Generate {0}", "{0} generieren");
         builder.AddOrUpdate("Admin.AI.TopicOptimize", "Optimize {0}", "{0} optimieren");
@@ -113,22 +113,22 @@ public class SmartDbContextDataSeeder : IDataSeeder<SmartDbContext>
 
         builder.AddOrUpdate("ReturnCase.WithdrawEntireOrder",
             "I would like to withdraw the entire order:",
-            "Ich möchte die gesamte Bestellung stornieren:");
+            "Ich mÃ¶chte die gesamte Bestellung stornieren:");
         builder.AddOrUpdate("ReturnCase.WithdrawItems",
             "I would like to withdraw the following items:", 
-            "Ich möchte folgende Artikel stornieren:");
+            "Ich mÃ¶chte folgende Artikel stornieren:");
 
-        builder.AddOrUpdate("Account.CustomerOrders.ReturnItems", "Return items", "Artikel zurücksenden");
+        builder.AddOrUpdate("Account.CustomerOrders.ReturnItems", "Return items", "Artikel zurÃ¼cksenden");
 
         builder.Delete("Admin.ReturnRequests.Updated",
             "Admin.ReturnRequests.Deleted");
 
         builder.AddOrUpdate("ReturnRequests.NoItemsSubmitted",
             "Please select the items you wish to return and specify the quantity.",
-            "Wählen Sie bitte die Artikel und die Menge aus, die Sie zurücksenden möchten.");
+            "WÃ¤hlen Sie bitte die Artikel und die Menge aus, die Sie zurÃ¼cksenden mÃ¶chten.");
 
         builder.AddOrUpdate("ReturnRequests.Submit", "Submit return request", "Retourenantrag absenden");
-        builder.AddOrUpdate("ReturnRequests.Submitted", "A return request has been submitted.", "Der Retourenantrag wurde übermittelt.");
+        builder.AddOrUpdate("ReturnRequests.Submitted", "A return request has been submitted.", "Der Retourenantrag wurde Ã¼bermittelt.");
 
         builder.AddOrUpdate("Admin.ReturnRequests.Fields.ID",
             "ID",
@@ -138,14 +138,14 @@ public class SmartDbContextDataSeeder : IDataSeeder<SmartDbContext>
 
         builder.AddOrUpdate("Admin.Common.SuccessfullySaved",
             "The changes have been saved successfully.",
-            "Die Änderungen wurden erfolgreich gespeichert.");
+            "Die Ã„nderungen wurden erfolgreich gespeichert.");
         builder.AddOrUpdate("Admin.Common.SuccessfullyDeleted",
             "The entries were successfully deleted.",
-            "Die Einträge wurden erfolgreich gelöscht.");
+            "Die EintrÃ¤ge wurden erfolgreich gelÃ¶scht.");
 
         builder.AddOrUpdate("Account.PasswordRecovery.EmailHasBeenSent",
             "If there is an account associated with this email, we have sent a link to reset your password.",
-            "Falls ein Konto mit dieser E-Mail-Adresse verknüpft ist, haben wir Ihnen soeben Anweisungen zum Zurücksetzen Ihres Passworts zugeschickt.");
+            "Falls ein Konto mit dieser E-Mail-Adresse verknÃ¼pft ist, haben wir Ihnen soeben Anweisungen zum ZurÃ¼cksetzen Ihres Passworts zugeschickt.");
 
         builder.AddOrUpdate("Admin.Configuration.Settings.Order.ReturnRequestsEnabled")
             .Value("en", "Return requests enabled");
@@ -155,24 +155,24 @@ public class SmartDbContextDataSeeder : IDataSeeder<SmartDbContext>
 
         builder.AddOrUpdate("Admin.Configuration.Settings.Order.NumberOfDaysReturnRequestAvailable",
             "Allowed period for return requests (in days)",
-            "Erlaubter Zeitraum für Retourenanträge (in Tagen)");
+            "Erlaubter Zeitraum fÃ¼r RetourenantrÃ¤ge (in Tagen)");
 
         builder.AddOrUpdate("Admin.Configuration.Settings.Order.NumberOfDaysReturnRequestAvailable.Hint",
             "The number of days after order completion during which customers can submit return requests."
             + " This applies to RMA return requests only and not to legal withdrawal. The value 0 means \"unlimited\".",
-            "Die Anzahl der Tage nach Abschluss der Bestellung, während der Kunden Retourenanträge einreichen können."
-            + " Dies gilt nur für Retourenanträge im Rahmen des RMA-Verfahrens und nicht für den gesetzlichen Widerruf. Der Wert 0 bedeutet \"unbegrenzt\".");
+            "Die Anzahl der Tage nach Abschluss der Bestellung, wÃ¤hrend der Kunden RetourenantrÃ¤ge einreichen kÃ¶nnen."
+            + " Dies gilt nur fÃ¼r RetourenantrÃ¤ge im Rahmen des RMA-Verfahrens und nicht fÃ¼r den gesetzlichen Widerruf. Der Wert 0 bedeutet \"unbegrenzt\".");
 
         builder.AddOrUpdate("Admin.Configuration.Settings.Order.ReturnRequestReasons.Hint")
-            .Value("de", "Eine kommaseparierte Liste von Retourengründen, die der Benutzer auswählen kann, wenn er einen Retourenantrag übermittelt.");
+            .Value("de", "Eine kommaseparierte Liste von RetourengrÃ¼nden, die der Benutzer auswÃ¤hlen kann, wenn er einen Retourenantrag Ã¼bermittelt.");
 
         builder.AddOrUpdate("Admin.Configuration.Settings.Order.ReturnRequestActions")
             .Value("en", "Available return actions");
        
         builder.AddOrUpdate("Admin.Configuration.Settings.Order.ReturnRequestActions.Hint",
             "A comma-separated list of the actions that a customer will be able to select when submitting a return request. This is not used for legal withdrawal.",
-            "Eine kommaseparierte Liste von Aktionen, aus denen der Benutzer wählen kann, wenn er einen Retourenantrag übermittelt. Beispiel: \"Ersatz\", \"Gutschein\" usw."
-            + " Dies wird nicht für den gesetzlichen Widerruf verwendet.");
+            "Eine kommaseparierte Liste von Aktionen, aus denen der Benutzer wÃ¤hlen kann, wenn er einen Retourenantrag Ã¼bermittelt. Beispiel: \"Ersatz\", \"Gutschein\" usw."
+            + " Dies wird nicht fÃ¼r den gesetzlichen Widerruf verwendet.");
 
         builder.AddOrUpdate("Admin.Configuration.Settings.Order.ReturnRequestSettings", "Returns", "Retouren");
 
@@ -183,19 +183,19 @@ public class SmartDbContextDataSeeder : IDataSeeder<SmartDbContext>
         builder.AddOrUpdate($"{prefix}.QueuedMailSending", "Mail Sending", "E-Mail-Versand");
         builder.AddOrUpdate($"{prefix}.QueuedMailSendingNotes",
             "Limits how many queued emails can be sent within a specific time window to prevent overload during email bursts.",
-            "Begrenzt die Anzahl der E-Mails, die innerhalb eines bestimmten Zeitfensters versendet werden können, um Überlastung bei E-Mail-Spitzen zu verhindern.");
+            "Begrenzt die Anzahl der E-Mails, die innerhalb eines bestimmten Zeitfensters versendet werden kÃ¶nnen, um Ãœberlastung bei E-Mail-Spitzen zu verhindern.");
 
         builder.AddOrUpdate($"{prefix}.MailSendRateWindow",
             "Time window (hh:mm:ss)",
             "Zeitfenster (hh:mm:ss)",
             "The time period for measuring the queued mail send rate (e.g., 1 minute).",
-            "Der Zeitraum für die Messung der E-Mail-Versandrate (z.B. 1 Minute).");
+            "Der Zeitraum fÃ¼r die Messung der E-Mail-Versandrate (z.B. 1 Minute).");
 
         builder.AddOrUpdate($"{prefix}.MailSendRateLimit",
             "Limit",
             "Grenzwert",
             "The maximum number of queued emails that may be sent during the time window. Empty value means there is no limit.",
-            "Die maximale Anzahl von E-Mails, die während des Zeitfensters versendet werden dürfen. Ein leerer Wert bedeutet: keine Begrenzung.");
+            "Die maximale Anzahl von E-Mails, die wÃ¤hrend des Zeitfensters versendet werden dÃ¼rfen. Ein leerer Wert bedeutet: keine Begrenzung.");
 
         builder.AddOrUpdate("Admin.Rules.FilterDescriptor.AllProductsWithDeliveryTimeInCart",
             "All products with delivery time in cart",
@@ -205,28 +205,32 @@ public class SmartDbContextDataSeeder : IDataSeeder<SmartDbContext>
 
         builder.AddOrUpdate("RewardPoints.PointsForPurchasesInfo",
             "For every {0} net order value, {1} points are awarded.",
-            "Für einen Auftragswert von je {0} netto werden {1} Punkte gewährt.");
+            "FÃ¼r einen Auftragswert von je {0} netto werden {1} Punkte gewÃ¤hrt.");
 
         builder.AddOrUpdate("Admin.Configuration.Settings.GeneralCommon.GoogleRecaptcha.Info",
             "Manage keys and domains in the <a class='fwm' href='https://www.google.com/recaptcha/admin' target='_blank'>reCAPTCHA Admin Console</a>. v3 runs invisibly with a risk score; optional step-up challenges can be enabled if needed.",
-            "Keys und Domains verwalten Sie in der <a class='fwm' href='https://www.google.com/recaptcha/admin' target='_blank'>reCAPTCHA Admin Console</a>. Bei v3 erfolgt die Bewertung unsichtbar per Score; Step-Up-Prüfungen sind optional möglich.");
+            "Keys und Domains verwalten Sie in der <a class='fwm' href='https://www.google.com/recaptcha/admin' target='_blank'>reCAPTCHA Admin Console</a>. Bei v3 erfolgt die Bewertung unsichtbar per Score; Step-Up-PrÃ¼fungen sind optional mÃ¶glich.");
 
         builder.AddOrUpdate("Enums.VatNumberStatus.ServiceUnavailable",
             "Online checks are currently unavailable",
-            "Onlineprüfung derzeit nicht möglich");
+            "OnlineprÃ¼fung derzeit nicht mÃ¶glich");
 
         builder.AddOrUpdate("Admin.Customers.Customers.Fields.VatNumberStatus", 
             "VAT number status", 
             "Status der Steuernummer");
 
+        builder.AddOrUpdate("Admin.Customers.Customers.Fields.VatNumber.MarkAs",
+            "Mark as",
+            "Markieren als");
+
         builder.AddOrUpdate("Admin.Customers.CheckVatNumber",
-            "Check VAT number",
-            "Steuernummer prüfen",
+            "Check online",
+            "Online prÃ¼fen",
             "Checks the VAT number online and updates its status.",
-            "Prüft die Steuernummer online und aktualisiert deren Status.");
+            "PrÃ¼ft die Steuernummer online und aktualisiert deren Status.");
 
         builder.AddOrUpdate("Admin.Customers.VatNumberValidationError",
             "The following error occurred while verifying the VAT number online: {0}",
-            "Bei der Onlineprüfung der Steuernummer ist folgender Fehler aufgetreten: {0}");
+            "Bei der OnlineprÃ¼fung der Steuernummer ist folgender Fehler aufgetreten: {0}");
     }
 }
