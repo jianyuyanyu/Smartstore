@@ -40,6 +40,7 @@ $pd-offer-spacing:              $grid-gutter-width / 2;
 
 .pd-description {
     color: $text-muted;
+    color: var(--gray-600);
     line-height: 1.3;
 }
 
@@ -120,6 +121,10 @@ $pd-offer-spacing:              $grid-gutter-width / 2;
     max-width: 100%;
     height: auto;
     max-height: 24px;
+
+    .pd-info-mobile & {
+        max-width: 96px;
+    }
 }
 
 .pd-attrs {
@@ -182,6 +187,8 @@ $pd-offer-spacing:              $grid-gutter-width / 2;
 
     > .pd-rating-box {
         display: flex;
+        align-items: center;
+        gap: 3px;
     }
 
     > .pd-review-link {

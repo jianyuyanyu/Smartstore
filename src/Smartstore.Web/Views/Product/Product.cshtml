@@ -13,8 +13,6 @@
     {
         Assets.AppendCanonicalUrlParts(Model.CanonicalUrl);
     }
-
-    var isTouchDevice = UserAgent.IsTouchDevice();
 }
 
 <partial name="MetaProperties" model="Model.MetaProperties" />
@@ -29,7 +27,7 @@
                 <!-- Top Content: Picture, Description, Attrs, Variants, Bundle Items, Price etc. -->
                 <section class="row pd-section pd-section-top admin-actions-container">
                     <!-- Mobile info above gallery -->
-                    <div class="col-12 d-block d-md-none" sm-if="@isTouchDevice">
+                    <div class="col-12 d-block d-md-none">
                         <zone name="productdetails_info_mobile_top" />
                         <partial name="Product.Info.Mobile" model="Model" />
                         <zone name="productdetails_info_mobile_bottom" />
@@ -55,17 +53,9 @@
 
                         <zone name="productdetails_info_top" />
 
-                        <div class="pd-info-container" attr-class='(isTouchDevice, "d-none d-md-block")'>
+                        <div class="pd-info-container d-none d-md-block">
                             <partial name="Product.Info" model="Model" />
                         </div>
-
-                        <!-- Short description -->
-                        @if (isTouchDevice && Model.ShortDescription.Value.HasValue())
-                        {
-                            <div sm-language-attributes-for="Model.ShortDescription" class="pd-description pd-group d-block d-md-none">
-                                @Html.Raw(Model.ShortDescription)
-                            </div>
-                        }
 
                         <div sm-if="Model.ProductType == ProductType.BundledProduct" class="pd-bundle-container pd-group card shadow-sm">
                             <partial name="Product.Bundle" model="Model" />
