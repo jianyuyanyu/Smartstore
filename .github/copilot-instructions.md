@@ -7,6 +7,7 @@
 - Only modify existing XML documentation comments (including <inheritdoc/>) when making documentation corrections; otherwise, preserve docs verbatim during code changes. User explicitly requested: 'Mach das nie wieder! Schreib bitte Docs'.
 - Never write German code comments; use English-only comments in code.
 - Tolerate minimal false positives for bot detection (around 0.5% real users affected acceptable) if it helps prevent DB junk.
+- Account for dynamic asset pipelines; do not assume static stylesheet links when CSS is generated dynamically. Prefer referencing generated asset manifests, pipeline helper functions, or runtime-injected links.
 
 ## Code Style
 - Use specific formatting rules
