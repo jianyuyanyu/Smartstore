@@ -32,6 +32,7 @@
 - New hidden system setting `CommonSettings.MinLogLevelToRetain` (for scheduled log cleanup operations)
 - #1522 Add a cart rule "All products with delivery time in cart".
 - #1512 Implement new VAT number status `ServiceUnavailable`.
+- #1507 Add shipping details metadata for search engines to the product detail page.
 
 ### Improvements
 
