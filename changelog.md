@@ -47,6 +47,7 @@
     - Stackframe tools: copy to clipboard, wrap text
 - **Theming**
     - Added `.prose` helpers for readable long-form content: optimized measure (narrow/standard/wide) plus comfortable typography defaults.
+    - On mobile devices (**< md**), key product information such as brand, title, short description, badges, and rating summary is now displayed **above** the image gallery, **not below**.
     - Product lists now display available **color options** and other variants on **touch devices** by default, ensuring key information is visible without requiring user interaction or hover.
 - #1459 Cart sorting: The selected items must always come before the unselected ones.
 - #1503 Calculate reward points for a purchase based on the net subtotal rather than the gross total.
