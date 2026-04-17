@@ -1054,6 +1054,7 @@ public partial class CatalogHelper
         }
 
         // Delivery Time.
+        DeliveryTime deliveryTime = null;
         var deliveryPresentation = _catalogSettings.DeliveryTimesInProductDetail;
 
         model.IsShippingEnabled = product.IsShippingEnabled;
@@ -1062,7 +1063,7 @@ public partial class CatalogHelper
 
         if (model.IsAvailable || model.DisplayDeliveryTimeAccordingToStock)
         {
-            var deliveryTime = await _deliveryTimeService.GetDeliveryTimeAsync(product, _catalogSettings);
+            deliveryTime = await _deliveryTimeService.GetDeliveryTimeAsync(product, _catalogSettings);
             if (deliveryTime != null)
             {
                 model.DeliveryTimeName = deliveryTime.GetLocalized(x => x.Name);
@@ -1078,6 +1079,45 @@ public partial class CatalogHelper
         if (!model.IsAvailable && model.DeliveryTimeName.IsEmpty() && deliveryPresentation != DeliveryTimesPresentation.None)
         {
             model.DeliveryTimeName = T("ShoppingCart.NotAvailable");
+        }
+
+        // INFO: Product-level "OfferShippingDetails" (schema.org) should only be emitted when the shipping rule can be determined
+        // without any customer-specific context. In this implementation, that is limited to products marked as free shipping.
+        if (product.IsFreeShipping
+            && product.IsShippingEnabled
+            && model.IsAvailable
+            && productBundleItem == null 
+            && !ctx.IsAssociatedProduct
+            && _catalogSettings.ShippingMetadataInProductDetail)
+        {
+            var countryCodes = await _db.Countries
+                .Where(x => x.Published && x.AllowsShipping)
+                .OrderBy(x => x.DisplayOrder)
+                .Select(x => x.TwoLetterIsoCode)
+                .ToListAsync();
+            if (countryCodes.Count > 0)
+            {
+                deliveryTime ??= await _deliveryTimeService.GetDeliveryTimeAsync(product, _catalogSettings);
+
+                // INFO: Our delivery time data only contains a total min/max delivery window and does not
+                // distinguish between handling time and transit time. To avoid generating an incorrect split,
+                // we map the total range to transitTime only and omit handlingTime.
+                var minDays = deliveryTime?.MinDays;
+                var maxDays = deliveryTime?.MaxDays;
+                if (minDays != null && maxDays != null && maxDays < minDays)
+                {
+                    (maxDays, minDays) = (minDays, maxDays);
+                }
+
+                model.ShippingDetails.Add(new()
+                {
+                    ShippingCosts = 0,
+                    CurrencyCode = currency.CurrencyCode,
+                    CountryCodes = countryCodes,
+                    TransitMinDays = minDays,
+                    TransitMaxDays = maxDays
+                });
+            }
         }
 
         var quantityUnit = await _db.QuantityUnits.GetQuantityUnitByIdAsync(product.QuantityUnitId ?? 0, _catalogSettings.ShowDefaultQuantityUnit);

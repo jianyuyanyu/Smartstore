@@ -232,5 +232,13 @@ public class SmartDbContextDataSeeder : IDataSeeder<SmartDbContext>
         builder.AddOrUpdate("Admin.Customers.VatNumberValidationError",
             "The following error occurred while verifying the VAT number online: {0}",
             "Bei der Onlineprüfung der Steuernummer ist folgender Fehler aufgetreten: {0}");
+
+        builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ShippingMetadataInProductDetail",
+            "Shipping information for search engines",
+            "Versandinformationen für Suchmaschinen",
+            "This specifies whether structured shipping information is added for products with free shipping for search engines."
+            + " Other shipping costs are not included as these are based on information provided by customers and cannot be clearly assigned to a single product.",
+            "Legt fest, ob für Produkte mit kostenlosem Versand strukturierte Versandinformationen für Suchmaschinen hinzugefügt werden."
+            + " Andere Versandkosten werden nicht berücksichtigt, da sie auf Kundenangaben basieren und sich nicht eindeutig einem einzelnen Produkt zuordnen lassen.");
     }
 }

@@ -59,6 +59,11 @@ namespace Smartstore.Core.Catalog
         public DeliveryTimesPresentation DeliveryTimesInProductDetail { get; set; } = DeliveryTimesPresentation.DateOnly;
 
         /// <summary>
+        /// Gets or sets a value indicating whether shipping metadata (schema.org/OfferShippingDetails) is added to product detail pages.
+        /// </summary>
+        public bool ShippingMetadataInProductDetail { get; set; } = true;
+
+        /// <summary>
         /// Gets or sets a value indicating whether to display quantity of linked product at attribute values
         /// </summary>
         public bool ShowLinkedAttributeValueQuantity { get; set; }

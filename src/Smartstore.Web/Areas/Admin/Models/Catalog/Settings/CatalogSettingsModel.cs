@@ -263,6 +263,9 @@ namespace Smartstore.Admin.Models.Catalog
         [LocalizedDisplay("*DeliveryTimesInProductDetail")]
         public DeliveryTimesPresentation DeliveryTimesInProductDetail { get; set; }
 
+        [LocalizedDisplay("*ShippingMetadataInProductDetail")]
+        public bool ShippingMetadataInProductDetail { get; set; }
+
         [UIHint("DeliveryTimes")]
         [LocalizedDisplay("*DeliveryTimeIdForEmptyStock")]
         public int? DeliveryTimeIdForEmptyStock { get; set; }

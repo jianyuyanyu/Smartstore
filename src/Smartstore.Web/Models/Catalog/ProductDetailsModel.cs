@@ -150,6 +150,7 @@ namespace Smartstore.Web.Models.Catalog
         public string DeliveryTimeName { get; set; }
         public string DeliveryTimeHexValue { get; set; }
         public string DeliveryTimeDate { get; set; }
+        public List<ShippingDetailsModel> ShippingDetails { get; set; } = [];
 
         public ProductVariantAttributeCombination SelectedCombination { get; set; }
 
@@ -297,6 +298,16 @@ namespace Smartstore.Web.Models.Catalog
             public bool HideThumbnail { get; set; }
             public bool Visible { get; set; }
             public bool IsBundleItemPricing { get; set; }
+        }
+
+        public partial class ShippingDetailsModel
+        {
+            public decimal ShippingCosts { get; set; }
+            public List<string> CountryCodes { get; set; }
+            public string CurrencyCode { get; set; }
+
+            public int? TransitMinDays { get; set; }
+            public int? TransitMaxDays { get; set; }
         }
 
         #endregion
