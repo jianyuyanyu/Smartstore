@@ -390,12 +390,8 @@ namespace Smartstore.Core.Identity
         /// <returns></returns>
         private static async Task<ClaimsPrincipal> EnsureAuthentication(HttpContext context)
         {
-            var authenticateResult = context.Features.Get<IAuthenticateResultFeature>()?.AuthenticateResult;
-            if (authenticateResult == null)
-            {
-                authenticateResult = await context.AuthenticateAsync();
-            }
-
+            var authenticateResult = context.Features.Get<IAuthenticateResultFeature>()?.AuthenticateResult 
+                ?? await context.AuthenticateAsync();
             if (authenticateResult.Succeeded)
             {
                 // The middleware ran already
@@ -413,7 +409,9 @@ namespace Smartstore.Core.Identity
         public virtual CustomerRole GetRoleBySystemName(string systemName, bool tracked = true)
         {
             if (string.IsNullOrWhiteSpace(systemName))
+            {
                 return null;
+            }
 
             var query = _db.CustomerRoles
                 .ApplyTracking(tracked)
@@ -427,7 +425,9 @@ namespace Smartstore.Core.Identity
         public virtual Task<CustomerRole> GetRoleBySystemNameAsync(string systemName, bool tracked = true)
         {
             if (string.IsNullOrWhiteSpace(systemName))
+            {
                 return Task.FromResult((CustomerRole)null);
+            }
 
             var query = _db.CustomerRoles
                 .ApplyTracking(tracked)
@@ -444,14 +444,29 @@ namespace Smartstore.Core.Identity
 
         public virtual void ApplyRewardPointsForProductReview(Customer customer, Product product, bool add)
         {
-            Guard.NotNull(customer, nameof(customer));
+            Guard.NotNull(customer);
 
             if (_rewardPointsSettings.Enabled && _rewardPointsSettings.PointsForProductReview > 0)
             {
                 var productName = product?.GetLocalized(x => x.Name) ?? StringExtensions.NotAvailable;
-                var message = T(add ? "RewardPoints.Message.EarnedForProductReview" : "RewardPoints.Message.ReducedForProductReview", productName).ToString();
+                var message = T(add ? "RewardPoints.Message.EarnedForProductReview" : "RewardPoints.Message.ReducedForProductReview", productName);
 
                 customer.AddRewardPointsHistoryEntry(_rewardPointsSettings.PointsForProductReview * (add ? 1 : -1), message);
+            }
+        }
+
+        public virtual void ApplyRewardPointsForNewsletterSubscription(Customer customer, bool add)
+        {
+            Guard.NotNull(customer);
+
+            // TODO: (mg) Only applicable once per customer.
+            if (_rewardPointsSettings.Enabled 
+                && _rewardPointsSettings.PointsForNewsletterSubscription > 0
+                && customer.IsRegistered())
+            {
+                var message = T(add ? "RewardPoints.Message.EarnedForNewsletterSubscription" : "RewardPoints.Message.ReducedForNewsletterSubscription");
+
+                customer.AddRewardPointsHistoryEntry(_rewardPointsSettings.PointsForNewsletterSubscription * (add ? 1 : -1), message);
             }
         }
 

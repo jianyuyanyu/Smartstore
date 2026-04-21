@@ -1545,8 +1545,6 @@ namespace Smartstore.Admin.Controllers
         {
             var model = MiniMapper.Map<RewardPointsSettings, RewardPointsSettingsModel>(settings);
 
-            model.PrimaryStoreCurrencyCode = Services.CurrencyService.PrimaryCurrency.CurrencyCode;
-
             return View(model);
         }
 

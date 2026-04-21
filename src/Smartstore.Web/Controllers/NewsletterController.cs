@@ -19,14 +19,14 @@ namespace Smartstore.Web.Controllers
         public NewsletterController(
             SmartDbContext db,
             IWorkContext workContext,
-            IMessageFactory messageFactory,
             IStoreContext storeContext,
+            IMessageFactory messageFactory,
             PrivacySettings privacySettings)
         {
             _db = db;
             _workContext = workContext;
-            _messageFactory = messageFactory;
             _storeContext = storeContext;
+            _messageFactory = messageFactory;
             _privacySettings = privacySettings;
         }
 
@@ -36,85 +36,74 @@ namespace Smartstore.Web.Controllers
         public async Task<IActionResult> Subscribe(bool subscribe, string email)
         {
             string result;
-            var success = false;
             var customer = _workContext.CurrentCustomer;
             var hasConsentedToGdpr = customer.GenericAttributes.HasConsentedToGdpr;
             var hasConsented = ViewData["GdprConsent"] != null ? (bool)ViewData["GdprConsent"] : hasConsentedToGdpr;
 
             if (!hasConsented && _privacySettings.DisplayGdprConsentOnForms)
             {
-                return Json(new
-                {
-                    Success = success,
-                    Result = string.Empty
-                });
+                return Json(new { Success = false, Result = string.Empty });
             }
 
             if (!email.IsEmail())
             {
-                result = T("Newsletter.Email.Wrong");
+                return Json(new { Success = false, Result = T("Newsletter.Email.Wrong").Value });
             }
-            else
+
+            // Subscribe/unsubscribe.
+            email = email.Trim();
+
+            var store = _storeContext.CurrentStore;
+            var language = _workContext.WorkingLanguage;
+            var subscription = await _db.NewsletterSubscriptions
+                .AsNoTracking()
+                .ApplyMailAddressFilter(email, store.Id)
+                .FirstOrDefaultAsync();
+
+            if (subscription != null)
             {
-                // subscribe/unsubscribe
-                email = email.Trim();
-
-                var subscription = await _db.NewsletterSubscriptions
-                    .AsNoTracking()
-                    .ApplyMailAddressFilter(email, _storeContext.CurrentStore.Id)
-                    .FirstOrDefaultAsync();
-
-                if (subscription != null)
+                if (subscribe)
                 {
-                    if (subscribe)
+                    if (!subscription.Active)
                     {
-                        if (!subscription.Active)
-                        {
-                            await _messageFactory.SendNewsletterSubscriptionActivationMessageAsync(subscription, _workContext.WorkingLanguage.Id);
-                        }
-                        result = T("Newsletter.SubscribeEmailSent");
+                        await _messageFactory.SendNewsletterSubscriptionActivationMessageAsync(subscription, language.Id);
                     }
-                    else
-                    {
-                        if (subscription.Active)
-                        {
-                            await _messageFactory.SendNewsletterSubscriptionDeactivationMessageAsync(subscription, _workContext.WorkingLanguage.Id);
-                        }
-                        result = T("Newsletter.UnsubscribeEmailSent");
-                    }
-                }
-                else if (subscribe)
-                {
-                    subscription = new NewsletterSubscription
-                    {
-                        NewsletterSubscriptionGuid = Guid.NewGuid(),
-                        Email = email,
-                        Active = false,
-                        CreatedOnUtc = DateTime.UtcNow,
-                        StoreId = _storeContext.CurrentStore.Id,
-                        WorkingLanguageId = _workContext.WorkingLanguage.Id
-                    };
-
-                    _db.NewsletterSubscriptions.Add(subscription);
-                    await _db.SaveChangesAsync();
-
-                    await _messageFactory.SendNewsletterSubscriptionActivationMessageAsync(subscription, _workContext.WorkingLanguage.Id);
-
                     result = T("Newsletter.SubscribeEmailSent");
                 }
                 else
                 {
+                    if (subscription.Active)
+                    {
+                        await _messageFactory.SendNewsletterSubscriptionDeactivationMessageAsync(subscription, language.Id);
+                    }
                     result = T("Newsletter.UnsubscribeEmailSent");
                 }
+            }
+            else if (subscribe)
+            {
+                subscription = new()
+                {
+                    NewsletterSubscriptionGuid = Guid.NewGuid(),
+                    Email = email,
+                    Active = false,
+                    CreatedOnUtc = DateTime.UtcNow,
+                    StoreId = store.Id,
+                    WorkingLanguageId = language.Id
+                };
 
-                success = true;
+                _db.NewsletterSubscriptions.Add(subscription);
+                await _db.SaveChangesAsync();
+
+                await _messageFactory.SendNewsletterSubscriptionActivationMessageAsync(subscription, language.Id);
+
+                result = T("Newsletter.SubscribeEmailSent");
+            }
+            else
+            {
+                result = T("Newsletter.UnsubscribeEmailSent");
             }
 
-            return Json(new
-            {
-                Success = success,
-                Result = result
-            });
+            return Json(new { Success = true, Result = result });
         }
 
         [HttpGet]
@@ -122,15 +111,11 @@ namespace Smartstore.Web.Controllers
         [LocalizedRoute("/newsletter/subscriptionactivation/{token}/{active}", Name = "NewsletterActivation")]
         public async Task<IActionResult> SubscriptionActivation(Guid token, bool active)
         {
-            var subscription = await _db.NewsletterSubscriptions
-                .FirstOrDefaultAsync(x => x.NewsletterSubscriptionGuid == token);
-
+            var subscription = await _db.NewsletterSubscriptions.FirstOrDefaultAsync(x => x.NewsletterSubscriptionGuid == token);
             if (subscription == null)
             {
                 return NotFound();
             }
-
-            var model = new SubscriptionActivationModel();
 
             if (active)
             {
@@ -143,7 +128,10 @@ namespace Smartstore.Web.Controllers
 
             await _db.SaveChangesAsync();
 
-            model.Result = T(active ? "Newsletter.ResultActivated" : "Newsletter.ResultDeactivated");
+            var model = new SubscriptionActivationModel
+            {
+                Result = T(active ? "Newsletter.ResultActivated" : "Newsletter.ResultDeactivated")
+            };
 
             return View(model);
         }

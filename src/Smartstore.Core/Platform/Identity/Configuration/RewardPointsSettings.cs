@@ -36,6 +36,11 @@ namespace Smartstore.Core.Identity
         public bool ShowPointsForProductReview { get; set; }
 
         /// <summary>
+        /// Gets or sets the number of reward points awarded for subscribing to the newsletter.
+        /// </summary>
+        public int PointsForNewsletterSubscription { get; set; }
+
+        /// <summary>
         /// Gets or sets a number of points awarded for purchases (amount in primary store currency).
         /// </summary>
         public decimal PointsForPurchases_Amount { get; set; } = 10;

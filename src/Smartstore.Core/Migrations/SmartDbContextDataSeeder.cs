@@ -240,5 +240,26 @@ public class SmartDbContextDataSeeder : IDataSeeder<SmartDbContext>
             + " Other shipping costs are not included as these are based on information provided by customers and cannot be clearly assigned to a single product.",
             "Legt fest, ob für Produkte mit kostenlosem Versand strukturierte Versandinformationen für Suchmaschinen hinzugefügt werden."
             + " Andere Versandkosten werden nicht berücksichtigt, da sie auf Kundenangaben basieren und sich nicht eindeutig einem einzelnen Produkt zuordnen lassen.");
+
+        builder.AddOrUpdate("RewardPoints.Message.EarnedForNewsletterSubscription",
+            "Earned reward points for subscribing to the newsletter.",
+            "Erhaltene Bonuspunkte für das Abonnieren des Newsletters.");
+        builder.AddOrUpdate("RewardPoints.Message.ReducedForNewsletterSubscription",
+            "Reduced reward points for unsubscribing from the newsletter.",
+            "Abgezogene Bonuspunkte für das Abbestellen des Newsletters.");
+
+        builder.AddOrUpdate("Admin.Configuration.Settings.RewardPoints.PointsForNewsletterSubscription",
+            "Points for subscribing to the newsletter",
+            "Punkte für das Abonnieren des Newsletters",
+            "Specifies the number of reward points awarded for subscribing to the newsletter.",
+            "Legt die Anzahl der Bonuspunkte für das Abonnieren des Newsletters fest.");
+
+        builder.AddOrUpdate("Admin.Configuration.Settings.RewardPoints.Description",
+            "The reward points program allows customers to earn points for certain actions, such as registering or placing orders.",
+            "Das Bonuspunkteprogramm ermöglicht es Kunden, für bestimmte Aktionen Punkte zu sammeln, beispielsweise für Registrierungen oder Bestellungen.");
+
+        builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.NewsletterEnabled.Hint",
+            "Specifies whether the option to subscribe to the newsletter is displayed.",
+            "Legt fest, ob die Option zum Abonnieren des Newsletters angezeigt wird.");
     }
 }

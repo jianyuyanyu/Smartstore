@@ -1,4 +1,7 @@
 ﻿using Smartstore.Core.Data;
+using Smartstore.Core.Identity;
+using Smartstore.Core.Localization;
+using Smartstore.Core.Stores;
 using Smartstore.Data.Hooks;
 using Smartstore.Events;
 using EState = Smartstore.Data.EntityState;
@@ -7,25 +10,33 @@ namespace Smartstore.Core.Messaging
 {
     public class NewsletterSubscriptionService : AsyncDbSaveHook<NewsletterSubscription>, INewsletterSubscriptionService
     {
-        private readonly HashSet<NewsletterSubscription> _toSubscribe = new();
-        private readonly HashSet<NewsletterSubscription> _toUnsubscribe = new();
+        private readonly HashSet<NewsletterSubscription> _toSubscribe = [];
+        private readonly HashSet<NewsletterSubscription> _toUnsubscribe = [];
 
         private readonly SmartDbContext _db;
-        private readonly IEventPublisher _eventPublisher;
         private readonly IWorkContext _workContext;
+        private readonly IStoreContext _storeContext;
+        private readonly IEventPublisher _eventPublisher;
         private readonly IMessageFactory _messageFactory;
+        private readonly ICustomerService _customerService;
 
         public NewsletterSubscriptionService(
             SmartDbContext db,
-            IEventPublisher eventPublisher,
             IWorkContext workContext,
-            IMessageFactory messageFactory)
+            IStoreContext storeContext,
+            IEventPublisher eventPublisher,
+            IMessageFactory messageFactory,
+            ICustomerService customerService)
         {
             _db = db;
-            _eventPublisher = eventPublisher;
             _workContext = workContext;
+            _storeContext = storeContext;
+            _eventPublisher = eventPublisher;
             _messageFactory = messageFactory;
+            _customerService = customerService;
         }
+
+        public Localizer T { get; set; } = NullLocalizer.Instance;
 
         #region Hook 
 
@@ -38,7 +49,6 @@ namespace Smartstore.Core.Messaging
         protected override Task<HookResult> OnUpdatingAsync(NewsletterSubscription entity, IHookedEntity entry, CancellationToken cancelToken)
         {
             EnsureValidEntityOrThrow(entity, entry);
-
             return Task.FromResult(HookResult.Ok);
         }
 
@@ -125,38 +135,108 @@ namespace Smartstore.Core.Messaging
 
         #endregion
 
-        public virtual bool Subscribe(NewsletterSubscription subscription)
+        public virtual async Task<bool> SubscribeAsync(
+            string email,
+            Customer customer = null,
+            bool active = false,
+            int? storeId = null)
         {
-            Guard.NotNull(subscription);
-
-            if (!subscription.Active)
+            if (!email.IsEmail())
             {
-                // Ensure that entity is tracked.
-                _db.TryUpdate(subscription);
-
-                subscription.Active = true;
-                return true;
+                return false;
             }
 
-            return false;
-        }
+            customer ??= _workContext.CurrentCustomer;
+            storeId ??= _storeContext.CurrentStore.Id;
 
-        public virtual bool Unsubscribe(NewsletterSubscription subscription)
-        {
-            Guard.NotNull(subscription);
+            var language = _workContext.WorkingLanguage;
+            var subscription = await _db.NewsletterSubscriptions
+                .ApplyTracking(active)
+                .ApplyMailAddressFilter(email, storeId.Value)
+                .FirstOrDefaultAsync();
 
-            if (subscription.Active)
+            if (subscription != null)
             {
-                // Ensure that entity is tracked.
-                _db.TryUpdate(subscription);
+                if (!subscription.Active)
+                {
+                    if (active)
+                    {
+                        subscription.Active = true;
 
-                subscription.Active = false;
-                return true;
+                        _customerService.ApplyRewardPointsForNewsletterSubscription(customer, true);
+                        await _db.SaveChangesAsync();
+                    }
+                    else
+                    {
+                        await _messageFactory.SendNewsletterSubscriptionActivationMessageAsync(subscription, language.Id);
+                    }
+                }
+            }
+            else
+            {
+                subscription = new()
+                {
+                    NewsletterSubscriptionGuid = Guid.NewGuid(),
+                    Email = email,
+                    Active = active,
+                    CreatedOnUtc = DateTime.UtcNow,
+                    StoreId = storeId.Value,
+                    WorkingLanguageId = language.Id
+                };
+
+                _db.NewsletterSubscriptions.Add(subscription);
+
+                if (active)
+                {
+                    _customerService.ApplyRewardPointsForNewsletterSubscription(customer, true);
+                    await _db.SaveChangesAsync();
+                }
+                else
+                {
+                    await _db.SaveChangesAsync();
+                    await _messageFactory.SendNewsletterSubscriptionActivationMessageAsync(subscription, language.Id);
+                }
             }
 
-            return false;
+            return true;
         }
 
+        public virtual async Task<bool> UnsubscribeAsync(
+            string email,
+            Customer customer = null,
+            bool remove = true, 
+            int? storeId = null)
+        {
+            if (!email.IsEmail())
+            {
+                return false;
+            }
+
+            var subscription = await _db.NewsletterSubscriptions
+                .ApplyTracking(remove)
+                .ApplyMailAddressFilter(email, storeId ?? _storeContext.CurrentStore.Id)
+                .FirstOrDefaultAsync();
+            if (subscription == null)
+            {
+                return false;
+            }
+
+            if (remove)
+            {
+                _db.NewsletterSubscriptions.Remove(subscription);
+                _customerService.ApplyRewardPointsForNewsletterSubscription(customer, false);
+                
+                await _db.SaveChangesAsync();
+            }
+            else if (subscription.Active)
+            {
+                await _messageFactory.SendNewsletterSubscriptionDeactivationMessageAsync(subscription, _workContext.WorkingLanguage.Id);
+            }
+
+            return true;
+        }
+
+        // TODO: (mg) Obsolete. Consolidate with SubscribeAsync and UnsubscribeAsync.
         public virtual async Task<bool?> ApplySubscriptionAsync(bool subscribe, string email, int storeId)
         {
             bool? result = null;

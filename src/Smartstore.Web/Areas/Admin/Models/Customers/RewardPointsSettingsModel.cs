@@ -26,6 +26,9 @@ namespace Smartstore.Admin.Models.Customers
         [LocalizedDisplay("*ShowPointsForProductReview")]
         public bool ShowPointsForProductReview { get; set; }
 
+        [LocalizedDisplay("*PointsForNewsletterSubscription")]
+        public int PointsForNewsletterSubscription { get; set; }
+
         [LocalizedDisplay("*PointsForPurchases_Amount")]
         public int PointsForPurchases_Points { get; set; }
 
@@ -44,8 +47,6 @@ namespace Smartstore.Admin.Models.Customers
 
         [LocalizedDisplay("*PointsForPurchases_Canceled")]
         public OrderStatus PointsForPurchases_Canceled { get; set; }
-
-        public string PrimaryStoreCurrencyCode { get; set; }
     }
 
     public partial class RewardPointsSettingsValidator : SettingModelValidator<RewardPointsSettingsModel, RewardPointsSettings>
