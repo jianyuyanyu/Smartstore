@@ -186,7 +186,7 @@
             const toggle = e.relatedTarget;
             const menu = toggle.nextElementSibling;
 
-            if (menu) {
+            if (menu && !menu.classList.contains('dropdown-menu-right')) {
                 if (e.type == 'hidden') {
                     menu.classList.remove('overflown');
                     menu.style.removeProperty('--menu-offset');
