@@ -244,9 +244,6 @@ public class SmartDbContextDataSeeder : IDataSeeder<SmartDbContext>
         builder.AddOrUpdate("RewardPoints.Message.EarnedForNewsletterSubscription",
             "Earned reward points for subscribing to the newsletter.",
             "Erhaltene Bonuspunkte für das Abonnieren des Newsletters.");
-        builder.AddOrUpdate("RewardPoints.Message.ReducedForNewsletterSubscription",
-            "Reduced reward points for unsubscribing from the newsletter.",
-            "Abgezogene Bonuspunkte für das Abbestellen des Newsletters.");
 
         builder.AddOrUpdate("Admin.Configuration.Settings.RewardPoints.PointsForNewsletterSubscription",
             "Points for subscribing to the newsletter",

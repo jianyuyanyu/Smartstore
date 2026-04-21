@@ -247,6 +247,15 @@ namespace Smartstore.Core.Identity
         }
 
         /// <summary>
+        /// Gets or sets a value indicating whether the customer has earned reward points for newsletter subscription.
+        /// </summary>
+        public bool HasEarnedNewsletterRewardPoints
+        {
+            get => Get<bool>(SystemCustomerAttributeNames.HasEarnedNewsletterRewardPoints, CurrentStoreId);
+            set => Set(SystemCustomerAttributeNames.HasEarnedNewsletterRewardPoints, value, CurrentStoreId);
+        }
+
+        /// <summary>
         /// Gets or sets the ID of the selected currency.
         /// </summary>
         public int? CurrencyId

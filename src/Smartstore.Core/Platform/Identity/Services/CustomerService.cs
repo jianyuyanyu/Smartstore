@@ -384,10 +384,8 @@ namespace Smartstore.Core.Identity
         }
 
         /// <summary>
-        /// Ensures that the authentication handler runs (even before the authentication middleware)
+        /// Ensures that the authentication handler runs (even before the authentication middleware).
         /// </summary>
-        /// <param name="context"></param>
-        /// <returns></returns>
         private static async Task<ClaimsPrincipal> EnsureAuthentication(HttpContext context)
         {
             var authenticateResult = context.Features.Get<IAuthenticateResultFeature>()?.AuthenticateResult 
@@ -455,18 +453,17 @@ namespace Smartstore.Core.Identity
             }
         }
 
-        public virtual void ApplyRewardPointsForNewsletterSubscription(Customer customer, bool add)
+        public virtual void AddRewardPointsForNewsletterSubscription(Customer customer)
         {
             Guard.NotNull(customer);
 
-            // TODO: (mg) Only applicable once per customer.
             if (_rewardPointsSettings.Enabled 
                 && _rewardPointsSettings.PointsForNewsletterSubscription > 0
-                && customer.IsRegistered())
+                && customer.IsRegistered()
+                && !customer.GenericAttributes.HasEarnedNewsletterRewardPoints)
             {
-                var message = T(add ? "RewardPoints.Message.EarnedForNewsletterSubscription" : "RewardPoints.Message.ReducedForNewsletterSubscription");
-
-                customer.AddRewardPointsHistoryEntry(_rewardPointsSettings.PointsForNewsletterSubscription * (add ? 1 : -1), message);
+                customer.AddRewardPointsHistoryEntry(_rewardPointsSettings.PointsForNewsletterSubscription, T("RewardPoints.Message.EarnedForNewsletterSubscription"));
+                customer.GenericAttributes.HasEarnedNewsletterRewardPoints = true;
             }
         }
 

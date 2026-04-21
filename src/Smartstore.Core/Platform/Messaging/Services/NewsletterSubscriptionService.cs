@@ -163,7 +163,7 @@ namespace Smartstore.Core.Messaging
                     {
                         subscription.Active = true;
 
-                        _customerService.ApplyRewardPointsForNewsletterSubscription(customer, true);
+                        _customerService.AddRewardPointsForNewsletterSubscription(customer);
                         await _db.SaveChangesAsync();
                     }
                     else
@@ -188,7 +188,7 @@ namespace Smartstore.Core.Messaging
 
                 if (active)
                 {
-                    _customerService.ApplyRewardPointsForNewsletterSubscription(customer, true);
+                    _customerService.AddRewardPointsForNewsletterSubscription(customer);
                     await _db.SaveChangesAsync();
                 }
                 else
@@ -224,8 +224,9 @@ namespace Smartstore.Core.Messaging
             if (remove)
             {
                 _db.NewsletterSubscriptions.Remove(subscription);
-                _customerService.ApplyRewardPointsForNewsletterSubscription(customer, false);
-                
+                // INFO: Better not to reduce reward points when a customer cancels their subscription.
+                // This could lead to frustration, raises some legal concerns, and is not in line with standard practice.
+
                 await _db.SaveChangesAsync();
             }
             else if (subscription.Active)

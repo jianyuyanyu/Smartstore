@@ -110,8 +110,11 @@ namespace Smartstore.Core.Identity
         /// <summary>
         /// Applies reward points for subscribing to the newsletter. The caller is responsible for database commit.
         /// </summary>
-        /// <param name="customer">The customer for whom to apply or remove reward points. Cannot be <c>null</c>.</param>
-        /// <param name="add"><c>true</c> to add reward points for newsletter subscription; <c>false</c> to remove them.</param>
-        void ApplyRewardPointsForNewsletterSubscription(Customer customer, bool add);
+        /// <param name="customer">The customer for whom to apply reward points. Cannot be <c>null</c>.</param>
+        /// <remarks>
+        /// Customers earn points for subscribing to the newsletter only once per store, 
+        /// regardless of how many times they subscribe and unsubscribe.
+        /// </remarks>
+        void AddRewardPointsForNewsletterSubscription(Customer customer);
     }
 }
