@@ -73,4 +73,20 @@ jobs:
         #docker build --build-arg VERSION=nightly -f NoBuild.Dockerfile -t smartstore/smartstore-windows:nightly .
         #docker push smartstore/smartstore-windows:nightly
 
+  cleanup-old-packages:
+    name: Delete untagged nightly package versions
+    needs: publish-nightly
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    strategy:
+      matrix:
+        package: [smartstore-linux, smartstore-windows]
+    steps:
+    - name: Delete untagged versions of ${{ matrix.package }}
+      uses: actions/delete-package-versions@v5
+      with:
+        package-name: ${{ matrix.package }}
+        package-type: container
+        delete-only-untagged-versions: true
 
