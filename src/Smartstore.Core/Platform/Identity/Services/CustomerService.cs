@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Smartstore.Core.Catalog.Products;
 using Smartstore.Core.Data;
 using Smartstore.Core.Localization;
+using Smartstore.Core.Stores;
 using Smartstore.Core.Web;
 using Smartstore.Data;
 using Smartstore.Data.Caching;
@@ -19,6 +20,7 @@ namespace Smartstore.Core.Identity
     public partial class CustomerService : ICustomerService
     {
         private readonly SmartDbContext _db;
+        private readonly IStoreContext _storeContext;
         private readonly UserManager<Customer> _userManager;
         private readonly IWebHelper _webHelper;
         private readonly IEventPublisher _eventPublisher;
@@ -32,6 +34,7 @@ namespace Smartstore.Core.Identity
 
         public CustomerService(
             SmartDbContext db,
+            IStoreContext storeContext,
             UserManager<Customer> userManager,
             IWebHelper webHelper,
             IEventPublisher eventPublisher,
@@ -41,6 +44,7 @@ namespace Smartstore.Core.Identity
             PrivacySettings privacySettings)
         {
             _db = db;
+            _storeContext = storeContext;
             _userManager = userManager;
             _webHelper = webHelper;
             _eventPublisher = eventPublisher;
@@ -462,7 +466,9 @@ namespace Smartstore.Core.Identity
                 && customer.IsRegistered()
                 && !customer.GenericAttributes.HasEarnedNewsletterRewardPoints)
             {
-                customer.AddRewardPointsHistoryEntry(_rewardPointsSettings.PointsForNewsletterSubscription, T("RewardPoints.Message.EarnedForNewsletterSubscription"));
+                var msg = T("RewardPoints.Message.EarnedForNewsletterSubscription", _storeContext.CurrentStore.Name.NaIfEmpty());
+
+                customer.AddRewardPointsHistoryEntry(_rewardPointsSettings.PointsForNewsletterSubscription, msg);
                 customer.GenericAttributes.HasEarnedNewsletterRewardPoints = true;
             }
         }

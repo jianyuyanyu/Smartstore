@@ -35,10 +35,6 @@ public partial interface INewsletterSubscriptionService
     /// Unsubscribes the specified email address from the newsletter subscription list.
     /// </summary>
     /// <param name="email">The email address to unsubscribe from the newsletter.</param>
-    /// <param name="customer">
-    /// The customer associated with the email address.
-    /// If <c>null</c>, customer will be obtained via <see cref="IWorkContext.CurrentCustomer"/>.
-    /// </param>
     /// <param name="remove">
     /// <c>true</c> to remove the subscription record entirely and to reduce reward points (if enabled).
     /// Otherwise, a newsletter deactivation message is sent to confirm the unsubscription.
@@ -50,15 +46,15 @@ public partial interface INewsletterSubscriptionService
     /// <returns><c>true</c> if the unsubscription was successful. Otherwise <c>false</c>.</returns>
     Task<bool> UnsubscribeAsync(
         string? email,
-        Customer? customer = null,
         bool remove = true,
         int? storeId = null);
 
     /// <summary>
-    /// Adds or deletes a newsletter subscription and sends newsletter activation message to subscriber in case of addition.
-    /// The caller is responsible for database commit.
+    /// Activates or removes the newsletter subscription associated with the specified token.
     /// </summary>
-    /// <param name="subscribe"><c>true</c> adds subscription, <c>false</c> removes subscription</param>
-    /// <returns><c>true</c> added subscription, <c>false</c> removed subscription, <c>null</c> did nothing</returns>
-    Task<bool?> ApplySubscriptionAsync(bool subscribe, string email, int storeId);
+    /// <param name="token">The unique token of the newsletter subscription.</param>
+    /// <param name="active">
+    /// <c>true</c> to activate or <c>false</c> to remove the newsletter subscription.</param>
+    /// <returns><c>true</c> if the operation was successful. Otherwise <c>false</c>.</returns>
+    Task<bool> ActivateAsync(Guid token, bool active);
 }

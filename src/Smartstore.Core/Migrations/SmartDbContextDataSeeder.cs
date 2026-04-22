@@ -242,14 +242,14 @@ public class SmartDbContextDataSeeder : IDataSeeder<SmartDbContext>
             + " Andere Versandkosten werden nicht berücksichtigt, da sie auf Kundenangaben basieren und sich nicht eindeutig einem einzelnen Produkt zuordnen lassen.");
 
         builder.AddOrUpdate("RewardPoints.Message.EarnedForNewsletterSubscription",
-            "Earned reward points for subscribing to the newsletter.",
-            "Erhaltene Bonuspunkte für das Abonnieren des Newsletters.");
+            "Earned reward points for signing up for the newsletter in the \"{0}\" store.",
+            "Erhaltene Bonuspunkte für die Newsletter-Anmeldung im Shop \"{0}\".");
 
         builder.AddOrUpdate("Admin.Configuration.Settings.RewardPoints.PointsForNewsletterSubscription",
             "Points for subscribing to the newsletter",
             "Punkte für das Abonnieren des Newsletters",
-            "Specifies the number of reward points awarded for subscribing to the newsletter.",
-            "Legt die Anzahl der Bonuspunkte für das Abonnieren des Newsletters fest.");
+            "Specifies how many reward points registered customers will receive as a one-time bonus for subscribing to the newsletter.",
+            "Legt fest, wie viele Bonuspunkte registrierte Kunden einmalig für das Abonnieren des Newsletters erhalten.");
 
         builder.AddOrUpdate("Admin.Configuration.Settings.RewardPoints.Description",
             "The reward points program allows customers to earn points for certain actions, such as registering or placing orders.",

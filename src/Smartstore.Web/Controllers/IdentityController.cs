@@ -31,6 +31,7 @@ namespace Smartstore.Web.Controllers
         private readonly ITaxService _taxService;
         private readonly IAddressService _addressService;
         private readonly IShoppingCartService _shoppingCartService;
+        private readonly INewsletterSubscriptionService _newsletterSubscriptionService;
         private readonly IMessageFactory _messageFactory;
         private readonly IWebHelper _webHelper;
         private readonly IDateTimeHelper _dateTimeHelper;
@@ -49,6 +50,7 @@ namespace Smartstore.Web.Controllers
             ITaxService taxService,
             IAddressService addressService,
             IShoppingCartService shoppingCartService,
+            INewsletterSubscriptionService newsletterSubscriptionService,
             IMessageFactory messageFactory,
             IWebHelper webHelper,
             IDateTimeHelper dateTimeHelper,
@@ -66,6 +68,7 @@ namespace Smartstore.Web.Controllers
             _taxService = taxService;
             _addressService = addressService;
             _shoppingCartService = shoppingCartService;
+            _newsletterSubscriptionService = newsletterSubscriptionService;
             _messageFactory = messageFactory;
             _webHelper = webHelper;
             _dateTimeHelper = dateTimeHelper;
@@ -907,30 +910,7 @@ namespace Smartstore.Web.Controllers
             // Newsletter subscription
             if (_customerSettings.NewsletterEnabled && model.Newsletter)
             {
-                var subscription = await _db.NewsletterSubscriptions
-                    .ApplyMailAddressFilter(customer.Email, Services.StoreContext.CurrentStore.Id)
-                    .FirstOrDefaultAsync();
-
-                if (subscription != null)
-                {
-                    subscription.Active = true;
-                }
-                else
-                {
-                    subscription = new NewsletterSubscription
-                    {
-                        NewsletterSubscriptionGuid = Guid.NewGuid(),
-                        Email = customer.Email,
-                        Active = true,
-                        CreatedOnUtc = DateTime.UtcNow,
-                        StoreId = Services.StoreContext.CurrentStore.Id,
-                        WorkingLanguageId = Services.WorkContext.WorkingLanguage.Id
-                    };
-
-                    _db.NewsletterSubscriptions.Add(subscription);
-                }
-
-                await _db.SaveChangesAsync();
+                await _newsletterSubscriptionService.SubscribeAsync(customer.Email, customer, true);
             }
 
             // Insert default address (if possible).

@@ -203,7 +203,6 @@ namespace Smartstore.Core.Messaging
 
         public virtual async Task<bool> UnsubscribeAsync(
             string email,
-            Customer customer = null,
             bool remove = true, 
             int? storeId = null)
         {
@@ -237,61 +236,52 @@ namespace Smartstore.Core.Messaging
             return true;
         }
 
-        // TODO: (mg) Obsolete. Consolidate with SubscribeAsync and UnsubscribeAsync.
-        public virtual async Task<bool?> ApplySubscriptionAsync(bool subscribe, string email, int storeId)
+        public virtual async Task<bool> ActivateAsync(Guid token, bool active)
         {
-            bool? result = null;
-
-            if (!email.IsEmail())
+            if (token == Guid.Empty)
             {
-                throw new ArgumentException("Email parameter must be a valid email address.", nameof(email));
+                return false;
             }
 
-            var language = _workContext.WorkingLanguage;
-            var subscription = await _db.NewsletterSubscriptions
-                .ApplyMailAddressFilter(email, storeId)
-                .FirstOrDefaultAsync();
+            var customerQuery = _db.Customers
+                .AsSplitQuery()
+                .IncludeCustomerRoles()
+                .Include(x => x.RewardPointsHistory);
 
-            if (subscription != null)
+            var query =
+                from ns in _db.NewsletterSubscriptions
+                join c in customerQuery on ns.Email equals c.Email into customers
+                from c in customers.DefaultIfEmpty()
+                where ns.NewsletterSubscriptionGuid == token
+                select new NewsletterSubscriber
+                {
+                    Subscription = ns,
+                    Customer = c
+                };
+
+            var subscriber = await query.FirstOrDefaultAsync();
+
+            if (subscriber?.Subscription == null)
             {
-                if (subscribe)
-                {
-                    if (!subscription.Active)
-                    {
-                        await _messageFactory.SendNewsletterSubscriptionActivationMessageAsync(subscription, language.Id);
-                    }
+                return false;
+            }
 
-                    result = true;
-                }
-                else
+            if (active)
+            {
+                subscriber.Subscription.Active = true;
+
+                if (subscriber.Customer != null)
                 {
-                    _db.NewsletterSubscriptions.Remove(subscription);
-                    result = false;
+                    _customerService.ApplyRewardPointsForNewsletterSubscription(subscriber.Customer);
                 }
             }
             else
             {
-                if (subscribe)
-                {
-                    subscription = new NewsletterSubscription
-                    {
-                        NewsletterSubscriptionGuid = Guid.NewGuid(),
-                        Email = email,
-                        Active = false,
-                        CreatedOnUtc = DateTime.UtcNow,
-                        StoreId = storeId,
-                        WorkingLanguageId = language.Id
-                    };
-
-                    _db.NewsletterSubscriptions.Add(subscription);
-
-                    await _messageFactory.SendNewsletterSubscriptionActivationMessageAsync(subscription, language.Id);
-
-                    result = true;
-                }
+                _db.NewsletterSubscriptions.Remove(subscriber.Subscription);
             }
 
-            return result;
+            await _db.SaveChangesAsync();
+            return true;
         }
     }
 }

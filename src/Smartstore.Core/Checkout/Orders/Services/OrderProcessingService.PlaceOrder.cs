@@ -1060,11 +1060,21 @@ namespace Smartstore.Core.Checkout.Orders
             if (_shoppingCartSettings.NewsletterSubscription != CheckoutNewsletterSubscription.None 
                 && ctx.ExtraData.TryGetValue(CheckoutWorkflow.SubscribeToNewsletterKey, out var addSubscription))
             {
-                var email = ctx.Customer.Email ?? ctx.Customer.Addresses.FirstOrDefault().Email;
-                var subscriptionResult = await _newsletterSubscriptionService.ApplySubscriptionAsync(addSubscription.ToBool(), email, order.StoreId);
-                if (subscriptionResult.HasValue)
+                var email = ctx.Customer.Email ?? ctx.Customer.Addresses?.FirstOrDefault()?.Email;
+
+                if (addSubscription.ToBool())
                 {
-                    notes.Add(T(subscriptionResult.Value ? "Admin.OrderNotice.NewsletterSubscriptionAdded" : "Admin.OrderNotice.NewsletterSubscriptionRemoved"));
+                    if (await _newsletterSubscriptionService.SubscribeAsync(email, ctx.Customer, false, order.StoreId))
+                    {
+                        notes.Add(T("Admin.OrderNotice.NewsletterSubscriptionAdded"));
+                    }
+                }
+                else
+                {
+                    if (await _newsletterSubscriptionService.UnsubscribeAsync(email, true, order.StoreId))
+                    {
+                        notes.Add(T("Admin.OrderNotice.NewsletterSubscriptionRemoved"));
+                    }
                 }
             }
 

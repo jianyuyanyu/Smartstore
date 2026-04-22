@@ -274,7 +274,14 @@ namespace Smartstore.Web.Controllers
                     }
                     if (_customerSettings.NewsletterEnabled)
                     {
-                        await _newsletterSubscriptionService.ApplySubscriptionAsync(model.Newsletter, customer.Email, Services.StoreContext.CurrentStore.Id);
+                        if (model.Newsletter)
+                        {
+                            await _newsletterSubscriptionService.SubscribeAsync(customer.Email, customer);
+                        }
+                        else
+                        {
+                            await _newsletterSubscriptionService.UnsubscribeAsync(customer.Email);
+                        }
                     }
                     if (_dateTimeSettings.AllowCustomersToSetTimeZone)
                     {
@@ -295,7 +302,9 @@ namespace Smartstore.Web.Controllers
                     }
                     else
                     {
-                        updateResult.Errors.Select(x => x.Description).Distinct()
+                        updateResult.Errors
+                            .Select(x => x.Description)
+                            .Distinct()
                             .Each(x => ModelState.AddModelError(string.Empty, x));
                     }
                 }
