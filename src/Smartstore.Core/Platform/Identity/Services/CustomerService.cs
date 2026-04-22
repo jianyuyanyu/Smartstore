@@ -453,7 +453,7 @@ namespace Smartstore.Core.Identity
             }
         }
 
-        public virtual void AddRewardPointsForNewsletterSubscription(Customer customer)
+        public virtual void ApplyRewardPointsForNewsletterSubscription(Customer customer)
         {
             Guard.NotNull(customer);
 

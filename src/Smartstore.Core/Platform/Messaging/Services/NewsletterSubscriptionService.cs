@@ -163,7 +163,7 @@ namespace Smartstore.Core.Messaging
                     {
                         subscription.Active = true;
 
-                        _customerService.AddRewardPointsForNewsletterSubscription(customer);
+                        _customerService.ApplyRewardPointsForNewsletterSubscription(customer);
                         await _db.SaveChangesAsync();
                     }
                     else
@@ -188,7 +188,7 @@ namespace Smartstore.Core.Messaging
 
                 if (active)
                 {
-                    _customerService.AddRewardPointsForNewsletterSubscription(customer);
+                    _customerService.ApplyRewardPointsForNewsletterSubscription(customer);
                     await _db.SaveChangesAsync();
                 }
                 else
