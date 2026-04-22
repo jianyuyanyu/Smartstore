@@ -19,6 +19,7 @@
   - New HTML text optimization command: **Organize**: Improves document structure and cleans up HTML markup.
   - #1445 Create a new image using the Media Manager.
 - #1469 Show password policy and live validation on customer registration.
+- #1141 Enable reward points to be awarded for subscribing to the newsletter.
 - Topics: added an option to disable the narrow prose container and render non-widget topic pages in full width (default remains prose/narrow layout).
 - **Wallet**
   - Wallet credits can be added to the shopping cart anywhere using a PageBuilder block.
