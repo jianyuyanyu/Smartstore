@@ -71,7 +71,7 @@ namespace Smartstore.Core.AI
         /// Gets or sets the names of the preferred custom AI models to create images.
         /// The available AI models depend on the used AI provider.
         /// </summary>
-        /// <example>gpt-image-1</example>
+        /// <example>gpt-image-2</example>
         [Obsolete("Use PreferredImageModels instead. This property will be removed in a future version.")]
         public string[] ImageModelNames { get; set; }
     }

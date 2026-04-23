@@ -9,6 +9,11 @@
 - Tolerate minimal false positives for bot detection (around 0.5% real users affected acceptable) if it helps prevent DB junk.
 - Account for dynamic asset pipelines; do not assume static stylesheet links when CSS is generated dynamically. Prefer referencing generated asset manifests, pipeline helper functions, or runtime-injected links.
 
+### AI Model Metadata
+- In AI model metadata, levels mean 0 = Instant, 1 = Balanced, 2 = Deep Reasoning.
+- Prioritize models optimized for text generation/optimization and image generation.
+- Do not mark deep-reasoning models as preferred even if they remain available.
+
 ## Code Style
 - Use specific formatting rules
 - Follow naming conventions
