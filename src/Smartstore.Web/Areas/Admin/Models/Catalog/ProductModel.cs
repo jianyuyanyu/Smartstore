@@ -276,7 +276,7 @@ namespace Smartstore.Admin.Models.Catalog
         public ProductPictureModel AddPictureModel { get; set; } = new();
         public List<ProductMediaFile> ProductMediaFiles { get; set; } = [];
 
-        [LocalizedDisplay("*DisplayAllImagesNumber")]
+        [LocalizedDisplay("Admin.Catalog.Products.Fields.DisplayAllImagesNumber")]
         public int? DisplayAllImagesNumber { get; set; }
 
         [UIHint("Discounts")]
