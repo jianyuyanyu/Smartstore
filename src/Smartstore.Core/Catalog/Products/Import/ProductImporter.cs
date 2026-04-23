@@ -57,21 +57,21 @@ namespace Smartstore.Core.DataExchange.Import
 
         public Localizer T { get; set; } = NullLocalizer.Instance;
 
-        public static string[] SupportedKeyFields => new[]
-        {
+        public static string[] SupportedKeyFields =>
+        [
             nameof(Product.Id),
             nameof(Product.Sku),
             nameof(Product.Gtin),
             nameof(Product.ManufacturerPartNumber),
             nameof(Product.Name)
-        };
+        ];
 
-        public static string[] DefaultKeyFields => new[]
-        {
+        public static string[] DefaultKeyFields =>
+        [
             nameof(Product.Sku),
             nameof(Product.Gtin),
             nameof(Product.ManufacturerPartNumber)
-        };
+        ];
 
         protected override async Task ProcessBatchAsync(ImportExecuteContext context, CancellationToken cancelToken = default)
         {
@@ -452,6 +452,7 @@ namespace Smartstore.Core.DataExchange.Import
                     row.SetProperty(context.Result, (x) => x.BundlePerItemShipping);
                     row.SetProperty(context.Result, (x) => x.BundlePerItemPricing);
                     row.SetProperty(context.Result, (x) => x.BundlePerItemShoppingCart);
+                    row.SetProperty(context.Result, (x) => x.DisplayAllImagesNumber);
                     row.SetProperty(context.Result, (x) => x.AvailableStartDateTimeUtc);
                     row.SetProperty(context.Result, (x) => x.AvailableEndDateTimeUtc);
                     // With new entities, "LimitedToStores" is an implicit field, meaning

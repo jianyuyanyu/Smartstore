@@ -394,11 +394,11 @@ namespace Smartstore.Web.Controllers
                         : (await LoadFiles()).Select(x => _mediaService.ConvertMediaFile(x.MediaFile)).ToList();
 
                     model.MediaGalleryModel = _helper.PrepareProductDetailsMediaGalleryModel(
+                        ctx,
                         files,
                         product.GetLocalized(x => x.Name),
                         null,
                         true,
-                        bundleItem,
                         model.SelectedCombination);
                 }
             }
@@ -406,7 +406,9 @@ namespace Smartstore.Web.Controllers
             {
                 // Update image gallery.
                 var files = await LoadFiles();
-                if (files.Count <= _catalogSettings.DisplayAllImagesNumber)
+                var displayAllImagesNumber = product.DisplayAllImagesNumber ?? _catalogSettings.DisplayAllImagesNumber;
+
+                if (files.Count <= displayAllImagesNumber)
                 {
                     // All pictures rendered... only index is required.
                     galleryStartIndex = 0;
@@ -427,11 +429,11 @@ namespace Smartstore.Web.Controllers
                         .ToList();
 
                     var mediaModel = _helper.PrepareProductDetailsMediaGalleryModel(
+                        ctx,
                         mediaFiles,
                         product.GetLocalized(x => x.Name),
                         allCombinationPictureIds,
                         false,
-                        bundleItem,
                         model.SelectedCombination);
 
                     galleryStartIndex = mediaModel.GalleryStartIndex;

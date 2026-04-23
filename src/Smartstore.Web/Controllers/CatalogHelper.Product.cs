@@ -413,7 +413,12 @@ public partial class CatalogHelper
             }
 
             model.MediaGalleryModel = PrepareProductDetailsMediaGalleryModel(
-                files, model.Name, combinationFileIds, isAssociatedProduct, ctx.ProductBundleItem, combination);
+                ctx,
+                files,
+                model.Name,
+                combinationFileIds,
+                isAssociatedProduct,
+                combination);
 
             #endregion
 
@@ -1297,11 +1302,11 @@ public partial class CatalogHelper
     #endregion
 
     public MediaGalleryModel PrepareProductDetailsMediaGalleryModel(
+        ProductDetailsModelContext ctx,
         IList<MediaFileInfo> files,
         string productName,
         ICollection<int> allCombinationImageIds,
         bool isAssociatedProduct,
-        ProductBundleItem bundleItem = null,
         ProductVariantAttributeCombination combination = null)
     {
         var model = new MediaGalleryModel
@@ -1320,7 +1325,7 @@ public partial class CatalogHelper
             model.ImageSize = _mediaSettings.AssociatedProductPictureSize;
             model.ThumbSize = _mediaSettings.AssociatedProductHeaderThumbSize;
         }
-        else if (bundleItem != null)
+        else if (ctx.ProductBundleItem != null)
         {
             model.ThumbSize = _mediaSettings.BundledProductPictureSize;
         }
@@ -1330,7 +1335,9 @@ public partial class CatalogHelper
 
         if (files.Count > 0)
         {
-            if (files.Count <= _catalogSettings.DisplayAllImagesNumber)
+            var displayAllImagesNumber = ctx?.Product?.DisplayAllImagesNumber ?? _catalogSettings.DisplayAllImagesNumber;
+
+            if (files.Count <= displayAllImagesNumber)
             {
                 // Show all images.
                 foreach (var file in files)
@@ -1393,8 +1400,7 @@ public partial class CatalogHelper
             }
             else
             {
-                model.FallbackUrl = _mediaService.GetFallbackUrl(
-                    bundleItem != null ? _mediaSettings.BundledProductPictureSize : _mediaSettings.ProductDetailsPictureSize);
+                model.FallbackUrl = _mediaService.GetFallbackUrl(ctx.ProductBundleItem != null ? _mediaSettings.BundledProductPictureSize : _mediaSettings.ProductDetailsPictureSize);
                 model.ThumbFallbackUrl = model.FallbackUrl;
             }
         }

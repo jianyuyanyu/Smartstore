@@ -706,6 +706,7 @@ namespace Smartstore.Core.DataExchange.Export
             _writer.WriteElementString(nameof(Product.HasTierPrices), entity.HasTierPrices.ToString());
             _writer.WriteElementString(nameof(Product.HasDiscountsApplied), entity.HasDiscountsApplied.ToString());
             _writer.WriteElementString(nameof(Product.MainPictureId), entity.MainPictureId?.ToString() ?? string.Empty);
+            _writer.WriteElementString(nameof(Product.DisplayAllImagesNumber), entity.DisplayAllImagesNumber?.ToString() ?? string.Empty);
             _writer.WriteElementString(nameof(Product.Weight), ((decimal)product.Weight).ToString(_culture));
             _writer.WriteElementString(nameof(Product.Length), ((decimal)product.Length).ToString(_culture));
             _writer.WriteElementString(nameof(Product.Width), ((decimal)product.Width).ToString(_culture));

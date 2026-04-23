@@ -1,6 +1,5 @@
 ﻿using System.Linq.Dynamic.Core;
 using System.Net;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Smartstore.Admin.Models.Catalog;
@@ -2324,6 +2323,7 @@ namespace Smartstore.Admin.Controllers
         private static void UpdateProductPictures(Product product, ProductModel model)
         {
             product.HasPreviewPicture = model.HasPreviewPicture;
+            product.DisplayAllImagesNumber = model.DisplayAllImagesNumber;
         }
 
         private async Task UpdateDataOfExistingProductAsync(Product product, ProductModel model, bool editMode)

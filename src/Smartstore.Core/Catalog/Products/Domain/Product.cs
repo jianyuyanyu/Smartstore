@@ -960,6 +960,12 @@ namespace Smartstore.Core.Catalog.Products
 		/// </summary>
         public bool HasPreviewPicture { get; set; }
 
+        /// <summary>
+        /// Gets or sets the threshold above which only images that are not assigned to any or the selected attribute combination are displayed.
+        /// Overwrites the system default <see cref="CatalogSettings.DisplayAllImagesNumber"/>.
+        /// </summary>
+        public int? DisplayAllImagesNumber { get; set; }
+
         private ICollection<ProductCategory> _productCategories;
         /// <summary>
         /// Gets or sets the product categories.

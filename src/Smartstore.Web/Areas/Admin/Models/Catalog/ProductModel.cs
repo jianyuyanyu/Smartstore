@@ -276,6 +276,9 @@ namespace Smartstore.Admin.Models.Catalog
         public ProductPictureModel AddPictureModel { get; set; } = new();
         public List<ProductMediaFile> ProductMediaFiles { get; set; } = [];
 
+        [LocalizedDisplay("*DisplayAllImagesNumber")]
+        public int? DisplayAllImagesNumber { get; set; }
+
         [UIHint("Discounts")]
         [AdditionalMetadata("multiple", true)]
         [AdditionalMetadata("discountType", DiscountType.AssignedToSkus)]
@@ -679,6 +682,10 @@ namespace Smartstore.Admin.Models.Catalog
             RuleFor(x => x.WithdrawalPeriodDays)
                 .GreaterThanOrEqualTo(0)
                 .When(x => x.WithdrawalPeriodDays != null);
+
+            RuleFor(x => x.DisplayAllImagesNumber)
+                .GreaterThanOrEqualTo(0)
+                .When(x => x.DisplayAllImagesNumber != null);
 
             When(x => x.IsTabLoaded("Inventory"), () =>
             {
