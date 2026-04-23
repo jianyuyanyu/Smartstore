@@ -34,6 +34,7 @@
 - #1522 Add a cart rule "All products with delivery time in cart".
 - #1512 Implement new VAT number status `ServiceUnavailable`.
 - #1507 Add shipping details metadata for search engines to the product detail page.
+- #1516 Overwrite `CatalogSettings.DisplayAllImagesNumber` on product level.
 
 ### Improvements
 
