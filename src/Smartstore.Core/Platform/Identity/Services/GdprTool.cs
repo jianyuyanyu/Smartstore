@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Sockets;
 using Smartstore.Core.Catalog.Products;
 using Smartstore.Core.Checkout.Cart;
+using Smartstore.Core.Checkout.Orders;
 using Smartstore.Core.Common;
 using Smartstore.Core.Data;
 using Smartstore.Core.Localization;
@@ -219,14 +220,28 @@ namespace Smartstore.Core.Identity
                 .ApplyExpiredCartItemsFilter(DateTime.UtcNow, customer)
                 .ExecuteDeleteAsync();
 
+            // Delete completed return cases.
+            // INFO: Do not use "RemoveRange" above. May cause a "DbUpdateConcurrencyException".
+            var rcCompleteStatuses = new int[]
+            {
+                (int)ReturnCaseStatus.ItemsRepaired,
+                (int)ReturnCaseStatus.ItemsRefunded,
+                (int)ReturnCaseStatus.RequestRejected,
+                (int)ReturnCaseStatus.Cancelled
+            };
+
+            await _db.ReturnCases
+                .Where(x => x.CustomerId == customer.Id && x.Kind == ReturnCaseKind.Return && rcCompleteStatuses.Contains(x.ReturnCaseStatusId))
+                .ExecuteDeleteAsync();
+
             // Log
             Logger.Info(T("Gdpr.Anonymize.Success", language.Id, customerName));
         }
 
         public void AnonymizeData<TEntity>(TEntity entity, Expression<Func<TEntity, object>> expression, IdentifierDataType type, Language language = null) where TEntity : BaseEntity
         {
-            Guard.NotNull(entity, nameof(entity));
-            Guard.NotNull(expression, nameof(expression));
+            Guard.NotNull(entity);
+            Guard.NotNull(expression);
 
             var originalValue = expression.Compile().Invoke(entity);
             object maskedValue = null;
