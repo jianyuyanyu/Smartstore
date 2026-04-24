@@ -88,6 +88,11 @@ namespace Smartstore.Core.AI.Prompting
         AIImageResolution? Resolution { get; }
 
         /// <summary>
+        /// Gets the quality setting used for generating the AI image, if specified.
+        /// </summary>
+        AIImageQuality? Quality { get; }
+
+        /// <summary>
         /// Gets the format to use for image output.
         /// </summary>
         /// <remarks>If not set, the default output format will be used. The selected format may affect

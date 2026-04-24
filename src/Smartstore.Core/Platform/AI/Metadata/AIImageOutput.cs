@@ -171,4 +171,24 @@ public record AIImageOutput
 
         return (AIImageResolution)defaultResolution!;
     }
+
+    public AIImageQuality FindSupportedQuality(AIImageQuality? attemptedQuality, out bool isDefault)
+    {
+        string[] supportedQualities = Qualities.IsNullOrEmpty() ? Default.Qualities! : Qualities!;
+
+        if (attemptedQuality.HasValue)
+        {
+            var quality = attemptedQuality.Value;
+            if (supportedQualities.Contains(quality.Value))
+            {
+                isDefault = quality.Value == DefaultQuality || supportedQualities.Length == 1;
+                return quality;
+            }
+        }
+
+        isDefault = true;
+        var defaultQuality = DefaultQuality ?? supportedQualities[0];
+
+        return (AIImageQuality)defaultQuality!;
+    }
 }
