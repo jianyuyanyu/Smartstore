@@ -11,8 +11,11 @@
 
 ### AI Model Metadata
 - In AI model metadata, levels mean 0 = Instant, 1 = Balanced, 2 = Deep Reasoning.
-- Prioritize models optimized for text generation/optimization and image generation.
-- Do not mark deep-reasoning models as preferred even if they remain available.
+- Prefer common, cost-efficient text-generation models; ensure at least one preferred level-0 (Instant) model is listed.
+- Prioritize models optimized for text and image generation when relevant.
+- Never mark deep-reasoning (level 2) models as preferred; they may remain available but must not be the default choice.
+- Remove nonexistent or deprecated model IDs instead of keeping placeholders.
+- When answering questions about AI model capabilities, prefer official API documentation and vendor capabilities over local project metadata mirrors; do not infer model behavior solely from the project's metadata.
 
 ## Code Style
 - Use specific formatting rules
