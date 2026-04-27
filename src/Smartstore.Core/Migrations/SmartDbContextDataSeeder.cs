@@ -258,5 +258,7 @@ public class SmartDbContextDataSeeder : IDataSeeder<SmartDbContext>
         builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.NewsletterEnabled.Hint",
             "Specifies whether the option to subscribe to the newsletter is displayed.",
             "Legt fest, ob die Option zum Abonnieren des Newsletters angezeigt wird.");
+
+        builder.AddOrUpdate("Common.Print", "Print", "Drucken");
     }
 }
