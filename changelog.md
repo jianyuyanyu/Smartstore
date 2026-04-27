@@ -68,6 +68,7 @@
 ### Bugfixes
 
 - Fixed the payment widget not displaying when payment methods are selected via radio buttons in checkout (the behaviour of icons and radio buttons needs to be equal).
+- Fixes the issue of missing text blocks assigned to products via a rule when the "Featured Product" option is enabled in their product category.
 - PostFinance: Fixed issue with TWINT payments regarding environment selection strategy.
 - #1454 After being assigned to an entity, an image below the dropzone is not displayed.
 - #1455 "Duplicate keys detected: `row-undefined`" in currency grid.
