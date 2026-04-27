@@ -1,5 +1,6 @@
 ﻿using Smartstore.Collections;
 using Smartstore.Core.Checkout.Orders;
+using Smartstore.Core.Configuration;
 using Smartstore.Core.Content.Menus;
 using Smartstore.Core.Identity;
 using Smartstore.Core.Localization;
@@ -13,6 +14,7 @@ namespace Smartstore.Web.Infrastructure
         private readonly SmartDbContext _db;
         private readonly IStoreContext _storeContext;
         private readonly IWorkContext _workContext;
+        private readonly ISettingService _settingService;
         private readonly IEventPublisher _eventPublisher;
         private readonly CustomerSettings _customerSettings;
         private readonly OrderSettings _orderSettings;
@@ -26,6 +28,7 @@ namespace Smartstore.Web.Infrastructure
             SmartDbContext db,
             IStoreContext storeContext,
             IWorkContext workContext,
+            ISettingService settingService,
             IEventPublisher eventPublisher,
             CustomerSettings customerSettings,
             OrderSettings orderSettings,
@@ -34,6 +37,7 @@ namespace Smartstore.Web.Infrastructure
             _db = db;
             _storeContext = storeContext;
             _workContext = workContext;
+            _settingService = settingService;
             _eventPublisher = eventPublisher;
             _customerSettings = customerSettings;
             _orderSettings = orderSettings;
@@ -126,9 +130,9 @@ namespace Smartstore.Web.Infrastructure
                 });
             }
 
-            if (_orderSettings.ReturnRequestsEnabled
+            if ((_orderSettings.ReturnRequestsEnabled || await _settingService.GetSettingByKeyAsync<bool>("WithdrawalSettings.Enabled"))
                 && await _db.ReturnCases.ApplyStandardFilter(null, _workContext.CurrentCustomer.Id, _storeContext.CurrentStore.Id).AnyAsync())
-            {
+            {                
                 root.Append(new MenuItem
                 {
                     Id = "returncases",
