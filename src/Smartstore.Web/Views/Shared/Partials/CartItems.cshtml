@@ -65,7 +65,7 @@
 
                 @* Actions *@
                 <div sm-if="Model.IsEditable" class="cart-item-actions hstack flex-wrap pt-2">
-                    <button sm-if="!item.IsRequired" class="btn btn-secondary btn-to-danger btn-sm btn-icon ajax-action-link"
+                    <button class="btn btn-secondary btn-to-danger btn-sm btn-icon ajax-action-link"
                             type="button"
                             title="@T("Common.Remove")"
                             data-href='@Url.Action("DeleteCartItem", "ShoppingCart", new { cartItemId = item.Id })'
@@ -73,7 +73,8 @@
                             data-type="cart"
                             data-id="@item.Id"
                             data-action="remove"
-                            aria-label="@T("Common.Remove")">
+                            aria-label="@T("Common.Remove")"
+                            attr-disabled='(item.IsRequired, "disabled")'>
                         <i class="far fa-trash-can" aria-hidden="true"></i>
                     </button>
 
