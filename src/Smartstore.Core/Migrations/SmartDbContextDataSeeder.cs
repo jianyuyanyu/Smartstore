@@ -151,7 +151,8 @@ public class SmartDbContextDataSeeder : IDataSeeder<SmartDbContext>
             .Value("en", "Return requests enabled");
 
         builder.Delete("Admin.Configuration.Settings.Order.ReturnRequestsEnabled.Hint",
-            "Admin.Configuration.Settings.Order.OrderSettings");
+            "Admin.Configuration.Settings.Order.OrderSettings",
+            "Admin.Configuration.Settings.Order.ReturnRequestsDescription2");
 
         builder.AddOrUpdate("Admin.Configuration.Settings.Order.NumberOfDaysReturnRequestAvailable",
             "Allowed period for return requests (in days)",
@@ -260,5 +261,9 @@ public class SmartDbContextDataSeeder : IDataSeeder<SmartDbContext>
             "Legt fest, ob die Option zum Abonnieren des Newsletters angezeigt wird.");
 
         builder.AddOrUpdate("Common.Print", "Print", "Drucken");
+
+        builder.AddOrUpdate("Admin.Configuration.Settings.Order.ReturnRequestsDescription1",
+            "Customers can use the returns system to request the return of items. Unlike withdrawal, returns are only possible for completed orders.",
+            "Über das Retourensystem können Kunden die Rücksendung von Artikeln beantragen. Im Gegensatz zum Widerruf ist eine Retoure nur für abgeschlossene Aufträge möglich.");
     }
 }
