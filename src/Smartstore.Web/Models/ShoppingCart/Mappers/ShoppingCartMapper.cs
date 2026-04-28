@@ -144,6 +144,16 @@ namespace Smartstore.Web.Models.Cart
             var prepareEstimateShippingIfEnabled = parameters?.PrepareEstimateShippingIfEnabled == true;
             var setEstimateShippingDefaultAddress = parameters?.SetEstimateShippingDefaultAddress == true;
 
+            // INFO: Please note that there is no fixed association between products and required products (as is the case, for example, with bundles and bundle items).
+            // It is therefore possible that multiple products in the cart contain the same required products,
+            // or that a required product itself appears multiple times in the shopping cart.
+            var requiredProductIds = from.Items
+                .Select(x => x.Item.Product)
+                .Where(x => x.RequireOtherProducts && x.AutomaticallyAddRequiredProducts)
+                .SelectMany(x => x.ParseRequiredProductIds())
+                .Distinct()
+                .ToArray();
+
             #region Simple properties
 
             to.IsEditable = isEditable;
@@ -410,6 +420,7 @@ namespace Smartstore.Web.Models.Cart
             itemParameters.CartSubtotal = subtotal;
             itemParameters.Cart = from;
             itemParameters.CachedBrands = new Dictionary<int, BrandOverviewModel>();
+            itemParameters.RequiredProductIds = requiredProductIds;
 
             foreach (var cartItem in from.Items)
             {

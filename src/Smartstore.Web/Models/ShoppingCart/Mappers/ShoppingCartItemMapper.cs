@@ -43,6 +43,7 @@ namespace Smartstore.Web.Models.Cart
             Guard.NotNull(from);
             Guard.NotNull(to);
 
+            var requiredProductIds = parameters?.RequiredProductIds as int[];
             var item = from.Item;
             var product = item.Product;
 
@@ -54,6 +55,7 @@ namespace Smartstore.Web.Models.Cart
             to.IsEsd = product.IsEsd;
             to.HasUserAgreement = product.HasUserAgreement;
             to.DisableWishlistButton = product.DisableWishlistButton;
+            to.IsRequired = requiredProductIds?.Contains(product.Id) ?? false;
 
             if (from.ChildItems != null)
             {

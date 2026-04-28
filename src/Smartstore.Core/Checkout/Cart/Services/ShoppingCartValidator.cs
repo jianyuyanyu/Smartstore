@@ -671,8 +671,12 @@ public partial class ShoppingCartValidator : IShoppingCartValidator
             return true;
         }
 
-        var missingRequiredProductIds = requiredProductIds.Except(cartItems.Select(x => x.Item.Product.Id));
-        if (!missingRequiredProductIds.Any())
+        var missingRequiredProductIds = requiredProductIds.Except(cartItems
+            .Where(x => x.Active)
+            .Select(x => x.Item.Product.Id))
+            .ToArray();
+
+        if (missingRequiredProductIds.Length == 0)
         {
             return true;
         }

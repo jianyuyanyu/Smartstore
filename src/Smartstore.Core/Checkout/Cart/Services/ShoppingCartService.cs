@@ -225,13 +225,12 @@ public partial class ShoppingCartService : IShoppingCartService
 
         _requestCache.RemoveByPattern(CartItemsPatternKey);
 
-        // If ctx.Product is a bundle product and the setting to automatically add bundle products is true, try to add all corresponding BundleItems.
-
         if (ctx.AutomaticallyAddBundleProducts
             && ctx.Product.ProductType == ProductType.BundledProduct
             && ctx.BundleItem == null
             && ctx.Warnings.Count == 0)
         {
+            // Add the corresponding bundle items.
             var bundleItems = await _db.ProductBundleItem
                 .ApplyBundledProductsFilter([ctx.Product.Id], true)
                 .Include(x => x.Product)

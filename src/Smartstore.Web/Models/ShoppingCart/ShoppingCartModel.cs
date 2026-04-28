@@ -49,6 +49,12 @@ namespace Smartstore.Web.Models.Cart
             }
 
             public bool DisableWishlistButton { get; set; }
+
+            /// <summary>
+            /// Gets or sets a value indicating whether the item is an auto-added, required product.
+            /// It can only be removed from the cart when the parent product is removed, if <c>true</c>.
+            /// </summary>
+            public bool IsRequired { get; set; }
         }
 
         public partial class CheckoutAttributeModel : ChoiceModel
