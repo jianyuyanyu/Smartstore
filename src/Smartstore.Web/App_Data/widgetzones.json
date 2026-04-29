@@ -84,7 +84,10 @@
         "productdetail_tabs_after",
         "productdetail_tags_after",
         "productdetail_related_products_after",
-        "productdetail_also_purchased_after"
+        "productdetail_also_purchased_after",
+        "productdetail_offer_after",
+        "productdetail_stockinfo_after",
+        "productdetail_fulldescription_after"
       ]
     },
     {
