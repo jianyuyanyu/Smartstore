@@ -277,13 +277,13 @@
 
                 var expander = el.find('.btn-text-expander--expand');
                 if (expander.length === 0) {
-                    el.append(`<a href="#" class="btn-text-expander btn-text-expander--expand" aria-expanded="false" aria-controls="${elId}">`
+                    el.append(`<a href="#" class="btn-text-expander btn-text-expander--expand link-dnn" aria-expanded="false" aria-controls="${elId}">`
                         + `<i class="fa fa fa-angle-double-down pr-2" aria-hidden="true"></i><span>${Res['Products.Longdesc.More']}</span></a>`);
                 }
 
                 var collapser = el.find('.btn-text-expander--collapse');
                 if (collapser.length === 0) {
-                    el.append(`<a href="#" class="btn-text-expander btn-text-expander--collapse focus-inset" aria-expanded="true" aria-controls="${elId}">`
+                    el.append(`<a href="#" class="btn-text-expander btn-text-expander--collapse link-dnn focus-inset" aria-expanded="true" aria-controls="${elId}">`
                         + `<i class="fa fa fa-angle-double-up pr-2" aria-hidden="true"></i><span>${Res['Products.Longdesc.Less']}</span></a>`);
                 }
             });
