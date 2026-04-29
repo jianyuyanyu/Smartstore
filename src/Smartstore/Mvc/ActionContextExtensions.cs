@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Controllers;
 
 namespace Smartstore;
 
@@ -10,11 +11,11 @@ public static class ActionContextExtensions
     public static bool ControllerIs<TController>(this ActionContext context)
         where TController : Controller
     {
-        if (context is ControllerContext controllerContext)
+        if (context.ActionDescriptor is ControllerActionDescriptor actionDescriptor)
         {
-            return typeof(TController).IsAssignableFrom(controllerContext.ActionDescriptor.ControllerTypeInfo);
+            return typeof(TController).IsAssignableFrom(actionDescriptor.ControllerTypeInfo);
         }
-
+        
         return false;
     }
 
@@ -26,11 +27,11 @@ public static class ActionContextExtensions
     {
         Guard.NotNull(actionSelector);
 
-        if (context is ControllerContext controllerContext)
+        if (context.ActionDescriptor is ControllerActionDescriptor actionDescriptor)
         {
-            if (typeof(TController).IsAssignableFrom(controllerContext.ActionDescriptor.ControllerTypeInfo))
+            if (typeof(TController).IsAssignableFrom(actionDescriptor.ControllerTypeInfo))
             {
-                return controllerContext.ActionDescriptor.MethodInfo == actionSelector.ExtractMethodInfo();
+                return actionDescriptor.MethodInfo == actionSelector.ExtractMethodInfo();
             }
         }
 
@@ -45,11 +46,11 @@ public static class ActionContextExtensions
     {
         Guard.NotNull(actionSelector);
 
-        if (context is ControllerContext controllerContext)
+        if (context.ActionDescriptor is ControllerActionDescriptor actionDescriptor)
         {
-            if (typeof(TController).IsAssignableFrom(controllerContext.ActionDescriptor.ControllerTypeInfo))
+            if (typeof(TController).IsAssignableFrom(actionDescriptor.ControllerTypeInfo))
             {
-                return controllerContext.ActionDescriptor.MethodInfo == actionSelector.ExtractMethodInfo();
+                return actionDescriptor.MethodInfo == actionSelector.ExtractMethodInfo();
             }
         }
 
@@ -64,11 +65,11 @@ public static class ActionContextExtensions
     {
         Guard.NotNull(actionSelector);
 
-        if (context is ControllerContext controllerContext)
+        if (context.ActionDescriptor is ControllerActionDescriptor actionDescriptor)
         {
-            if (typeof(TController).IsAssignableFrom(controllerContext.ActionDescriptor.ControllerTypeInfo))
+            if (typeof(TController).IsAssignableFrom(actionDescriptor.ControllerTypeInfo))
             {
-                return controllerContext.ActionDescriptor.MethodInfo == actionSelector.ExtractMethodInfo();
+                return actionDescriptor.MethodInfo == actionSelector.ExtractMethodInfo();
             }
         }
 
