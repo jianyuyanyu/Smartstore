@@ -364,6 +364,12 @@ namespace Smartstore.Core.Catalog.Products
         public bool AutomaticallyAddRequiredProducts { get; set; }
 
         /// <summary>
+        /// Gets or sets how many units of the required product are automatically kept in the cart for each unit of the main product.
+        /// 0 (default) to not synchronize the quantity of the required product. Only applicable for required products.
+        /// </summary>
+        public int QuantityPerParentUnit { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether the product is a download.
         /// </summary>
         public bool IsDownload { get; set; }

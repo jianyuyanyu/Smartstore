@@ -187,6 +187,7 @@ namespace Smartstore.Web.Models.Cart
             {
                 await ShoppingCartValidator.ValidateProductAttributesAsync(item, cart.Items, itemWarnings);
                 await ShoppingCartValidator.ValidateRequiredProductsAsync(product, cart.Items, itemWarnings);
+                await ShoppingCartValidator.ValidateRequiredProductsQuantityAsync(item, cart, itemWarnings);
             }
 
             to.Warnings.AddRange(itemWarnings);

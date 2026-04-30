@@ -80,6 +80,9 @@ namespace Smartstore.Admin.Models.Catalog
         [LocalizedDisplay("*AutomaticallyAddRequiredProducts")]
         public bool AutomaticallyAddRequiredProducts { get; set; }
 
+        [LocalizedDisplay("*QuantityPerParentUnit")]
+        public int QuantityPerParentUnit { get; set; }
+
         [LocalizedDisplay("*IsDownload")]
         public bool IsDownload { get; set; }
 
@@ -89,7 +92,7 @@ namespace Smartstore.Admin.Models.Catalog
 
         [LocalizedDisplay("Common.Download.Version")]
         public string NewVersion { get; set; }
-        public List<DownloadVersion> DownloadVersions { get; set; } = new();
+        public List<DownloadVersion> DownloadVersions { get; set; } = [];
 
         [UIHint("Download")]
         [LocalizedDisplay("*Download")]
@@ -686,6 +689,9 @@ namespace Smartstore.Admin.Models.Catalog
             RuleFor(x => x.DisplayAllImagesNumber)
                 .GreaterThanOrEqualTo(0)
                 .When(x => x.DisplayAllImagesNumber != null);
+
+            RuleFor(x => x.QuantityPerParentUnit)
+                .GreaterThanOrEqualTo(0);
 
             When(x => x.IsTabLoaded("Inventory"), () =>
             {

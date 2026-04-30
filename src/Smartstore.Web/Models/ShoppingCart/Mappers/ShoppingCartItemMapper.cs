@@ -43,7 +43,7 @@ namespace Smartstore.Web.Models.Cart
             Guard.NotNull(from);
             Guard.NotNull(to);
 
-            var requiredProductIds = parameters?.RequiredProductIds as int[];
+            var requiredProducts = parameters?.RequiredProducts as Dictionary<int, OrganizedShoppingCartItem>;
             var item = from.Item;
             var product = item.Product;
 
@@ -55,7 +55,14 @@ namespace Smartstore.Web.Models.Cart
             to.IsEsd = product.IsEsd;
             to.HasUserAgreement = product.HasUserAgreement;
             to.DisableWishlistButton = product.DisableWishlistButton;
-            to.IsRequired = requiredProductIds?.Contains(product.Id) ?? false;
+
+            if (requiredProducts.TryGetValue(product.Id, out var parent))
+            {
+                var expectedQuantity = parent.Item.Quantity * product.QuantityPerParentUnit;
+
+                to.IsRequired = parent.Item.Product.AutomaticallyAddRequiredProducts;
+                to.DisableQuantityControl = product.QuantityPerParentUnit > 0 && item.Quantity == expectedQuantity;
+            }
 
             if (from.ChildItems != null)
             {

@@ -2241,6 +2241,7 @@ namespace Smartstore.Admin.Controllers
             p.QuantityStep = m.QuantityStep;
             p.HideQuantityControl = m.HideQuantityControl;
             p.AllowedQuantities = m.AllowedQuantities;
+            p.QuantityPerParentUnit = m.QuantityPerParentUnit;
         }
 
         private async Task UpdateProductBundleItemsAsync(Product product, ProductModel model)

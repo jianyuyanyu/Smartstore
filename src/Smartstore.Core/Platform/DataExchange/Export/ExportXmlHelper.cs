@@ -656,6 +656,7 @@ namespace Smartstore.Core.DataExchange.Export
             _writer.WriteElementString(nameof(Product.RequireOtherProducts), entity.RequireOtherProducts.ToString());
             _writer.WriteElementString(nameof(Product.RequiredProductIds), entity.RequiredProductIds);
             _writer.WriteElementString(nameof(Product.AutomaticallyAddRequiredProducts), entity.AutomaticallyAddRequiredProducts.ToString());
+            _writer.WriteElementString(nameof(Product.QuantityPerParentUnit), entity.QuantityPerParentUnit.ToString());
             _writer.WriteElementString(nameof(Product.IsDownload), entity.IsDownload.ToString());
             _writer.WriteElementString(nameof(Product.UnlimitedDownloads), entity.UnlimitedDownloads.ToString());
             _writer.WriteElementString(nameof(Product.MaxNumberOfDownloads), entity.MaxNumberOfDownloads.ToString());

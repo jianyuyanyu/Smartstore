@@ -1,4 +1,5 @@
-﻿@using Smartstore.Web.Models.Cart
+﻿@using Microsoft.AspNetCore.Routing
+@using Smartstore.Web.Models.Cart
 @using Smartstore.Core.Catalog.Products
 @using Smartstore.Core.Checkout.Cart
 
@@ -79,23 +80,29 @@
                     </button>
 
                     <div class="cart-item-qty">
+                        @{
+                            var qtyAttributes = new Dictionary<string, object>
+                            {
+                                ["data-href"] = Url.Action("UpdateCartItem", "ShoppingCart", new { cartItemId = item.Id, isCartPage = true }),
+                                ["data-sci-item"] = item.Id,
+                                ["id"] = $"itemquantity{item.Id}",
+                                ["name"] = $"itemquantity{item.Id}"
+                            };
+                            if (item.DisableQuantityControl)
+                            {
+                                qtyAttributes["disabled"] = "disabled";
+                                qtyAttributes["title"] = T("ShoppingCart.SyncedRequiredProductQuantityInfo").Value;
+                            }
+                        }
                         @Html.EditorFor(x => item, "QtyInput", new
                         {
                             size = ControlSize.Small,
-                            htmlAttributes = new
-                            {
-                                data_href = Url.Action("UpdateCartItem", "ShoppingCart", new { cartItemId = item.Id, isCartPage = true }),
-                                data_sci_item = item.Id,
-                                id = $"itemquantity{item.Id}",
-                                name = $"itemquantity{item.Id}"
-                            }
+                            htmlAttributes = qtyAttributes
                         })
-
                         <span class="field-validation-valid" 
                               data-valmsg-for="itemquantity@(item.Id)" 
                               data-valmsg-replace="true"
                               role="alert"></span>
-
                         <script>
                         $(function () {
                             // Disable incorrect jquery validation of the step attribute for quantity inputs.

@@ -165,12 +165,12 @@ public partial class ShoppingCartService : IShoppingCartService
         // Add item to cart (if no warnings accured)
         if (existingCartItem != null && !_shoppingCartSettings.AddProductsToBasketInSinglePositions)
         {
-            // Product is already in cart, find existing item
-            var newQuantity = ctx.Quantity + existingCartItem.Quantity;
-
-            existingCartItem.Quantity = newQuantity;
+            // Product is already in cart.
+            existingCartItem.Quantity = ctx.Quantity + existingCartItem.Quantity;
             existingCartItem.UpdatedOnUtc = DateTime.UtcNow;
             existingCartItem.RawAttributes = ctx.AttributeSelection.AsJson();
+
+            ApplyRequiredProductsQuantity(ctx.Product, existingCartItem.Quantity, cart);
 
             if (!await _cartValidator.ValidateAddToCartItemAsync(ctx, existingCartItem, cart.Items))
             {
@@ -550,7 +550,9 @@ public partial class ShoppingCartService : IShoppingCartService
 
         var cart = await GetCartAsync(customer, cartItem.ShoppingCartType, cartItem.StoreId);
 
-        // INFO: we execute SaveChangesAsync despite warnings because the quantity on cart page
+        ApplyRequiredProductsQuantity(ctx.Product, cartItem.Quantity, cart);
+
+        // INFO: We execute SaveChangesAsync despite warnings because the quantity on cart page
         // must be updatable at all times (see issue #621).
         if (!await _cartValidator.ValidateAddToCartItemAsync(ctx, cartItem, cart.Items))
         {
@@ -793,6 +795,11 @@ public partial class ShoppingCartService : IShoppingCartService
                 BundleItemId = ctx.BundleItem?.Id
             };
 
+            if (product.QuantityPerParentUnit > 0)
+            {
+                item.Quantity = ctx.Quantity * product.QuantityPerParentUnit;
+            }
+
             newItems.Add(CreateOrganizedCartItem(item));
         }
 
@@ -811,6 +818,27 @@ public partial class ShoppingCartService : IShoppingCartService
                 });
             }
         }
+    }
+
+    protected virtual bool ApplyRequiredProductsQuantity(Product product, int quantity, ShoppingCart cart)
+    {
+        if (product.RequireOtherProducts)
+        {
+            var requiredProductsIds = product.ParseRequiredProductIds();
+            var requiredItems = cart.Items
+                .Where(x => requiredProductsIds.Contains(x.Item.Product.Id) && x.Item.Product.QuantityPerParentUnit > 0)
+                .ToList();
+
+            foreach (var requiredItem in requiredItems)
+            {
+                requiredItem.Item.Quantity = quantity * requiredItem.Item.Product.QuantityPerParentUnit;
+                requiredItem.Item.UpdatedOnUtc = DateTime.UtcNow;
+            }
+
+            return requiredItems.Count > 0;
+        }
+
+        return false;
     }
 
     private async Task LoadCartItemCollection(Customer customer, bool force = false)

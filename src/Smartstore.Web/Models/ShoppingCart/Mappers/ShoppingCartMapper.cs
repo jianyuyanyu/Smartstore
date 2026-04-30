@@ -144,15 +144,16 @@ namespace Smartstore.Web.Models.Cart
             var prepareEstimateShippingIfEnabled = parameters?.PrepareEstimateShippingIfEnabled == true;
             var setEstimateShippingDefaultAddress = parameters?.SetEstimateShippingDefaultAddress == true;
 
-            // INFO: Please note that there is no fixed association between products and required products (as is the case, for example, with bundles and bundle items).
-            // It is therefore possible that multiple products in the cart contain the same required products,
-            // or that a required product itself appears multiple times in the shopping cart.
-            var requiredProductIds = from.Items
-                .Select(x => x.Item.Product)
-                .Where(x => x.RequireOtherProducts && x.AutomaticallyAddRequiredProducts)
-                .SelectMany(x => x.ParseRequiredProductIds())
-                .Distinct()
-                .ToArray();
+            // INFO: At the moment there is no fixed association between products and required products (see issue #1529).
+            // Consequently, the cart is unable to determine which required product belongs to which main product.
+
+            // Key: Required product ID. Value: Parent cart item.
+            var requiredProducts = new Dictionary<int, OrganizedShoppingCartItem>();
+            foreach (var item in from.Items.Where(x => x.Item.Product.RequireOtherProducts))
+            {
+                var requiredProductIds = item.Item.Product.ParseRequiredProductIds();
+                requiredProductIds.Each(id => requiredProducts[id] = item);
+            }
 
             #region Simple properties
 
@@ -420,7 +421,7 @@ namespace Smartstore.Web.Models.Cart
             itemParameters.CartSubtotal = subtotal;
             itemParameters.Cart = from;
             itemParameters.CachedBrands = new Dictionary<int, BrandOverviewModel>();
-            itemParameters.RequiredProductIds = requiredProductIds;
+            itemParameters.RequiredProducts = requiredProducts;
 
             foreach (var cartItem in from.Items)
             {

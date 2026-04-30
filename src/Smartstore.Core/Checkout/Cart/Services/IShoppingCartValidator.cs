@@ -105,8 +105,17 @@ public interface IShoppingCartValidator
     /// Validates the product on all required products.
     /// </summary>
     /// <param name="product">Product to validate.</param>
-    /// <param name="cartItems">Shopping cart items used for required products validation.</param>
+    /// <param name="cartItems">Shopping cart items of the customer.</param>
     /// <param name="warnings">List of errors as string.</param>
     /// <returns><c>True</c> when the shopping cart already contains all required products, otherwise <c>false</c>.</returns>
     Task<bool> ValidateRequiredProductsAsync(Product product, IEnumerable<OrganizedShoppingCartItem> cartItems, IList<string> warnings);
+
+    /// <summary>
+    /// Validates the quantity of required products, which are synchronized with the quantity of the main product.
+    /// </summary>
+    /// <param name="cartItem">Shopping cart item to validate.</param>
+    /// <param name="cart">Shopping cart of the customer.</param>
+    /// <param name="warnings">List of warnings.</param>
+    /// <returns><c>true</c> if valid, otherwise <c>false</c>.</returns>
+    Task<bool> ValidateRequiredProductsQuantityAsync(ShoppingCartItem cartItem, ShoppingCart cart, IList<string> warnings);
 }

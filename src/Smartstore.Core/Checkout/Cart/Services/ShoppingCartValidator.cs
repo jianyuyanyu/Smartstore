@@ -195,14 +195,17 @@ public partial class ShoppingCartValidator : IShoppingCartValidator
 
         if (validateRequiredProducts)
         {
-            var requiredProductsToValidate = cart.Items
-                .Select(x => x.Item.Product)
-                .Where(x => x.RequireOtherProducts)
-                .ToList();
-
-            foreach (var product in requiredProductsToValidate)
+            foreach (var item in cart.Items)
             {
-                await ValidateRequiredProductsAsync(product, cart.Items, currentWarnings);
+                var product = item.Item.Product;
+                if (product.RequireOtherProducts)
+                {
+                    await ValidateRequiredProductsAsync(product, cart.Items, currentWarnings);
+                }
+                else
+                {
+                    await ValidateRequiredProductsQuantityAsync(item.Item, cart, currentWarnings);
+                }
             }
         }
 
@@ -659,6 +662,8 @@ public partial class ShoppingCartValidator : IShoppingCartValidator
     public virtual async Task<bool> ValidateRequiredProductsAsync(Product product, IEnumerable<OrganizedShoppingCartItem> cartItems, IList<string> warnings)
     {
         Guard.NotNull(product);
+        Guard.NotNull(cartItems);
+        Guard.NotNull(warnings);
 
         if (!product.RequireOtherProducts)
         {
@@ -692,6 +697,42 @@ public partial class ShoppingCartValidator : IShoppingCartValidator
         }
 
         return missingRequiredProducts.Count == 0;
+    }
+
+    public virtual async Task<bool> ValidateRequiredProductsQuantityAsync(ShoppingCartItem cartItem, ShoppingCart cart, IList<string> warnings)
+    {
+        Guard.NotNull(cartItem);
+        Guard.NotNull(cart);
+        Guard.NotNull(warnings);
+
+        var requiredProduct = cartItem.Product;
+        if (!cartItem.Active || requiredProduct.QuantityPerParentUnit <= 0)
+        {
+            return true;
+        }
+
+        var parentItems = cart.Items
+            .Where(x => x.Active 
+                && x.Item.ParentItemId == null
+                && x.Item.Product.Id != requiredProduct.Id 
+                && x.Item.Product.RequireOtherProducts)
+            .ToList();
+
+        foreach (var parentItem in parentItems)
+        {
+            var requiredProductsIds = parentItem.Item.Product.ParseRequiredProductIds();
+            if (requiredProductsIds.Contains(requiredProduct.Id))
+            {
+                var expectedQuantity = parentItem.Item.Quantity * requiredProduct.QuantityPerParentUnit;
+                if (cartItem.Quantity != expectedQuantity)
+                {
+                    warnings.Add(T("ShoppingCart.SyncedRequiredProductQuantityWarning", cartItem.Quantity, expectedQuantity));
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     private string GetAttributeRequiredWarning(AttributeControlType type, string textPrompt)
