@@ -128,6 +128,10 @@ namespace Smartstore.Core.Catalog.Products
 
         #endregion
 
+        // TODO: (mh) (eu) Remove this (you forgot to commit this repo).
+        [NotMapped, IgnoreDataMember]
+        public int? DurabilityGuaranteeDurationYears { get; set; }
+
         [NotMapped, IgnoreDataMember]
         public bool MergedDataIgnore { get; set; }
 
