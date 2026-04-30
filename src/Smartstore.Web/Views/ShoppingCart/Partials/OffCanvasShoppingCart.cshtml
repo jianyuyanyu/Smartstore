@@ -100,17 +100,25 @@
 
                     <div class="row sm-gutters flex-wrap align-items-center mt-2">
                         <div class="col col-alpha">
+                            @{
+                                var qtyAttributes = new Dictionary<string, object>
+                                {
+                                    ["data-update-url"] = Url.Action("UpdateCartItem", "ShoppingCart"),
+                                    ["data-type"] = "cart",
+                                    ["data-sci-id"] = item.Id,
+                                    ["id"] = $"o-cart-item-quantity-{item.Id}",
+                                    ["aria-label"] = $"{T("ShoppingCart.Quantity")} {item.ProductName}"
+                                };
+                                if (item.DisableQuantityControl)
+                                {
+                                    qtyAttributes["disabled"] = "disabled";
+                                    qtyAttributes["title"] = T("ShoppingCart.SyncedRequiredProductQuantityInfo").Value;
+                                }
+                            }
                             @Html.EditorFor(x => item, "QtyInput", new
                             {
                                 size = ControlSize.Small,
-                                htmlAttributes = new
-                                {
-                                    data_update_url = Url.Action("UpdateCartItem", "ShoppingCart"),
-                                    data_type = "cart",
-                                    data_sci_id = item.Id,
-                                    id = $"o-cart-item-quantity-{item.Id}",
-                                    aria_label = $"{T("ShoppingCart.Quantity")} {item.ProductName}"
-                                }
+                                htmlAttributes = qtyAttributes
                             })
                         </div>
                         <div class="col">
@@ -148,7 +156,8 @@
                                     data-href='@Url.Action("DeleteCartItem", "ShoppingCart", new { cartItemId = item.Id })'
                                     data-name="@item.ProductName"
                                     data-type="cart"
-                                    data-action="remove">
+                                    data-action="remove"
+                                    attr-disabled='(item.IsRequired, "disabled")'>
                                 <i class="fal fa-trash-can" aria-hidden="true"></i>
                             </button>
                         </div>

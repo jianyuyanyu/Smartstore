@@ -135,6 +135,13 @@ namespace Smartstore.Web.Models.Cart
             var checkoutAttributes = await _checkoutAttributeMaterializer.GetCheckoutAttributesAsync(from, store.Id);
             to.DisplayCheckoutButton = !checkoutAttributes.Any(x => x.IsRequired) && from.Items.Any(x => x.Active);
 
+            var requiredProducts = new Dictionary<int, OrganizedShoppingCartItem>();
+            foreach (var item in from.Items.Where(x => x.Item.Product.RequireOtherProducts))
+            {
+                var requiredProductIds = item.Item.Product.ParseRequiredProductIds();
+                requiredProductIds.Each(id => requiredProducts[id] = item);
+            }
+
             // Products sort descending (recently added products).
             foreach (var cartItem in from.Items)
             {
@@ -149,7 +156,7 @@ namespace Smartstore.Web.Models.Cart
                     customer,
                     batchContext);
 
-                var cartItemModel = new MiniShoppingCartModel.ShoppingCartItemModel
+                var itemModel = new MiniShoppingCartModel.ShoppingCartItemModel
                 {
                     Id = item.Id,
                     Active = cartItem.Active,
@@ -165,12 +172,12 @@ namespace Smartstore.Web.Models.Cart
 
                 if (_shoppingCartSettings.ShowEssentialAttributesInMiniShoppingCart)
                 {
-                    cartItemModel.EssentialSpecAttributesInfo = _productAttributeFormatter.FormatSpecificationAttributes(
+                    itemModel.EssentialSpecAttributesInfo = _productAttributeFormatter.FormatSpecificationAttributes(
                         await batchContext.EssentialAttributes.GetOrLoadAsync(product.Id),
                         DefaultAttributeFormatOptions);
                 }
 
-                await cartItem.MapQuantityInputAsync(cartItemModel);
+                await cartItem.MapQuantityInputAsync(itemModel);
 
                 if (cartItem.ChildItems != null && _shoppingCartSettings.ShowProductBundleImagesOnShoppingCart)
                 {
@@ -208,8 +215,17 @@ namespace Smartstore.Web.Models.Cart
                             };
                         }
 
-                        cartItemModel.BundleItems.Add(bundleItemModel);
+                        itemModel.BundleItems.Add(bundleItemModel);
                     }
+                }
+
+                // Required products.
+                if (requiredProducts.TryGetValue(product.Id, out var parent))
+                {
+                    var expectedQuantity = parent.Item.Quantity * product.QuantityPerParentUnit;
+
+                    itemModel.IsRequired = parent.Item.Product.AutomaticallyAddRequiredProducts;
+                    itemModel.DisableQuantityControl = product.QuantityPerParentUnit > 0 && item.Quantity == expectedQuantity;
                 }
 
                 // Unit prices.
@@ -217,16 +233,16 @@ namespace Smartstore.Web.Models.Cart
                 {
                     if (lineItem.UnitPrice.PricingType == PricingType.CallForPrice)
                     {
-                        cartItemModel.UnitPrice = lineItem.UnitPrice.FinalPrice;
+                        itemModel.UnitPrice = lineItem.UnitPrice.FinalPrice;
                     }
                     else
                     {
                         var unitPrice = _currencyService.ConvertFromPrimaryCurrency(lineItem.UnitPrice.FinalPrice.Amount, currency);
-                        cartItemModel.UnitPrice = unitPrice.WithPostFormat(taxFormat);
+                        itemModel.UnitPrice = unitPrice.WithPostFormat(taxFormat);
 
                         if (unitPrice != 0 && to.ShowBasePrice)
                         {
-                            cartItemModel.BasePriceInfo = _priceCalculationService.GetBasePriceInfo(item.Product, unitPrice, currency);
+                            itemModel.BasePriceInfo = _priceCalculationService.GetBasePriceInfo(item.Product, unitPrice, currency);
                         }
                     }
                 }
@@ -234,10 +250,10 @@ namespace Smartstore.Web.Models.Cart
                 // Image.
                 if (_shoppingCartSettings.ShowProductImagesInMiniShoppingCart)
                 {
-                    await cartItem.MapAsync(cartItemModel.Image, _mediaSettings.MiniCartThumbPictureSize, cartItemModel.ProductName);
+                    await cartItem.MapAsync(itemModel.Image, _mediaSettings.MiniCartThumbPictureSize, itemModel.ProductName);
                 }
 
-                to.Items.Add(cartItemModel);
+                to.Items.Add(itemModel);
             }
         }
     }
